@@ -113,7 +113,7 @@
           </ins> 
         </strong> 
       </p>
-      <p>Contact: [Sebastian has not entered his email]
+      <p>Contact: sebastianreel@nevada.unr.edu
       </p>
       <p>Title: Project Contributer
     </div>
