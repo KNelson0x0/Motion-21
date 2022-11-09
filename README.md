@@ -77,7 +77,7 @@
           </ins> 
         </strong> 
       </p>
-      <p>Contact: [Keegan has not entered his email]
+      <p>Contact: keegang@nevada.unr.edu
       </p>
       <p>Title: Project Contributer
     </div>
