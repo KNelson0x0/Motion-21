@@ -89,7 +89,7 @@
     <img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/67765481?v=4&h=300&w=300&fit=cover&mask=circle&maxage=7d" href ="https://github.com/KNelson0x0" "alt="Keith Nelson" width="100" height="100" style="border-radius: 50%" align = "left"/>
 <p float="left"> 
     <div>
-      <p> 
+      <p href="https://github.com/KNelson0x0"> 
         <strong> 
           <ins> Keith Nelson 
           </ins> 
