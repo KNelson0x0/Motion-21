@@ -13,10 +13,38 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Python">
+      <UniqueIdentifier>{382b99cf-7097-4156-bf0b-0150728ee370}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dictionary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Python\ASL_GUI.py">
+      <Filter>Python</Filter>
+    </None>
+    <None Include="Python\constants.py">
+      <Filter>Python</Filter>
+    </None>
+    <None Include="Python\scroll_panel.py">
+      <Filter>Python</Filter>
+    </None>
+    <None Include="Python\utils.py">
+      <Filter>Python</Filter>
+    </None>
   </ItemGroup>
 </Project>
