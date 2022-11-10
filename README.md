@@ -60,7 +60,7 @@
           </ins> 
         </strong> 
       </p>
-      <p>Contact: [Jason has not entered his email]
+      <p>Contact: jasonliang@nevada.unr.edu
       </p>
       <p>Title: Project Contributer
     </div>
