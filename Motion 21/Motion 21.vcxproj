@@ -21,6 +21,17 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dictionary.h" />
+    <ClInclude Include="includes.h" />
+    <ClInclude Include="tools.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Python\ASL_GUI.py" />
+    <None Include="Python\constants.py" />
+    <None Include="Python\scroll_panel.py" />
+    <None Include="Python\utils.py" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
