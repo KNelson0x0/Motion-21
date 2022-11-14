@@ -44,7 +44,7 @@
           <ins> Chad Josim </ins> 
         </strong>
       <p>
-      Contact: [Chad has not entered his email]
+      Contact: cjosim@nevada.unr.edu
       <p>Title: Project Contributer
     </div>
   </div> 
