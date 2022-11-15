@@ -45,7 +45,7 @@
         </strong>
       <p>
       Contact: [Chad has not entered his email]
-      <p>Title: Project Contributer
+      <p>Title: Lead ML Developer
     </div>
   </div> 
   <br>
@@ -62,7 +62,7 @@
       </p>
       <p>Contact: jasonliang@nevada.unr.edu
       </p>
-      <p>Title: Project Contributer
+      <p>Title: Lead UI Designer
     </div>
   </div> 
   <br>
@@ -79,7 +79,7 @@
       </p>
       <p>Contact: keegang@nevada.unr.edu
       </p>
-      <p>Title: Project Contributer
+      <p>Title: Lead UI Developer
     </div>
   </div> 
   <br>
@@ -97,7 +97,7 @@
       </p>
       <p>Contact: KeithNelson@nevada.unr.edu
       </p>
-      <p>Title: Project Contributer
+      <p>Title: Lead Developer
       </p>
     </div>
   </div> 
@@ -115,7 +115,7 @@
       </p>
       <p>Contact: sebastianreel@nevada.unr.edu
       </p>
-      <p>Title: Project Contributer
+      <p>Title: Project Manager
     </div>
   </div> 
 </h4>
