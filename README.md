@@ -45,7 +45,7 @@
         </strong>
       <p>
       Contact: [Chad has not entered his email]
-      <p>Title: Lead ML Developer
+      <p>Title: Head ML Developer
     </div>
   </div> 
   <br>
@@ -62,7 +62,7 @@
       </p>
       <p>Contact: jasonliang@nevada.unr.edu
       </p>
-      <p>Title: Lead UI Designer
+      <p>Title: Head UI Designer
     </div>
   </div> 
   <br>
@@ -79,7 +79,7 @@
       </p>
       <p>Contact: keegang@nevada.unr.edu
       </p>
-      <p>Title: Lead UI Developer
+      <p>Title: Head UI Developer
     </div>
   </div> 
   <br>
