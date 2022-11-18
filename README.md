@@ -45,7 +45,7 @@
         </strong>
       <p>
       Contact: cjosim@nevada.unr.edu
-      <p>Title: Project Contributer
+      <p>Title: Head ML Developer
     </div>
   </div> 
   <br>
@@ -62,7 +62,7 @@
       </p>
       <p>Contact: jasonliang@nevada.unr.edu
       </p>
-      <p>Title: Project Contributer
+      <p>Title: Head UI Designer
     </div>
   </div> 
   <br>
@@ -79,7 +79,7 @@
       </p>
       <p>Contact: keegang@nevada.unr.edu
       </p>
-      <p>Title: Project Contributer
+      <p>Title: Head UI Developer
     </div>
   </div> 
   <br>
@@ -97,7 +97,7 @@
       </p>
       <p>Contact: KeithNelson@nevada.unr.edu
       </p>
-      <p>Title: Project Contributer
+      <p>Title: Lead Developer
       </p>
     </div>
   </div> 
@@ -115,7 +115,7 @@
       </p>
       <p>Contact: sebastianreel@nevada.unr.edu
       </p>
-      <p>Title: Project Contributer
+      <p>Title: Project Manager
     </div>
   </div> 
 </h4>
@@ -143,6 +143,9 @@
   </a> 
   <a target="_blank"> 
     <img src="https://www.vectorlogo.zone/logos/opencv/opencv-icon.svg" alt="OpenCV" width="50" height="50"/> 
+  </a> 
+  <a target="_blank"> 
+    <img src="https://www.vectorlogo.zone/logos/tensorflow/tensorflow-icon.svg" alt="TensorFlow" width="50" height="50"/> 
   </a> 
 </p>
 
