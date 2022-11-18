@@ -3,5 +3,5 @@ numpy==1.23.4
 opencv-python==4.6.0.66
 pandas==1.5.1
 Pillow==9.3.0
-scikit-learn==1.13
+scikit-learn
 tensorflow==2.10.0
