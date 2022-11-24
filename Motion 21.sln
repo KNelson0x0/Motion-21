@@ -5,6 +5,11 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Motion 21", "Motion_21\Motion 21.pyproj", "{175C95DA-62B4-4D72-B4AC-8DE56BBCCA2E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{72DB5F93-E1E5-466D-9B7C-FC82C37D5437}"
+	ProjectSection(SolutionItems) = preProject
+		requirements.txt = requirements.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

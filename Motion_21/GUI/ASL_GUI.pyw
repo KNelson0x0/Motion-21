@@ -24,6 +24,7 @@ class App(customtkinter.CTk):
 
         #Handy closing function to stop all running processes even when window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.current_frame = None
 
         self.home_window()
 
@@ -141,7 +142,7 @@ class App(customtkinter.CTk):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
     # Defines user accounts
-    def defaultUser(self):
+    def default_user(self):
         customtkinter.set_appearance_mode("Dark")
         customtkinter.set_default_color_theme("dark-blue")
 
@@ -184,7 +185,3 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
         self.frame_right.grid(row=0, column=2, sticky="nswe")
 
-
-if __name__ == "__main__":
-    app = App()
-    app.start()

@@ -23,10 +23,21 @@
 #
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
-
 from GUI.ASL_GUI import App
+from config import Config
+import json
 
 if __name__ == "__main__":
+    cfg = Config("Keith") 
     app = App()
-    app.start()
+    #app.start()
+    x = 1336.5
 
+    cfg.save(app, ['geometry','title'])
+    cfg.save(app, ['geometry','title'])
+    cfg.save(app, ['geometry','title'], 'Test Name :D')
+    cfg.save_var(x, 'x')
+    cfg.load()
+
+    print(cfg['x']['var'])
+    print(cfg['x']['both'])
