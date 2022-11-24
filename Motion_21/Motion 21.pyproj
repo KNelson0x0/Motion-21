@@ -23,6 +23,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="config.py" />
     <Compile Include="GUI\ASL_GUI.pyw" />
     <Compile Include="GUI\scroll_panel.pyw" />
     <Compile Include="motion_21.pyw" />
