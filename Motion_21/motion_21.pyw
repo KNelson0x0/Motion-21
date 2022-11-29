@@ -24,20 +24,11 @@
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 from GUI.ASL_GUI import App
+from Utils.camera import Camera
 from config import Config
-import json
 
 if __name__ == "__main__":
-    cfg = Config("Keith") 
+    cam = Camera() # init it.
     app = App()
-    #app.start()
-    x = 1336.5
-
-    cfg.save(app, ['geometry','title'])
-    cfg.save(app, ['geometry','title'])
-    cfg.save(app, ['geometry','title'], 'Test Name :D')
-    cfg.save_var(x, 'x')
-    cfg.load()
-
-    print(cfg['x']['var'])
-    print(cfg['x']['both'])
+    app.start()
+    

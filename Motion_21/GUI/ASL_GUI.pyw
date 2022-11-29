@@ -1,8 +1,13 @@
-import customtkinter
-from PIL import Image, ImageTk
 import os
+import cv2
+import customtkinter
+from   enum import Enum
+from   Utils.utils import *
+from   Utils.camera import Camera
+from   Utils.constants import DEBUG
+from   PIL import Image, ImageTk
 
-PATH = os.path.dirname(os.path.realpath(__file__))
+PATH = os.path.dirname(os.path.realpath(__file__)) # NOTE: move this to constants
 
 # To-Do List:
 # 1) Implement save file
@@ -14,11 +19,50 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
 
+
+
+class WindowState(Enum):
+    HOME = 1
+    SETTINGS = 2
+    THEMES = 3
+
+
+class CameraWindow(customtkinter.CTkFrame):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.camera_window      = customtkinter.CTkLabel(master = self);
+        self.camera_window_crop = customtkinter.CTkLabel(master = self);
+        self.camera_window.grid(row=1, column=0, padx=0, pady=0, sticky="w")
+        self.cw_update();
+
+    def cw_update(self):
+        img         = Image.fromarray(Camera().rgb_img)
+        imgtk       = ImageTk.PhotoImage(image = img)
+        self.camera_window.imgtk = imgtk
+        self.camera_window.configure(image=imgtk)
+
+    def pause(self):
+        Camera().stop = True
+
+    def resume(self):
+        Camera().begin()
+
+    def __del__(self):
+        Camera().stop = True
+
+
+        
+
+
+
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
+       
         #Size of window and title
+        self.window_state = WindowState.HOME
         self.geometry("780x520")
         self.title("ASL Learning App")
 
@@ -27,6 +71,8 @@ class App(customtkinter.CTk):
         self.current_frame = None
 
         self.home_window()
+        self.after(10, self.the_afterinator)
+
 
 
     # Button function declarations
@@ -47,6 +93,8 @@ class App(customtkinter.CTk):
 
     # Button that recreates window with the theme page
     def themes_button(self):
+        self.window_state = WindowState.THEMES
+
 
         # Destroyed old window
         self.frame_left.destroy()
@@ -66,7 +114,7 @@ class App(customtkinter.CTk):
         self.label_1.grid(row=0, column=0, padx=10, pady=10, sticky="we")
 
         # Default user settings button to reset all changes
-        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Default User Settings", width = 200, height = 50, border_width = 0, corner_radius = 0, border_color="#000000", command=self.defaultUser)
+        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Default User Settings", width = 200, height = 50, border_width = 0, corner_radius = 0, border_color="#000000", command=self.default_user)
         self.button1.grid(row=1, column=0, padx=1, pady=1)
 
         # Creates Return button
@@ -91,7 +139,8 @@ class App(customtkinter.CTk):
 
     # Button that recreates window with settings page
     def settings_button(self):
-
+        self.window_state = WindowState.SETTINGS
+        if DEBUG: cv2.destroyAllWindows() # just to see if this works
         # Destroyed old window
         self.frame_left.destroy()
         self.frame_middle.destroy()
@@ -131,6 +180,16 @@ class App(customtkinter.CTk):
     def on_closing(self, event=0):
         self.destroy()
 
+    def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
+        # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
+        if self.frame_middle and self.window_state == WindowState.HOME:
+            self.frame_middle.cw_update();
+
+            if DEBUG: cv2.imshow("Sanity Window.", Camera().get_frame()) 
+
+
+        self.after(10, self.the_afterinator)
+
     def start(self):
         self.mainloop()
 
@@ -156,7 +215,8 @@ class App(customtkinter.CTk):
 
     # Creates the home window
     def home_window(self):
-
+        self.window_state = WindowState.HOME
+        
         # Configures grid layout of 2x1
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -178,10 +238,17 @@ class App(customtkinter.CTk):
         self.button5.grid(row=1, column=0, padx=0, pady=468, sticky="se")
 
         #Middle sub-window
-        self.frame_middle = customtkinter.CTkFrame(master=self)
+        self.frame_middle       = CameraWindow(master=self)
+        #self.frame_middle       = customtkinter.CTkFrame(master=self)
+        #self.camera_window      = TK.Label(master = self.frame_middle)
+        #self.camera_window.grid(row=0, column=0, padx=0, pady=0, sticky="nswe")
+
+        
         self.frame_middle.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
+
         
         #Right side sub-window (May not need)
         self.frame_right = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
         self.frame_right.grid(row=0, column=2, sticky="nswe")
+        self.update()
 
