@@ -30,7 +30,7 @@ class App(customtkinter.CTk):
         self.title("ASL Learning App")
 
         # Locks size of window
-        #self.resizable(False, False)
+        self.resizable(False, False)
 
         #Handy closing function to stop all running processes even when window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
