@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Motion 21</Name>
     <RootNamespace>Motion 21</RootNamespace>
-    <InterpreterId>MSBuild|custom_env_11|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|ML-Env|$(MSBuildProjectFullPath)</InterpreterId>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -23,12 +23,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="config.py" />
+    <Compile Include="config.pyw" />
     <Compile Include="GUI\ASL_GUI.pyw" />
+    <Compile Include="GUI\camera_window.pyw" />
     <Compile Include="GUI\scroll_panel.pyw" />
+    <Compile Include="ML\usertrain.pyw" />
     <Compile Include="motion_21.pyw" />
-    <Compile Include="Utils\constants.py" />
-    <Compile Include="Utils\utils.py" />
+    <Compile Include="Utils\camera.pyw" />
+    <Compile Include="Utils\constants.pyw" />
+    <Compile Include="Utils\utils.pyw" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="C++\" />
@@ -41,10 +44,10 @@
     <InterpreterReference Include="Global|VisualStudio|env-custom (Python 3.10 (64-bit))" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="custom_env_11\">
-      <Id>custom_env_11</Id>
+    <Interpreter Include="ML-Env\">
+      <Id>ML-Env</Id>
       <Version>3.11</Version>
-      <Description>custom_env_11 (Python 3.11 (64-bit))</Description>
+      <Description>ML-Env (Python 3.11 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
