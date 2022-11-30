@@ -37,7 +37,7 @@ class App(customtkinter.CTk):
         self.current_frame = None
 
         self.home_window()
-        self.after(10, self.the_afterinator)
+        #self.after(10, self.the_afterinator)
 
 
     # Button function declarations
@@ -319,13 +319,14 @@ class App(customtkinter.CTk):
 
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        if self.frame_middle and self.window_state == WindowState.HOME:
-            self.frame_middle.cw_update();
+        #if self.frame_middle and self.window_state == WindowState.HOME:
+        #    self.frame_middle.cw_update();
 
-            if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
+        #    if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
 
 
-        self.after(10, self.the_afterinator)
+        #self.after(10, self.the_afterinator)
+        pass
 
     def start(self):
         self.mainloop()
