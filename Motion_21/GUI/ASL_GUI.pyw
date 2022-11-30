@@ -4,9 +4,6 @@ import os
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
-# NEXT TIME:
-# Push to main
-
 # To-Do List:
 # 1) Implement save file
 # 2) Fix color on themes page as they are currently hard set to grey (implement along with save file)
