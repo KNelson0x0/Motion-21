@@ -99,7 +99,3 @@ class Camera(object): # singleton because every time the camera is initialized t
 
             
             time.sleep(0.1)         # pErFoRmAnCe
-
-
-    
-

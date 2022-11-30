@@ -28,6 +28,7 @@ from Utils.camera import Camera
 from config import Config
 
 if __name__ == "__main__":
+    # Loading Window Here!
     cam = Camera() # init it.
     app = App()
     app.start()

@@ -1,8 +1,8 @@
 import os
 import cv2
 import customtkinter
-from   enum import Enum
 from   Utils.utils import *
+from   .camera_window import CameraWindow, WindowState
 from   Utils.camera import Camera
 from   Utils.constants import DEBUG
 from   PIL import Image, ImageTk
@@ -18,39 +18,6 @@ PATH = os.path.dirname(os.path.realpath(__file__)) # NOTE: move this to constant
 #Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
-
-
-
-class WindowState(Enum):
-    HOME = 1
-    SETTINGS = 2
-    THEMES = 3
-
-
-class CameraWindow(customtkinter.CTkFrame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        self.camera_window      = customtkinter.CTkLabel(master = self);
-        self.camera_window_crop = customtkinter.CTkLabel(master = self);
-        self.camera_window.grid(row=1, column=0, padx=0, pady=0, sticky="w")
-        self.cw_update();
-
-    def cw_update(self):
-        img         = Image.fromarray(Camera().rgb_img_rect)
-        imgtk       = ImageTk.PhotoImage(image = img)
-        self.camera_window.imgtk = imgtk
-        self.camera_window.configure(image=imgtk)
-
-    def pause(self):
-        Camera().stop = True
-
-    def resume(self):
-        Camera().begin()
-
-    def __del__(self):
-        Camera().stop = True
-
 
 class App(customtkinter.CTk):
     def __init__(self):
