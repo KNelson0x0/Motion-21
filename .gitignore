@@ -363,5 +363,3 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsd
-/custom_env_11
