@@ -37,7 +37,7 @@ class CameraWindow(customtkinter.CTkFrame):
         self.cw_update();
 
     def cw_update(self):
-        img         = Image.fromarray(Camera().rgb_img)
+        img         = Image.fromarray(Camera().rgb_img_rect)
         imgtk       = ImageTk.PhotoImage(image = img)
         self.camera_window.imgtk = imgtk
         self.camera_window.configure(image=imgtk)
@@ -50,10 +50,6 @@ class CameraWindow(customtkinter.CTkFrame):
 
     def __del__(self):
         Camera().stop = True
-
-
-        
-
 
 
 class App(customtkinter.CTk):
@@ -185,7 +181,7 @@ class App(customtkinter.CTk):
         if self.frame_middle and self.window_state == WindowState.HOME:
             self.frame_middle.cw_update();
 
-            if DEBUG: cv2.imshow("Sanity Window.", Camera().get_frame()) 
+            if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
 
 
         self.after(10, self.the_afterinator)
@@ -240,13 +236,8 @@ class App(customtkinter.CTk):
         #Middle sub-window
         self.frame_middle       = CameraWindow(master=self)
         #self.frame_middle       = customtkinter.CTkFrame(master=self)
-        #self.camera_window      = TK.Label(master = self.frame_middle)
-        #self.camera_window.grid(row=0, column=0, padx=0, pady=0, sticky="nswe")
-
-        
         self.frame_middle.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
-        
         #Right side sub-window (May not need)
         self.frame_right = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
         self.frame_right.grid(row=0, column=2, sticky="nswe")
