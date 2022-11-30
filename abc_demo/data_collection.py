@@ -1,3 +1,9 @@
+# Author: Sebastian Reel
+# Project: ASL Hand Demo
+# Description: Utilizing opencv, and a premade Google machine learning algorithm, named Teachable Machine.(which uses Tensorflow)
+#              This will demo the possibility of presenting ASL letters A, B, and C, to demonstrate the goal for
+#              detecting letters and comfirming the user has shown their hand correctly.
+
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 import numpy as np
@@ -10,7 +16,7 @@ detector = HandDetector(maxHands=1)
 offset = 20
 imgSize = 300
 
-folder = "Data/Y"
+folder = "images/C"
 counter = 0
 
 while True:
@@ -45,6 +51,7 @@ while True:
 
         cv2.imshow("ImageCrop", imgCrop)
         cv2.imshow("ImageWhite", imgWhite)
+    
 
     cv2.imshow("Image", img)
     key = cv2.waitKey(1)
