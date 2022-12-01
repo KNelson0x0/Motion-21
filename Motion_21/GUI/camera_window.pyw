@@ -1,5 +1,4 @@
 import customtkinter
-from   enum import Enum
 from   PIL import Image, ImageTk
 from   Utils.camera import Camera
 
