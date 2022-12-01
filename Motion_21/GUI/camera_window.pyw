@@ -4,25 +4,28 @@ from   PIL import Image, ImageTk
 from   Utils.camera import Camera
 
 
-class WindowState(Enum):
-    HOME = 1
-    SETTINGS = 2
-    THEMES = 3
 
-class CameraWindow(customtkinter.CTkFrame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class CameraWindow(customtkinter.CTkLabel):
+    def __init__(self, *args, width=None, height=None, cropped = False, **kwargs):
+        self.width = width
+        self.height = height
+        self.cropped = cropped
+
+        if width == None and height == None: super().__init__(*args, **kwargs)
+        else:                                super().__init__(*args, width=self.width, height=self.height, **kwargs)
         
-        self.camera_window      = customtkinter.CTkLabel(master = self);
-        self.camera_window_crop = customtkinter.CTkLabel(master = self);
-        self.camera_window.grid(row=1, column=0, padx=0, pady=0, sticky="w")
         self.cw_update();
 
     def cw_update(self):
-        img         = Image.fromarray(Camera().rgb_img_rect)
+        img         = Image.fromarray(Camera().rgb_img_rect if not self.cropped else Camera().rgb_img_crop)
+
+        if self.width != None and self.height != None:
+            img = img.resize((self.width, self.height))
+
         imgtk       = ImageTk.PhotoImage(image = img)
-        self.camera_window.imgtk = imgtk
-        self.camera_window.configure(image=imgtk)
+
+        self.imgtk = imgtk
+        self.configure(image=imgtk)
 
     def pause(self):
         Camera().stop = True

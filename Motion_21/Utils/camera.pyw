@@ -80,8 +80,8 @@ class Camera(object): # singleton because every time the camera is initialized t
                 self.rect_frame = self.frame.copy()
 
                 cv2.rectangle(self.rect_frame, (52,52), (252,252), (255,122,1), 3) # make sure box is divisible by 4
-                self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB) 
-
+                self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
+                self.rgb_img_crop = cv2.cvtColor(self.rect_frame[52:252, 52:252], cv2.COLOR_BGR2RGB)
                 self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
                 
                 roi = self.frame[52:252, 52:252]
