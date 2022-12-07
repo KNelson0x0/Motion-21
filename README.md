@@ -132,9 +132,11 @@
   </font>
 </h4>
 <p align="left"> 
+<!--
   <a  target="_blank"> 
     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/cplusplus/cplusplus-original.svg" alt="cplusplus" width="50" height="50"/> 
   </a> 
+-->
   <a  target="_blank"> 
     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="50" height="50"/> 
   </a> 
@@ -144,5 +146,11 @@
   <a target="_blank"> 
     <img src="https://www.vectorlogo.zone/logos/opencv/opencv-icon.svg" alt="OpenCV" width="50" height="50"/> 
   </a> 
+  <a target="_blank"> 
+    <img src="https://www.vectorlogo.zone/logos/tensorflow/tensorflow-icon.svg" alt="TensorFlow" width="50" height="50"/> 
+  </a> 
+  <a target="_blank"> 
+    <img src="https://keras.io/img/logo.png" alt="Keras" width="150" height="50"/> 
+  </a>                
 </p>
 

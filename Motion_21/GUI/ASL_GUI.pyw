@@ -30,14 +30,14 @@ class App(customtkinter.CTk):
         self.title("ASL Learning App")
 
         # Locks size of window
-        #self.resizable(False, False)
+        self.resizable(False, False)
 
         #Handy closing function to stop all running processes even when window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.current_frame = None
 
         self.home_window()
-        self.after(10, self.the_afterinator)
+        #self.after(10, self.the_afterinator)
 
 
     # Button function declarations
@@ -319,13 +319,14 @@ class App(customtkinter.CTk):
 
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        if self.frame_middle and self.window_state == WindowState.HOME:
-            self.frame_middle.cw_update();
+        #if self.frame_middle and self.window_state == WindowState.HOME:
+        #    self.frame_middle.cw_update();
 
-            if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
+        #    if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
 
 
-        self.after(10, self.the_afterinator)
+        #self.after(10, self.the_afterinator)
+        pass
 
     def start(self):
         self.mainloop()
@@ -411,33 +412,3 @@ class App(customtkinter.CTk):
         #Prints the home page help screen on the right window
         self.label4 = customtkinter.CTkLabel(master=self.frame_right, image = self.home_example_image, width = 550, height = 500)
         self.label4.grid(row=0, column=0, padx=0, pady=0, sticky="nswe")
-
-
-if __name__ == "__main__":
-    app = App()
-    app.start()
-
-        # Creates label with the text "Users:"
-        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, text="Lesson Stuff Goes Here:")
-        self.label_1.grid(row=0, column=0, padx=1, pady=1, sticky="we")
-
-        #Button mapping and functionality
-        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Home", width = 48, height = 20, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
-        self.button1.grid(row=1, column=0, padx=0, pady=468, sticky="sw")
-        self.button4 = customtkinter.CTkButton(master=self.frame_left, text = "Settings", width = 48, height = 20, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.settings_button)
-        self.button4.grid(row=1, column=0, padx=0, pady=468, sticky="s")
-        self.button5 = customtkinter.CTkButton(master=self.frame_left, text = "Exit", width = 48, height = 20, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.exit_button)
-        self.button5.grid(row=1, column=0, padx=0, pady=468, sticky="se")
-
-        #Middle sub-window
-        self.frame_middle       = CameraWindow(master=self)
-        #self.frame_middle       = customtkinter.CTkFrame(master=self)
-        self.frame_middle.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
-
-        #Right side sub-window (May not need)
-        self.frame_right = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
-        self.frame_right.grid(row=0, column=2, sticky="nswe")
-        self.update()
-
-
-
