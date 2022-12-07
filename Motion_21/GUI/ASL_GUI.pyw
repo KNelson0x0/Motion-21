@@ -61,8 +61,8 @@ class App(customtkinter.CTk):
 
     # Button that recreates window with the theme page
     def themes_button(self):
-        self.window_state = WindowState.THEMES
 
+        self.window_state = WindowState.THEMES
 
         # Destroyed old window
         self.frame_left.destroy()
@@ -81,12 +81,12 @@ class App(customtkinter.CTk):
         self.label_1.grid(row=0, column=0, padx=10, pady=10, sticky="we")
 
         # Default user settings button to reset all changes
-        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Default User Settings", width = 200, height = 50, border_width = 0, corner_radius = 0, border_color="#000000", command=self.default_user)
+        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Default User Settings", width = 200, height = 50, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = "#292929", border_color="#101010", command=self.defaultUser)
         self.button1.grid(row=1, column=0, padx=1, pady=1)
 
         # Creates Return button
-        self.button2 = customtkinter.CTkButton(master=self.frame_left, text = "Return", width = 200, height = 50, border_width = 0, corner_radius = 0, border_color="#000000", command=self.return_function)
-        self.button2.grid(row=9, column=0, padx=20, pady=350, sticky="w")
+        self.button2 = customtkinter.CTkButton(master=self.frame_left, text = "Return", width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = "#292929", border_color="#101010", command=self.return_function)
+        self.button2.grid(row=9, column=0, padx=0, pady=350, sticky="we")
 
         # Creates the right side of the theme wind
         # ------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ class App(customtkinter.CTk):
         self.label_2.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
         # Creates theme drop down menu to change general theme details all at once
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.frame_right, values=["Light", "Dark", "System"], command=self.change_appearance_mode)
+        self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.frame_right, values=["System", "Light", "Dark"], fg_color = "#292929", command=self.change_appearance_mode)
         self.optionmenu_1.grid(row=0, column=1, padx=5, pady=10, sticky="w")
 
         # Creates label with the text "Font Size:" to describe what the slider below it does
@@ -114,7 +114,7 @@ class App(customtkinter.CTk):
         self.slider_1 = customtkinter.CTkSlider(master=self.frame_right,
                                                 from_=0,
                                                 to=1,
-                                                number_of_steps=3,
+                                                number_of_steps=10,
                                                 command=self.progressbar.set)
         self.slider_1.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")   
 
@@ -126,7 +126,7 @@ class App(customtkinter.CTk):
         self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
                                                 from_=0,
                                                 to=1,
-                                                number_of_steps=3,
+                                                number_of_steps=10,
                                                 command=self.progressbar.set)
         self.slider_2.grid(row=4, column=0, columnspan=2, pady=10, padx=20, sticky="we")   
 
