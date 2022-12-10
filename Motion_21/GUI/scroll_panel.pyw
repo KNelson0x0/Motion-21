@@ -17,9 +17,11 @@ class ScrollPanel (CT.CTkFrame):
         self.width         = width
         self.height        = height
         self.child_order   = {}
+        self.anim_complete = False
         self.timer         = Timer()
         self.counter       = Counter(0, 4)
-        
+        self.button        = CT.CTkButton(self, text = "Drip", width = 130, height = 60, border_width = 2, corner_radius = 10, compound = "bottom", border_color="#000000")
+
     def as_destroy(self, el):
         el.destroy()
         self.child_order = {}
