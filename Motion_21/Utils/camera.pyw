@@ -50,7 +50,7 @@ class Camera(object): # singleton because every time the camera is initialized t
         return self.get_frame()
 
     def warmup(self): # camera seems to need a bit to warmup. not joking.
-        for i in range(60):
+        for i in range(100):
             _, self.frame = self.stream.read() 
 
         roi = self.frame[52:252, 52:252]
