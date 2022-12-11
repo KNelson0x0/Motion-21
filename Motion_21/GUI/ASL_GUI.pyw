@@ -1,17 +1,37 @@
 import os
 import cv2
 import customtkinter
+from   enum import Enum
 from   Utils.utils import *
-from   .camera_window import CameraWindow, WindowState
-from   Utils.camera import Camera
+from   .camera_window import CameraWindow
 from   Utils.constants import DEBUG
 from   PIL import Image, ImageTk
 
 PATH = os.path.dirname(os.path.realpath(__file__)) # NOTE: move this to constants
 
+# To-Do List:
+# 1) Implement save file
+# 2) Fix color on themes page as they are currently hard set to grey (implement along with save file)
+# 3) Add functionality to other buttons
+# 4) Add options for text resizing and button resizing
+
 #Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
+
+
+class CameraState(Enum):
+    CAM_OFF = 0
+    CAM_ON = 1
+    CAM_REQUIRED = 2
+    CAM_NOT_REQUIRED = 3
+
+class WindowState(Enum):
+    HOME     = [1, CameraState.CAM_NOT_REQUIRED]
+    LESSONS  = [1, CameraState.CAM_REQUIRED]
+    SETTINGS = [1, CameraState.CAM_NOT_REQUIRED]
+    THEMES   = [1, CameraState.CAM_NOT_REQUIRED]
+
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -20,11 +40,12 @@ class App(customtkinter.CTk):
        
         #Size of window and title
         self.window_state = WindowState.HOME
+        self.camera_state = CameraState.CAM_NOT_REQUIRED
         self.geometry("780x520")
         self.title("ASL Learning App")
 
         # Locks size of window
-        self.resizable(False, False)
+        #self.resizable(False, False)
 
         #Handy closing function to stop all running processes even when window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -55,8 +76,8 @@ class App(customtkinter.CTk):
 
     # Button that recreates window with the theme page
     def themes_button(self):
-
         self.window_state = WindowState.THEMES
+
 
         # Destroyed old window
         self.frame_left.destroy()
@@ -75,12 +96,12 @@ class App(customtkinter.CTk):
         self.label_1.grid(row=0, column=0, padx=10, pady=10, sticky="we")
 
         # Default user settings button to reset all changes
-        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Default User Settings", width = 200, height = 50, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = "#292929", border_color="#101010", command=self.defaultUser)
-        self.button1.grid(row=1, column=0, padx=1, pady=1)
+        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Default User Settings", width = 200, height = 50, border_width = 0, corner_radius = 0, border_color="#000000", command=self.default_user)
+        self.button1.grid(row=1, column=0, padx=1, pady=1) 
 
         # Creates Return button
-        self.button2 = customtkinter.CTkButton(master=self.frame_left, text = "Return", width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = "#292929", border_color="#101010", command=self.return_function)
-        self.button2.grid(row=9, column=0, padx=0, pady=350, sticky="we")
+        self.button2 = customtkinter.CTkButton(master=self.frame_left, text = "Return", width = 200, height = 50, border_width = 0, corner_radius = 0, border_color="#000000", command=self.return_function)
+        self.button2.grid(row=9, column=0, padx=20, pady=350, sticky="w")
 
         # Creates the right side of the theme wind
         # ------------------------------------------------------------------------------------
@@ -95,7 +116,7 @@ class App(customtkinter.CTk):
         self.label_2.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
         # Creates theme drop down menu to change general theme details all at once
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.frame_right, values=["System", "Light", "Dark"], fg_color = "#292929", command=self.change_appearance_mode)
+        self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.frame_right, values=["Light", "Dark", "System"], command=self.change_appearance_mode)
         self.optionmenu_1.grid(row=0, column=1, padx=5, pady=10, sticky="w")
 
         # Creates label with the text "Font Size:" to describe what the slider below it does
@@ -108,7 +129,7 @@ class App(customtkinter.CTk):
         self.slider_1 = customtkinter.CTkSlider(master=self.frame_right,
                                                 from_=0,
                                                 to=1,
-                                                number_of_steps=10,
+                                                number_of_steps=3,
                                                 command=self.progressbar.set)
         self.slider_1.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")   
 
@@ -120,9 +141,12 @@ class App(customtkinter.CTk):
         self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
                                                 from_=0,
                                                 to=1,
-                                                number_of_steps=10,
+                                                number_of_steps=3,
                                                 command=self.progressbar.set)
         self.slider_2.grid(row=4, column=0, columnspan=2, pady=10, padx=20, sticky="we")   
+
+    def configure_button(self): 
+        pass
 
     # Button that recreates window with settings page
     def settings_button(self):
@@ -138,7 +162,7 @@ class App(customtkinter.CTk):
         self.frame_left.grid(row=0, column=0, sticky="nswe")
 
         # configure grid layout (1x8)
-        self.frame_left.grid_rowconfigure(6, weight=1)      # empty row as spacing
+        self.frame_left.grid_rowconfigure(7, weight=1)      # empty row as spacing
         self.frame_left.grid_rowconfigure(8, minsize=0)     # sets minimum size from bottom of screen to buttons
         
         # Creates labels for the left window
@@ -156,6 +180,8 @@ class App(customtkinter.CTk):
         self.button5.grid(row=4, column=0, padx=0, pady=0)
         self.button6 = customtkinter.CTkButton(master=self.frame_left, text = "Notifications", width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = "#292929", border_color="#101010", command=self.notif_button)
         self.button6.grid(row=5, column=0, padx=0, pady=0)
+        self.button7 = customtkinter.CTkButton(master=self.frame_left, text = "Configure M21", width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = "#292929", border_color="#101010", command=self.notif_button)
+        self.button7.grid(row=6, column=0, padx=0, pady=0)
     
         # Creates Return button
         self.button7 = customtkinter.CTkButton(master=self.frame_left, text = "Return", width = 150, height = 60, border_width = 1, corner_radius = 5, fg_color = "#292929", border_color="#101010", command=self.return_function)
@@ -264,8 +290,13 @@ class App(customtkinter.CTk):
         # Window for the main camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-        self.label6 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
-        self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+
+        self.window_state = WindowState.LESSONS
+        self.camera_state = CameraState.CAM_REQUIRED
+        self.cam_win1 = CameraWindow(master = self.frame_right, width=450, height=350, compound = "bottom",text="")
+        self.cam_win1.grid(row=0, column=0, sticky="n", padx=5, pady=10)
+        #self.label6 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+        #self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
 
         # Label that describes the main camera above
         self.label7 = customtkinter.CTkLabel(master=self.frame_right, text = "Main Camera")
@@ -278,18 +309,20 @@ class App(customtkinter.CTk):
         # Window for the example camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-        self.label9 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+        self.label9 = customtkinter.CTkLabel(master=self.frame_right, text = "No Logo Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
         self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
 
         # Label that describes the example camera above
-        self.label10 = customtkinter.CTkLabel(master=self.frame_right, text = "Example Camera")
+        self.label10 = customtkinter.CTkLabel(master=self.frame_right, text = "Example")
         self.label10.grid(row=0, column=1, padx=0, pady=0) 
 
         # Window for the user hand camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-        self.label11 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-        self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+        self.cam_win2 = CameraWindow(master = self.frame_right, width=150, height=150, text = "", cropped = True, corner_radius = 8, compound = "bottom")
+        self.cam_win2.grid(row=0, column=1, sticky="s", padx=0, pady=0)
+        #self.label11 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+        #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
 
         # Label that describes the user hand camera above
         self.label10 = customtkinter.CTkLabel(master=self.frame_right, text = "User Hand Camera")
@@ -298,6 +331,9 @@ class App(customtkinter.CTk):
         # Label that describes the user's accuracy
         self.label11 = customtkinter.CTkLabel(master=self.frame_right, text = "Total Accuracy: 100%", text_font=("Segoe UI", 14))
         self.label11.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+
+
+        self.the_afterinator()
 
     # Button that opens lesson select page
     def lesson_select_button(self):
@@ -313,14 +349,12 @@ class App(customtkinter.CTk):
 
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        #if self.frame_middle and self.window_state == WindowState.HOME:
-        #    self.frame_middle.cw_update();
+        if self.window_state == WindowState.LESSONS and self.camera_state == CameraState.CAM_REQUIRED:
+            self.cam_win1.cw_update();
+            self.cam_win2.cw_update();
+            self.after(10, self.the_afterinator)
 
         #    if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
-
-
-        #self.after(10, self.the_afterinator)
-        pass
 
     def start(self):
         self.mainloop()
