@@ -9,12 +9,6 @@ from   PIL import Image, ImageTk
 
 PATH = os.path.dirname(os.path.realpath(__file__)) # NOTE: move this to constants
 
-# To-Do List:
-# 1) Implement save file
-# 2) Fix color on themes page as they are currently hard set to grey (implement along with save file)
-# 3) Add functionality to other buttons
-# 4) Add options for text resizing and button resizing
-
 #Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
