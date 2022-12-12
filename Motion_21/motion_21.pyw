@@ -31,5 +31,17 @@ if __name__ == "__main__":
     # Loading Window Here!
     cam = Camera() # init it.
     app = App()
+
+    x = 1336.5
+
+    cfg = Config("Keith") 
+    cfg.save(app, ['geometry','title'])
+    cfg.save(app, ['geometry','title'], 'Test Name')
+    cfg.save_var(x, 'x')
+    cfg.load()
+
     app.start()
     
+
+
+
