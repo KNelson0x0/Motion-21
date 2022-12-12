@@ -285,6 +285,88 @@ class App(customtkinter.CTk):
     def exit_button(self):
         self.destroy()
 
+
+    # Button that allows user to enter their own training data
+    def user_train(self, id):
+
+        # Destroyed old window
+        self.frame_left.destroy()
+        self.frame_right.destroy()
+
+        # Configures grid layout of 2x1
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        # Creates left sub-window
+        # ------------------------------------------------------------------------------------   
+        self.frame_left = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
+        self.frame_left.grid(row=0, column=0, sticky="nswe")
+
+        # configure grid layout (9x1)
+        self.frame_left.grid_rowconfigure(0, minsize=10)    # sets minimum size from top of screen to text
+        self.frame_left.grid_rowconfigure(2, weight=1)      # creates empty row with weight 1
+        self.frame_left.grid_rowconfigure(4, weight=0)      # creates empty row with weight 0
+        self.frame_left.grid_rowconfigure(7, weight=1)      # creates empty row with weight 1
+        self.frame_left.grid_rowconfigure(9, minsize=0)     # sets minimum size from bottom of screen to buttons
+
+        # Creates user training label
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, text="Training \nConfiguration:", text_font=("Segoe UI", 14))
+        self.label_1.grid(row=1, column=0, padx=1, pady=1, sticky="we")
+
+        # Previous training information for the user
+        self.label_2 = customtkinter.CTkLabel(master=self.frame_left, text="Please put training \nconfig text here", text_font=("Segoe UI", 11))
+        self.label_2.grid(row=3, column=0, padx=1, pady=5, sticky="nswe")
+
+        #Images for left side of window
+        self.home_image = self.load_image("/images/home.png", 25, 25)
+        self.home_example_image = self.load_image("/images/HomeExample.png", 700, 635)
+        self.settings_image = self.load_image("/images/settings.png", 25, 25)
+        self.exit_image = self.load_image("/images/exit.png", 25, 25)
+
+        #Button mapping and functionality
+        self.button3 = customtkinter.CTkButton(master=self.frame_left, image = self.home_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
+        self.button3.grid(row=8, column=0, padx=0, pady=0, sticky="sw")
+        self.button4 = customtkinter.CTkButton(master=self.frame_left, image = self.settings_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.settings_button)
+        self.button4.grid(row=8, column=0, padx=0, pady=0, sticky="s")
+        self.button5 = customtkinter.CTkButton(master=self.frame_left, image = self.exit_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.exit_button)
+        self.button5.grid(row=8, column=0, padx=0, pady=0, sticky="se")
+
+        # Creates right sub-window
+        # ------------------------------------------------------------------------------------   
+        self.frame_right = customtkinter.CTkFrame(master=self)
+        self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
+
+        # configure grid layout (5x3)
+        self.frame_right.grid_rowconfigure((0, 1, 3), weight=1)        # sets weights of standard rows
+        self.frame_right.grid_rowconfigure(5, weight=1)                # sets weight of last row
+        self.frame_right.grid_columnconfigure((0, 1), weight=1)        # sets weights of standard columns
+        self.frame_right.grid_columnconfigure(2, minsize=0)            # sets minimum size from right side of screen to cameras
+
+        # Window for the main camera
+        # For now this is just an error message of "No Camera Found"
+        # Once a camera is linked we create the same size window but with the camera output
+        self.label5 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 280, height = 250, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+        self.label5.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
+
+        # Label that describes the main camera above
+        self.label6 = customtkinter.CTkLabel(master=self.frame_right, text = "Main Camera")
+        self.label6.grid(row=1, column=0, sticky="n", padx=10, pady=0)      
+
+        # Creates instruction window for the application to communicate with the user
+        self.label7 = customtkinter.CTkLabel(master=self.frame_right, text = "Please sign the letter \"A\" that you want \nmotion 21 to use as an example!", text_font=("Segoe UI", 20), width = 450, height = 100, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+        self.label7.grid(row=3, column=0, columnspan=2, sticky="ns", padx=10, pady=0)
+
+        # Window for the user hand camera
+        # For now this is just an error message of "No Camera Found"
+        # Once a camera is linked we create the same size window but with the camera output
+        self.label8 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 280, height = 250, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+        self.label8.grid(row=0, column=1, sticky="nw", padx=10, pady=10)
+
+        # Label that describes the user hand camera above
+        self.label9 = customtkinter.CTkLabel(master=self.frame_right, text = "Hand Camera")
+        self.label9.grid(row=1, column=1, padx=0, pady=0, sticky="n")
+
+
     # Button that returns to previous lesson
     def previous_section_button(self):
         # Configures grid layout of 2x1
@@ -296,7 +378,7 @@ class App(customtkinter.CTk):
         self.frame_left = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
         self.frame_left.grid(row=0, column=0, sticky="nswe")
 
-        # configure grid layout (1x9)
+        # configure grid layout (9x1)
         self.frame_left.grid_rowconfigure(0, minsize=10)    # sets minimum size from top of screen to text
         self.frame_left.grid_rowconfigure(4, weight=20)      # creates empty row with weight 1
         self.frame_left.grid_rowconfigure(7, weight=1)      # creates empty row with weight 1
@@ -325,7 +407,6 @@ class App(customtkinter.CTk):
         self.settings_image = self.load_image("/images/settings.png", 25, 25)
         self.exit_image = self.load_image("/images/exit.png", 25, 25)
 
-        # NEED TO FIX SIZING
         # Creates section image
         self.label5 = customtkinter.CTkLabel(master=self.frame_left, image = self.section_example_image)
         self.label5.grid(row=6, column=0, padx=0, pady=0, sticky="s")
@@ -343,7 +424,7 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
 
-        # configure grid layout (2x5)
+        # configure grid layout (5x2)
         self.frame_right.grid_rowconfigure((0, 1, 2, 3), weight=1)     # sets weights of standard rows
         self.frame_right.grid_rowconfigure(5, weight=1)               # sets weight of last row
         self.frame_right.grid_columnconfigure((0, 1), weight=1)        # sets weights of standard columns
@@ -380,12 +461,12 @@ class App(customtkinter.CTk):
         self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
 
         # Label that describes the user hand camera above
-        self.label10 = customtkinter.CTkLabel(master=self.frame_right, text = "User Hand Camera")
-        self.label10.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+        self.label11 = customtkinter.CTkLabel(master=self.frame_right, text = "User Hand Camera")
+        self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
 
         # Label that describes the user's accuracy
-        self.label11 = customtkinter.CTkLabel(master=self.frame_right, text = "Total Accuracy: 100%", text_font=("Segoe UI", 14))
-        self.label11.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+        self.label12 = customtkinter.CTkLabel(master=self.frame_right, text = "Total Accuracy: 100%", text_font=("Segoe UI", 14))
+        self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
     # Button that opens lesson select page
     def lesson_select_button(self):
@@ -433,7 +514,7 @@ class App(customtkinter.CTk):
         self.frame_left = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
         self.frame_left.grid(row=0, column=0, sticky="nswe")
 
-        # configure grid layout (1x9)
+        # configure grid layout (9x1)
         self.frame_left.grid_rowconfigure(0, minsize=10)    # sets minimum size from top of screen to text
         self.frame_left.grid_rowconfigure(4, minsize=100)   # empty row with minsize as spacing
         self.frame_left.grid_rowconfigure(7, weight=1)      # empty row as spacing
@@ -486,7 +567,10 @@ class App(customtkinter.CTk):
     # ------------------------------------------------------------------------------------   
     
     def config_A(self):
-        print("testing config A")
+        
+        id = 'A'
+
+        self.user_train(id)
 
     def config_B(self):
         print("testing config B")
