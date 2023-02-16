@@ -1,4 +1,3 @@
-# copy and pasted from Jasons branch as github is being funky atm
 
 from pickle import TRUE
 import customtkinter
@@ -520,7 +519,7 @@ class App(customtkinter.CTk):
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
         if USE_CAMERA:
-            self.config_cam_win2 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", compound = "bottom",)
+            self.config_cam_win2 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", cropped = True, compound = "bottom",)
         else:
             self.config_cam_win2 = customtkinter.CTkLabel(master=self.frame_right, width = 290, height = 260, text = "[Debug] camera off", cropped = True, compound = "bottom")
         self.config_cam_win2.grid(row=0, column=1, sticky="nw", padx=10, pady=10)
@@ -612,6 +611,7 @@ class App(customtkinter.CTk):
 
     # Button that returns to previous lesson
     def start_lesson(self):
+        self.window_state = WindowState.LESSONS
         self.button1.destroy()
         self.label_1.destroy()
         self.label_2.destroy()
@@ -641,7 +641,12 @@ class App(customtkinter.CTk):
         # Window for the main camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-        self.label6 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+       
+        if USE_CAMERA:
+            self.label6 = CameraWindow(master=self.frame_right, width = 420, height = 320, text = "", compound = "bottom",)
+        else:
+            self.label6 = customtkinter.CTkLabel(master=self.frame_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+
         self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
 
         # Label that describes the main camera above
@@ -655,7 +660,13 @@ class App(customtkinter.CTk):
         # Window for the example camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-        self.label9 = customtkinter.CTkLabel(master=self.frame_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+
+        if USE_CAMERA:
+            self.label9 = CameraWindow(master=self.frame_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom",)
+        else:
+            self.label9 = customtkinter.CTkLabel(master=self.frame_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+
+        
         self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
 
         # Label that describes the example camera above
@@ -676,6 +687,9 @@ class App(customtkinter.CTk):
         self.label11 = customtkinter.CTkLabel(master=self.frame_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
         self.label11.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+        self.update()
+        self.the_afterinator()
+
     # Button that opens lesson select page
     def lesson_select_button(self, choice):
         print(f"testing lesson select button {choice}")
@@ -683,7 +697,7 @@ class App(customtkinter.CTk):
     #Image processing function declarations
     # ------------------------------------------------------------------------------------    
     def load_image(self, path, image_size1, image_size2):
-        return ImageTk.PhotoImage(Image.open("C:\\Users\\Keegan G\\Desktop\\Motion-21-Keegan-Workspace\\Motion_21\\GUI\\" + path).resize((image_size1, image_size2)))
+        return ImageTk.PhotoImage(Image.open("C:\\Users\\Resu\\Documents\\Dev\\Py\\Motion 21\\Motion_21\\GUI\\" + path).resize((image_size1, image_size2)))
 
     def on_closing(self, event=0):
         self.destroy()
@@ -770,9 +784,9 @@ class App(customtkinter.CTk):
 
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        if self.window_state == WindowState.LESSONS and CameraState.CAM_REQUIRED in self.window_state: # find a better method of doing this later
-            #self.cam_win1.cw_update();
-            #self.cam_win2.cw_update();
+        if self.window_state == WindowState.LESSONS: # find a better method of doing this later
+            self.label6.cw_update();
+            self.label9.cw_update();
             self.after(10, self.the_afterinator)
             return
 
