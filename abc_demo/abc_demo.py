@@ -14,7 +14,8 @@ import time
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=1)
 classifier = Classifier("model/keras_model.h5", "model/labels.txt")
-
+# THis is a comment
+# editing
 def main():
     labels = ["A", "B", "C"]
     offset = 20
