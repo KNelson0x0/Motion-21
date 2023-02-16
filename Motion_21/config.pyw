@@ -1,8 +1,74 @@
 import json
+from   Utils.constants import *
 from   Utils.utils import *
 from   os.path  import exists
 from   os       import mkdir
 from   os       import remove
+
+# custom file format to put all the configs in so they werent just laying around in random folders.
+# This is the manager for it.
+class Archive():
+    def __init__(self): # TODO: fix later
+        self.header    = {}
+        self.user_path = PATH + "UserData/m21.cfg"
+        
+        if not exists(PATH + "UserData/"):
+            mkdir    (PATH + "UserData/")
+            f = open (PATH + "UserData/m21.cfg", 'w').close()
+
+        self.config_str = open(PATH + "UserData/m21.cfg", 'r').read()
+        self.header     = self.get_header()
+
+    def parse_arch(self):
+        sizes       = list(self.header.values())
+        data_size   = sum(sizes)
+        header_size = len(str(self.header))
+      
+        header    = self.config_str.strip().replace('\n','') # in case of formatting
+        blob      = header[header_size-1:]
+        last_size = header_size
+        jsons     = []
+
+        c_config = header[last_size + (-1) : self.end_brace_index(blob)+last_size]
+        if (len(sizes) == 1): return [json.loads(c_config)]
+
+        for i in range(len(sizes)):
+            last_size += len(c_config)
+
+        print(jsons)
+      
+    def load_json(self):
+        pass
+
+    def update_json(self):
+        pass
+
+    def add_json(self):
+        pass
+
+    def get_json(self):
+        pass
+
+    def remove_json(self):
+        pass
+    # helpers
+    def end_brace_index(self, string):
+        brace_c = 1
+        index = string.index('{') + 1
+    
+        while brace_c != 0:
+            if string[index] == '{': brace_c += 1
+            if string[index] == '}': brace_c -= 1
+            index+=1
+
+        return index-1
+
+    def get_header(self):
+        header = self.config_str.strip().replace('\n','') # in case of formatting
+        return json.loads(header[:self.end_brace_index(header)+1])
+
+    def get_json_size(self, j):
+        return( len(str(j).replace('\n','').strip()) )
 
 class Config(): # singleton me later
     def __init__(self, user_name = '', pass_hash = ''): # TODO: fix later
@@ -11,9 +77,9 @@ class Config(): # singleton me later
         self.settings  = {}
         self.user_path = "./UserData/{}/m21.cfg".format(self.user_name)
 
-        if not exists("./UserData/{}/".format(self.user_name)):
-            mkdir("./UserData/{}/".format(self.user_name))
-        if not exists(self.user_path):
+        if not exists(PATH + "/UserData/m21.cfg"):
+            mkdir(PATH + "/UserData/m21.cfg")
+        if not exists(PATH + "/UserData/m21.cfg"):
             open(self.user_path,'w').close()
 
     def login(self):
