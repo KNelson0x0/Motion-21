@@ -34,7 +34,8 @@ bld/
 [Ll]ogs/
 [Aa]rchive/
 [Uu]serData/
-ML-Env/
+ML-Env.*/
+ML-Env-310/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
