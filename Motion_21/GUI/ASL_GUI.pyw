@@ -265,7 +265,10 @@ class App(customtkinter.CTk):
         # Window for the main camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-        self.config_cam_win1 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", compound = "bottom",)
+        if USE_CAMERA:
+            self.config_cam_win1 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", compound = "bottom",)
+        else:
+            self.config_cam_win1 = customtkinter.CTkLabel(master=self.frame_right, text = "[Debug] camera off")
         self.config_cam_win1.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
 
         # Label that describes the main camera above
@@ -282,7 +285,10 @@ class App(customtkinter.CTk):
         # Window for the user hand camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-        self.config_cam_win2 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", cropped = True, compound = "bottom")
+        if USE_CAMERA:
+            self.config_cam_win2 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", compound = "bottom",)
+        else:
+            self.config_cam_win2 = customtkinter.CTkLabel(master=self.frame_right, width = 290, height = 260, text = "[Debug] camera off", cropped = True, compound = "bottom")
         self.config_cam_win2.grid(row=0, column=1, sticky="nw", padx=10, pady=10)
 
         # Label that describes the user hand camera above
@@ -295,7 +301,6 @@ class App(customtkinter.CTk):
 
     def training_begin(self):
         self.training.on_begin()
-
 
     def settings_button(self):
 
