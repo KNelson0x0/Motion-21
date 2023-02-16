@@ -8,6 +8,16 @@ import matplotlib.pyplot as plot
 
 #eigenvalues/eigenvector stuff
 
+#- Research Notes for Hand ML Algorithm
+#
+#- Issue with our current code, when resizing window it causes it to crash (unable to find a compatible hand since its distorted)
+#	- Solutions: Prevent window from distorting hand (stretching, shrinking, etc)
+#		     Delete the resizing function (solution we are trying thus far)
+#	
+#- The 21 points when pulled and placed into a PCA algorithm returns wildly varying values based on position within the screenshot
+#	- The values seem to retain a structure (similar difference between point values 1, 2, 3, etc)
+#	- Solutions: We need to find a way to compare this relationship with test images and classify which letter it is most similar to
+
 # Function that calculates the covariance matrix
 def compute_covariance_matrix(Z):
     
