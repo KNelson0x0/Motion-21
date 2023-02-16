@@ -3,6 +3,7 @@ import cv2
 import threading
 import time
 import numpy as np
+from   Utils.constants import *
 from   Utils.utils import *
 
 class Camera(object): # singleton because every time the camera is initialized there is at least a five second freeze and I'd prefer not to hard global too much.
@@ -18,6 +19,7 @@ class Camera(object): # singleton because every time the camera is initialized t
     stop               = False
 
     def __new__(self):
+        if not USE_CAMERA: return
         if not hasattr(self, 'instance'):
             self.instance = super(Camera, self).__new__(self)
             self.thread   = threading.Thread(target=self.begin, args=(self,))
