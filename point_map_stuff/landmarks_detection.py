@@ -3,6 +3,68 @@ import mediapipe
 import os
 from os import listdir
 import shutil
+import numpy as np
+import matplotlib.pyplot as plot
+
+#eigenvalues/eigenvector stuff
+
+# Function that calculates the covariance matrix
+def compute_covariance_matrix(Z):
+    
+    # Uses numpy to calculate the covariance of Z
+    covariance = np.cov(Z.T)
+
+    return covariance
+
+# Function that calculates the PCS from the covariance matrix
+def find_pcs(cov):
+
+    # Saves eigenvalues to L and eigenvectors to pcs
+    (L, pcs) = np.linalg.eig(cov)
+
+    # Create temp variables for moving eigenvalues and eigenvectors into largest to smallest
+    tempL = L[0]
+    tempPCS = pcs[0]
+
+    # Sorts the index so it is now greatest to smallest
+    # This will only work with 2D arrays      
+    if(L[0] < L[1]):
+        L[0] = L[1]
+        L[1] = tempL
+
+        pcs[0] = pcs[1]
+        pcs[1] = tempPCS
+
+    return pcs, L
+
+
+# Projects the data onto a single axis
+def project_data(Z, pcs, L):
+
+    # Declaration of Z_star for manipulation
+    Z_star = []
+
+    # Grabs all the values from the first column
+    data = pcs[:, 0]
+
+    # Creates projection data and appends it to Z_star
+    for i in Z:
+        projection = np.dot(i, data)
+        Z_star.append(projection)
+
+    return Z_star
+
+# Outputs the single axis data
+def show_plot(Z, Z_star):
+
+    # Plots our original data points
+    plot.scatter(Z[:, 0], Z[:, 1])
+
+    # Plots our Z_stars
+    plot.scatter(Z_star, np.zeros(len(Z_star)))
+    
+    # Outputs the plot
+    plot.show()
 
 if os.path.exists('hand_edits'):
     shutil.rmtree('hand_edits')
@@ -22,7 +84,16 @@ base_arr = [(147, 522), (282, 484), (364, 390), (408, 278), (371, 206), (301, 21
             (250, 248), (149, 206), (163, 96), (189, 194), (183, 249), (71, 238), (87, 140), (123, 204), (127, 245)]
 #print(len(base_arr))
 
+#need to test every letter against A to see if there are any false flags
+
+#different groups of images (small-large, different skin colors), compare user's images to our own set
+#if a match is found, flag it
+
 for images in os.listdir(directory):
+
+    coordinates_arr = [] #array to store x,y coordinates
+    #print(coordinates_arr)
+
     if (images.endswith(".jpg")):
         print("\n"+ images + "\n")
         path = os.path.join(directory, images)
@@ -76,20 +147,46 @@ for images in os.listdir(directory):
                     normalizedLandmark = handLandmarks.landmark[point]
                     pixelCoordinatesLandmark = drawingModule._normalized_to_pixel_coordinates(normalizedLandmark.x, normalizedLandmark.y, imageWidth, imageHeight)
  
-                    print(point)
-                    print(str(pixelCoordinatesLandmark))
+                    print(point) #name of landmark
+
+                    #note: name of landmarks is in the same order as mediapipe framework
+
+                    print(str(pixelCoordinatesLandmark)) #coordinates of landmark
+                    #for i in range(21):
+                        #coordinates_arr[i] = pixelCoordinatesLandmark
+                    coordinates_arr.append(pixelCoordinatesLandmark)
+
                     
                     full_arr.append(pixelCoordinatesLandmark)
-
                     #print(normalizedLandmark)
         
+        #need to find which function generates/stores points
+        #keep in order for later reference (avoid false flagging with similar hand signs)
+
         path2 = os.path.join(directory2, images)
         cv2.imwrite(path2, image)
 
         counter += 1
+
         #cv2.imshow("img", image)
 
         #cv2.waitKey(0)
+
+        print(coordinates_arr)
+
+        np_coordinates = np.array(coordinates_arr)
+
+        print(np_coordinates)
+
+        #should be equal to the number of hand images
+        print(int(np.size(np_coordinates)/2)) #need to divide by 2 since size function works weird
+
+        #for i in range(int(np.size(np_coordinates))):
+        covariance = compute_covariance_matrix(np_coordinates)
+        pcs, L = find_pcs(covariance)
+        Z_star = project_data(np_coordinates, pcs, L)
+        print(Z_star)
+        show_plot(np_coordinates, Z_star)
 
 #print(full_arr)
 print(counter)
