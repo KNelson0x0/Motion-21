@@ -32,6 +32,9 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+[Aa]rchive/
+[Uu]serData/
+ML-Env/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -360,4 +363,3 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsd
