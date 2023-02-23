@@ -92,6 +92,12 @@ full_arr = []
 #pre-determined base image array for given letter (A in this case)
 base_arr = [(147, 522), (282, 484), (364, 390), (408, 278), (371, 206), (301, 217), (320, 108), (329, 181), (316, 245), (228, 198), (247, 87), (263, 198),
             (250, 248), (149, 206), (163, 96), (189, 194), (183, 249), (71, 238), (87, 140), (123, 204), (127, 245)]
+
+# Finds our Z_star of our base A to compare with user's Z_star
+covarianceBase = compute_covariance_matrix(base_arr)
+pcsBase, LBase = find_pcs(covarianceBase)
+Z_starBase = project_data(base_arr, pcsBase, LBase)
+
 #print(len(base_arr))
 
 #need to test every letter against A to see if there are any false flags
@@ -197,6 +203,14 @@ for images in os.listdir(directory):
         Z_star = project_data(np_coordinates, pcs, L)
         print(Z_star)
         show_plot(np_coordinates, Z_star)
+
+        # Run a relational algorithm and see if user input matches letter A
+        Z_starRelation = []
+
+        for i in Z_starBase:
+            Z_starRelation[i] = Z_starBase[i]/Z_star[i]
+
+        print(Z_starRelation)
 
 #print(full_arr)
 print(counter)
