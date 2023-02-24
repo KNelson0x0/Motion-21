@@ -96,7 +96,14 @@ base_arr = [(147, 522), (282, 484), (364, 390), (408, 278), (371, 206), (301, 21
 # Finds our Z_star of our base A to compare with user's Z_star
 covarianceBase = compute_covariance_matrix(base_arr)
 pcsBase, LBase = find_pcs(covarianceBase)
-Z_starBase = project_data(base_arr, pcsBase, LBase)
+Z_star_base = project_data(base_arr, pcsBase, LBase)
+
+# Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
+Z_star_base_arr = []
+
+for i in range(len(Z_star_base - 1)):
+    temp = Z_star_base[i] - Z_star_base[i+1]
+    Z_star_base_arr.append(temp)
 
 #print(len(base_arr))
 
@@ -204,13 +211,26 @@ for images in os.listdir(directory):
         print(Z_star)
         show_plot(np_coordinates, Z_star)
 
+        # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
+        Z_star_user_arr = []
+
+        for i in range(len(Z_star - 1)):
+            temp = Z_star[i] - Z_star[i + 1]
+            Z_star_user_arr.append(temp)
+
         # Run a relational algorithm and see if user input matches letter A
-        Z_starRelation = []
+        # (compares Z_star_base_arr with Z_star_user_arr)
+        count = 0
 
-        for i in Z_starBase:
-            Z_starRelation[i] = Z_starBase[i]/Z_star[i]
+        for i in range(len(Z_star_user_arr)):
+            temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
+            if ((85 >= temp and temp <= 110) or (-110 >= temp and temp <= -85)):
+                count += 1
 
-        print(Z_starRelation)
+        # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
+        if(count == 20):
+            print("You have correctly signed A!")
+            #Put whatever we want in here to trigger that
 
 #print(full_arr)
 print(counter)
