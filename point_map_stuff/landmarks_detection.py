@@ -8,16 +8,6 @@ import matplotlib.pyplot as plot
 
 #eigenvalues/eigenvector stuff
 
-#- Research Notes for Hand ML Algorithm
-#
-#- Issue with our current code, when resizing window it causes it to crash (unable to find a compatible hand since its distorted)
-#	- Solutions: Prevent window from distorting hand (stretching, shrinking, etc)
-#		     Delete the resizing function (solution we are trying thus far)
-#	
-#- The 21 points when pulled and placed into a PCA algorithm returns wildly varying values based on position within the screenshot
-#	- The values seem to retain a structure (similar difference between point values 1, 2, 3, etc)
-#	- Solutions: We need to find a way to compare this relationship with test images and classify which letter it is most similar to
-
 # Function that calculates the covariance matrix
 def compute_covariance_matrix(Z):
     
@@ -64,6 +54,94 @@ def project_data(Z, pcs, L):
 
     return Z_star
 
+# Creates our base arrays
+def base_arr_function(base_arr, letter):
+    #pre-determined base image array for given letter (A in this case)
+    A = [(147, 522), (282, 484), (364, 390), (408, 278), (371, 206), (301, 217), (320, 108), (329, 181), (316, 245), (228, 198), (247, 87), (263, 198),
+                (250, 248), (149, 206), (163, 96), (189, 194), (183, 249), (71, 238), (87, 140), (123, 204), (127, 245)]
+    
+    B = [(81, 170), (107, 166), (124, 141), (108, 117), (85, 112), (123, 106), (126, 78), (125, 60), (123, 43), (107, 99), (109, 66), (110, 43), (109, 23),
+             (91, 100), (93, 68), (94, 46), (94, 28), (74, 108), (75, 82), (77, 65), (77, 49)]
+    
+    # Returns the base array for the given letter
+    if letter == "A":
+        return A
+    elif letter == "B":
+        return B
+    
+# Creates our user array
+def user_arr_function():
+
+    #need to test every letter against A to see if there are any false flags
+
+    #different groups of images (small-large, different skin colors), compare user's images to our own set
+    #if a match is found, flag it
+
+    for images in os.listdir(directory):
+
+        coordinates_arr = [] #array to store x,y coordinates
+        #print(coordinates_arr)
+
+        if (images.endswith(".jpg")):
+            print("\n"+ images + "\n")
+            path = os.path.join(directory, images)
+
+        with handsModule.Hands(static_image_mode=True) as hands:
+        
+            #finds initial landmarks to detect just image of hand
+            image = cv2.imread(path)
+            #cv2.imshow("img", image)
+            #cv2.waitKey(0)
+            results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+            imageHeight, imageWidth, _ = image.shape
+
+            cv2.imshow("img", image)
+    
+            if results.multi_hand_landmarks != None:
+                for handLandmarks in results.multi_hand_landmarks:
+                    for point in handsModule.HandLandmark:
+    
+                        drawingModule.draw_landmarks(image, handLandmarks, handsModule.HAND_CONNECTIONS)
+
+                        normalizedLandmark = handLandmarks.landmark[point]
+                        pixelCoordinatesLandmark = drawingModule._normalized_to_pixel_coordinates(normalizedLandmark.x, normalizedLandmark.y, imageWidth, imageHeight)
+    
+                        print(point) #name of landmark
+
+                        #note: name of landmarks is in the same order as mediapipe framework
+
+                        print(str(pixelCoordinatesLandmark)) #coordinates of landmark
+                        #for i in range(21):
+                            #coordinates_arr[i] = pixelCoordinatesLandmark
+                        coordinates_arr.append(pixelCoordinatesLandmark)
+
+                        
+                        full_arr.append(pixelCoordinatesLandmark)
+                        #print(normalizedLandmark)
+            
+            #need to find which function generates/stores points
+            #keep in order for later reference (avoid false flagging with similar hand signs)
+
+            path2 = os.path.join(directory2, images)
+            cv2.imwrite(path2, image)
+
+            counter += 1
+
+            #cv2.imshow("img", image)
+
+            #cv2.waitKey(0)
+
+            print(coordinates_arr)
+
+            user_arr = np.array(coordinates_arr)
+
+            print(user_arr)
+
+            #should be equal to the number of hand images
+            print(int(np.size(user_arr)/2)) #need to divide by 2 since size function works weird
+
+            return user_arr
+
 # Outputs the single axis data
 def show_plot(Z, Z_star):
 
@@ -89,127 +167,47 @@ handsModule = mediapipe.solutions.hands
 
 counter = 0
 full_arr = []
-#pre-determined base image array for given letter (A in this case)
-base_arr = [(147, 522), (282, 484), (364, 390), (408, 278), (371, 206), (301, 217), (320, 108), (329, 181), (316, 245), (228, 198), (247, 87), (263, 198),
-            (250, 248), (149, 206), (163, 96), (189, 194), (183, 249), (71, 238), (87, 140), (123, 204), (127, 245)]
 
-# Finds our Z_star of our base A to compare with user's Z_star
-covarianceBase = compute_covariance_matrix(base_arr)
-pcsBase, LBase = find_pcs(covarianceBase)
-Z_star_base = project_data(base_arr, pcsBase, LBase)
+# Checks to see if user input is matched with any of our base letters
+matched = False
 
-# Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
-Z_star_base_arr = []
+# While loop to check through all our base letters
+# Might not be needed
+while not matched:
 
-for i in range(len(Z_star_base - 1)):
-    temp = Z_star_base[i] - Z_star_base[i+1]
-    Z_star_base_arr.append(temp)
+    # Variable declarations
+    letter = ["A", "B"]
 
-#print(len(base_arr))
+    # Grabs user letter input
+    user_arr = user_arr_function()
 
-#need to test every letter against A to see if there are any false flags
+    # For loop that checks through all our base letters
+    for i in len(letter):
 
-#different groups of images (small-large, different skin colors), compare user's images to our own set
-#if a match is found, flag it
+        chosen_letter = letter[i]
 
-for images in os.listdir(directory):
+        base_arr = base_arr_function(base_arr, chosen_letter)
 
-    coordinates_arr = [] #array to store x,y coordinates
-    #print(coordinates_arr)
+        base_arr = np.array(base_arr)
 
-    if (images.endswith(".jpg")):
-        print("\n"+ images + "\n")
-        path = os.path.join(directory, images)
+        # Finds our Z_star of our base A to compare with user's Z_star
+        covarianceBase = compute_covariance_matrix(base_arr)
+        pcsBase, LBase = find_pcs(covarianceBase)
+        Z_star_base = project_data(base_arr, pcsBase, LBase)
 
-    with handsModule.Hands(static_image_mode=True) as hands:
-    
-        #finds initial landmarks to detect just image of hand
-        image = cv2.imread(path)
-        #cv2.imshow("img", image)
-        #cv2.waitKey(0)
-        results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-        imageHeight, imageWidth, _ = image.shape
- 
-        if results.multi_hand_landmarks != None:
-            for handLandmarks in results.multi_hand_landmarks:
-                x_max = 0
-                y_max = 0
-                x_min = imageWidth
-                y_min = imageHeight
-                for lm in handLandmarks.landmark:
-                    x, y = int(lm.x * imageWidth), int(lm.y * imageHeight)
-                    if x > x_max:
-                        x_max = x
-                    if x < x_min:
-                        x_min = x
-                    if y > y_max:
-                        y_max = y
-                    if y < y_min:
-                        y_min = y
-                
-                #might have to edit values based on resolution of image
-                x_min -= 30
-                y_min -= 30
-                x_max += 30
-                y_max += 30
-                cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 0, 0), 2)
-    
-        #new downscaled image with just hand
-        image = image[y_min:y_max, x_min:x_max]
-        image = cv2.resize(image, (480, 640)) #works consistently when y value is greater than x
-        cv2.imshow("img", image)
-        results2 = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-        imageHeight, imageWidth, _ = image.shape
-    
-        if results2.multi_hand_landmarks != None:
-            for handLandmarks in results2.multi_hand_landmarks:
-                for point in handsModule.HandLandmark:
- 
-                    drawingModule.draw_landmarks(image, handLandmarks, handsModule.HAND_CONNECTIONS)
+        # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
+        Z_star_base_arr = []
 
-                    normalizedLandmark = handLandmarks.landmark[point]
-                    pixelCoordinatesLandmark = drawingModule._normalized_to_pixel_coordinates(normalizedLandmark.x, normalizedLandmark.y, imageWidth, imageHeight)
- 
-                    print(point) #name of landmark
+        for i in range(len(Z_star_base - 1)):
+            temp = Z_star_base[i] - Z_star_base[i+1]
+            Z_star_base_arr.append(temp)
 
-                    #note: name of landmarks is in the same order as mediapipe framework
-
-                    print(str(pixelCoordinatesLandmark)) #coordinates of landmark
-                    #for i in range(21):
-                        #coordinates_arr[i] = pixelCoordinatesLandmark
-                    coordinates_arr.append(pixelCoordinatesLandmark)
-
-                    
-                    full_arr.append(pixelCoordinatesLandmark)
-                    #print(normalizedLandmark)
-        
-        #need to find which function generates/stores points
-        #keep in order for later reference (avoid false flagging with similar hand signs)
-
-        path2 = os.path.join(directory2, images)
-        cv2.imwrite(path2, image)
-
-        counter += 1
-
-        #cv2.imshow("img", image)
-
-        #cv2.waitKey(0)
-
-        print(coordinates_arr)
-
-        np_coordinates = np.array(coordinates_arr)
-
-        print(np_coordinates)
-
-        #should be equal to the number of hand images
-        print(int(np.size(np_coordinates)/2)) #need to divide by 2 since size function works weird
-
-        #for i in range(int(np.size(np_coordinates))):
-        covariance = compute_covariance_matrix(np_coordinates)
+        #for i in range(int(np.size(user_arr))):
+        covariance = compute_covariance_matrix(user_arr)
         pcs, L = find_pcs(covariance)
-        Z_star = project_data(np_coordinates, pcs, L)
+        Z_star = project_data(user_arr, pcs, L)
         print(Z_star)
-        show_plot(np_coordinates, Z_star)
+        show_plot(user_arr, Z_star)
 
         # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
         Z_star_user_arr = []
@@ -222,6 +220,25 @@ for images in os.listdir(directory):
         # (compares Z_star_base_arr with Z_star_user_arr)
         count = 0
 
+        # Checks if user letter matches base letter
+        for i in range(len(Z_star_user_arr)):
+            temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
+            if ((temp >= 60 and temp <= 140) or (temp >= -60 and temp <= -140)): #change these values
+                count += 1
+
+        # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
+        if(count >= 15): #decreased to 15, can increase for similar hand signs
+            print("You have correctly signed " + chosen_letter + "!")
+        else:
+            print("Counts that matched: " + str(count))
+
+        print("Z Star base array")
+        print(Z_star_base_arr)
+        print("Z Star user array")
+        print(Z_star_user_arr)
+        print("Z star array")
+        print(Z_star)
+        show_plot(user_arr, Z_star)
         for i in range(len(Z_star_user_arr)):
             temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
             if ((75 >= temp and temp <= 125) or (-125 >= temp and temp <= -75)):
@@ -233,30 +250,5 @@ for images in os.listdir(directory):
             #Put whatever we want in here to trigger that
         else:
             print("Counts that matched: " + count)
-
-#print(full_arr)
-print(counter)
-for i in range(counter):
-    lower_bound = i*21
-    total_diff_x = 0
-    total_diff_y = 0
-    for j in range(20):
-        difference_x = base_arr[j][0] - full_arr[lower_bound+j][0]
-        difference_y = base_arr[j][1] - full_arr[lower_bound+j][1]
-        total_diff_x += abs(difference_x)
-        total_diff_y += abs(difference_y)
-    percent_diff_x = total_diff_x/(480)*100 #x dimension
-    percent_diff_y = total_diff_y/(640)*100 #y dimension
-    #print(str(percent_diff_x))
-    #print(str(percent_diff_y))
-    
-    avg_percent_sim = round((100 - ((percent_diff_x*(480/(480+640)) + percent_diff_y*(640/(480+640))))), 2)
-    if avg_percent_sim < 0:
-        avg_percent_sim = 0
-
-    if percent_diff_x <= 30 and percent_diff_y <= 30:
-        print("Letter detected as A, with " + str(avg_percent_sim) + "% similarity to the base image\n")
-    else:
-        print("Letter not detected, with " + str(avg_percent_sim) + "% similarity to the base image\n")
 
 #EOF
