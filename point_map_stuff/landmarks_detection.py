@@ -55,13 +55,13 @@ def project_data(Z, pcs, L):
     return Z_star
 
 # Creates our base arrays
-def base_arr_function(base_arr, letter):
+def base_arr_function(letter):
     #pre-determined base image array for given letter (A in this case)
-    A = [(147, 522), (282, 484), (364, 390), (408, 278), (371, 206), (301, 217), (320, 108), (329, 181), (316, 245), (228, 198), (247, 87), (263, 198),
-                (250, 248), (149, 206), (163, 96), (189, 194), (183, 249), (71, 238), (87, 140), (123, 204), (127, 245)]
+    A = [(70, 166), (103, 164), (134, 140), (146, 111), (138, 91), (122, 103), (126, 79), (119, 105), (116, 116), (100, 100), (104, 79), (100, 111), 
+         (99, 116), (80, 100), (82, 81), (82, 111), (82, 119), (59, 102), (62, 87), (64, 109), (65, 117)]
     
-    B = [(81, 170), (107, 166), (124, 141), (108, 117), (85, 112), (123, 106), (126, 78), (125, 60), (123, 43), (107, 99), (109, 66), (110, 43), (109, 23),
-             (91, 100), (93, 68), (94, 46), (94, 28), (74, 108), (75, 82), (77, 65), (77, 49)]
+    B = [(84, 185), (113, 176), (130, 145), (114, 120), (91, 114), (126, 108), (126, 76), (124, 56), (120, 38), (106, 103), (108, 67), (107, 42), 
+         (106, 21), (89, 106), (90, 71), (91, 48), (91, 28), (70, 115), (71, 86), (73, 67), (73, 50)]
     
     # Returns the base array for the given letter
     if letter == "A":
@@ -77,7 +77,7 @@ def user_arr_function():
     #different groups of images (small-large, different skin colors), compare user's images to our own set
     #if a match is found, flag it
 
-    for images in os.listdir(directory):
+    for images in os.listdir(directory): #NOTE: ONLY DO ONE IMAGE
 
         coordinates_arr = [] #array to store x,y coordinates
         #print(coordinates_arr)
@@ -125,20 +125,19 @@ def user_arr_function():
             path2 = os.path.join(directory2, images)
             cv2.imwrite(path2, image)
 
-            counter += 1
-
             #cv2.imshow("img", image)
 
             #cv2.waitKey(0)
 
             print(coordinates_arr)
+            coordinates_arr = np.array(coordinates_arr)
 
-            user_arr = np.array(coordinates_arr)
+            user_arr = coordinates_arr
 
-            print(user_arr)
+            #print(user_arr)
 
             #should be equal to the number of hand images
-            print(int(np.size(user_arr)/2)) #need to divide by 2 since size function works weird
+            #print(int(np.size(user_arr)/2)) #need to divide by 2 since size function works weird
 
             return user_arr
 
@@ -182,11 +181,11 @@ while not matched:
     user_arr = user_arr_function()
 
     # For loop that checks through all our base letters
-    for i in len(letter):
+    for i in range(len(letter)):
 
         chosen_letter = letter[i]
 
-        base_arr = base_arr_function(base_arr, chosen_letter)
+        base_arr = base_arr_function(chosen_letter)
 
         base_arr = np.array(base_arr)
 
@@ -198,7 +197,7 @@ while not matched:
         # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
         Z_star_base_arr = []
 
-        for i in range(len(Z_star_base - 1)):
+        for i in range(len(Z_star_base) - 1):
             temp = Z_star_base[i] - Z_star_base[i+1]
             Z_star_base_arr.append(temp)
 
@@ -206,13 +205,13 @@ while not matched:
         covariance = compute_covariance_matrix(user_arr)
         pcs, L = find_pcs(covariance)
         Z_star = project_data(user_arr, pcs, L)
-        print(Z_star)
-        show_plot(user_arr, Z_star)
+        #print(Z_star)
+        #print(base_arr)
 
         # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
         Z_star_user_arr = []
 
-        for i in range(len(Z_star - 1)):
+        for i in range(len(Z_star) - 1):
             temp = Z_star[i] - Z_star[i + 1]
             Z_star_user_arr.append(temp)
 
@@ -223,32 +222,19 @@ while not matched:
         # Checks if user letter matches base letter
         for i in range(len(Z_star_user_arr)):
             temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
+            print(temp)
             if ((temp >= 60 and temp <= 140) or (temp >= -60 and temp <= -140)): #change these values
                 count += 1
 
         # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
         if(count >= 15): #decreased to 15, can increase for similar hand signs
             print("You have correctly signed " + chosen_letter + "!")
+            matched = True
+            break
         else:
             print("Counts that matched: " + str(count))
 
-        print("Z Star base array")
-        print(Z_star_base_arr)
-        print("Z Star user array")
-        print(Z_star_user_arr)
-        print("Z star array")
-        print(Z_star)
-        show_plot(user_arr, Z_star)
-        for i in range(len(Z_star_user_arr)):
-            temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
-            if ((75 >= temp and temp <= 125) or (-125 >= temp and temp <= -75)):
-                count += 1
-
-        # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
-        if(count == 20):
-            print("You have correctly signed A!")
-            #Put whatever we want in here to trigger that
-        else:
-            print("Counts that matched: " + count)
+    show_plot(user_arr, Z_star)
+    matched = True
 
 #EOF
