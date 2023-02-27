@@ -224,13 +224,15 @@ for images in os.listdir(directory):
 
         for i in range(len(Z_star_user_arr)):
             temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
-            if ((85 >= temp and temp <= 110) or (-110 >= temp and temp <= -85)):
+            if ((75 >= temp and temp <= 125) or (-125 >= temp and temp <= -75)):
                 count += 1
 
         # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
         if(count == 20):
             print("You have correctly signed A!")
             #Put whatever we want in here to trigger that
+        else:
+            print("Counts that matched: " + count)
 
 #print(full_arr)
 print(counter)
