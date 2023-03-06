@@ -56,19 +56,117 @@ def project_data(Z, pcs, L):
 
 # Creates our base arrays
 def base_arr_function(letter):
+
+    # Nonmovement Alphabet letters
+    # ----------------------------------------------------------------------------------------------------------------------------------------------
+
     #pre-determined base image array for given letter (A in this case)
     A = [(70, 166), (103, 164), (134, 140), (146, 111), (138, 91), (122, 103), (126, 79), (119, 105), (116, 116), (100, 100), (104, 79), (100, 111), 
          (99, 116), (80, 100), (82, 81), (82, 111), (82, 119), (59, 102), (62, 87), (64, 109), (65, 117)]
     
     B = [(84, 185), (113, 176), (130, 145), (114, 120), (91, 114), (126, 108), (126, 76), (124, 56), (120, 38), (106, 103), (108, 67), (107, 42), 
          (106, 21), (89, 106), (90, 71), (91, 48), (91, 28), (70, 115), (71, 86), (73, 67), (73, 50)]
+
+    C = []
+
+    D = []
+
+    E = []
+
+    F = []
+
+    G = []
+
+    H = []
+
+    I = []
+
+    K = []
+
+    L = []
+
+    M = []
+
+    N = []
+
+    O = []
+
+    P = []
+
+    Q = []
+
+    R = []
+
+    S = []
+
+    T = []
+
+    U = []
+
+    V = []
+
+    W = []
+
+    X = []
+
+    Y = []
     
-    # Returns the base array for the given letter
+    # Movement Alphabet letters
+    # ----------------------------------------------------------------------------------------------------------------------------------------------
+
+    J = []
+
+    Z = []
+
+    # Returns the base array for the given letter (only non-movement for now)
     if letter == "A":
         return A
     elif letter == "B":
         return B
-    
+    elif letter == "C":
+        return C
+    elif letter == "D":
+        return D
+    elif letter == "E":
+        return E
+    elif letter == "F":
+        return F
+    elif letter == "G":
+        return G
+    elif letter == "H":
+        return H
+    elif letter == "I":
+        return I
+    elif letter == "K":
+        return K
+    elif letter == "L":
+        return L
+    elif letter == "M":
+        return M
+    elif letter == "N":
+        return N
+    elif letter == "O":
+        return O
+    elif letter == "P":
+        return P
+    elif letter == "Q":
+        return Q
+    elif letter == "R":
+        return R
+    elif letter == "S":
+        return S
+    elif letter == "T":
+        return T
+    elif letter == "U":
+        return U
+    elif letter == "V":
+        return V
+    elif letter == "W":
+        return W
+    elif letter == "X":
+        return X
+    elif letter == "Y":
+        return Y
 # Creates our user array
 def user_arr_function():
 
@@ -175,7 +273,8 @@ matched = False
 while not matched:
 
     # Variable declarations
-    letter = ["A", "B"]
+    # Letter only contains non-movement letters for now
+    letter = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
 
     # Grabs user letter input
     user_arr = user_arr_function()
