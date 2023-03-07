@@ -45,7 +45,7 @@
         </strong>
       <p>
       Contact: cjosim@nevada.unr.edu
-      <p>Title: Head ML Developer
+      <p>Title: Head Image Processing Developer
     </div>
   </div> 
   <br>
@@ -62,7 +62,7 @@
       </p>
       <p>Contact: jasonliang@nevada.unr.edu
       </p>
-      <p>Title: Head UI Designer
+      <p>Title: Head ML Developer
     </div>
   </div> 
   <br>
