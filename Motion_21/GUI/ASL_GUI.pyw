@@ -29,6 +29,12 @@ class App(customtkinter.CTk):
 
         self.home_window()
 
+    #Image processing function declarations
+    # ------------------------------------------------------------------------------------    
+    def load_image(self, path, image_size1, image_size2):
+        return ImageTk.PhotoImage(Image.open(PATH + path).resize((image_size1, image_size2)))
+
+
     # Button function declarations
     # ------------------------------------------------------------------------------------    
     
@@ -408,8 +414,8 @@ class App(customtkinter.CTk):
         self.label_6.grid(row=5, column=0, padx=0, pady=0, sticky="w")
         self.label_7 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Notifications: Change notification options for the application\n", font=("Segoe UI", 12))
         self.label_7.grid(row=6, column=0, padx=0, pady=0, sticky="w")
-        self.label_8 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Configure Letter: Lets you train Motion 21 to better suit your needs for letters\n", font=("Segoe UI", 12))
-        self.label_8.grid(row=7, column=0, padx=0, pady=0, sticky="w")
+        #self.label_8 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Configure Letter: Lets you train Motion 21 to better suit your needs for letters\n", font=("Segoe UI", 12))
+        #self.label_8.grid(row=7, column=0, padx=0, pady=0, sticky="w")
 
     # Button that allows the user to change volume options
     def volume_button(self):
@@ -892,11 +898,18 @@ class App(customtkinter.CTk):
                 # Window for the example camera
                 # For now this is just an error message of "No Camera Found"
                 # Once a camera is linked we create the same size window but with the camera output
-                self.label9 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
+                
+                #self.label9 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
+
+                # Load the image from the /image/letters folder to use for this part and position it in the correct place
+                # Place Imaage of example sign for user to use when signing in the main lesson window 
+                self.A_image = self.load_image("/images/letters/a.JPG", 150, 150)
+                self.A_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150)
+                self.A_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
 
                 # Label that describes the example camera above
-                self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
+                self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Image")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
 
                 # Window for the user hand camera
@@ -920,8 +933,11 @@ class App(customtkinter.CTk):
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"B\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
                 self.label8.grid(row=3, column=0, sticky="ns", padx=10, pady=0)
-                self.label9 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
+                #self.label9 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
+                self.B_image = self.load_image("/images/letters/b.JPG", 150, 150)
+                self.B_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.B_image, width = 150, height = 150)
+                self.B_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
                 self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
@@ -1391,11 +1407,6 @@ class App(customtkinter.CTk):
     def lesson_select_button(self, choice):
         print(f"testing lesson select button {choice}")
 
-    #Image processing function declarations
-    # ------------------------------------------------------------------------------------    
-    def load_image(self, path, image_size1, image_size2):
-        return ImageTk.PhotoImage(Image.open(PATH + path).resize((image_size1, image_size2)))
-
     def on_closing(self, event=0):
         self.destroy()
 
@@ -1464,20 +1475,20 @@ class App(customtkinter.CTk):
         '''
 
         #Images for left side of window
-        #self.home_image = self.load_image("/images/home.png", 25, 25)
-        #self.home_example_image = self.load_image("/images/HomeExample.png", 700, 635)
+        self.home_image = self.load_image("/images/home.png", 25, 25)
+        self.home_example_image = self.load_image("/images/HomeExample.png", 700, 635)
         self.settings_image = self.load_image("/images/settings.png", 25, 25)
         self.exit_image = self.load_image("/images/exit.png", 25, 25)
         
         #Button mapping and functionality
-        #self.button3 = customtkinter.CTkButton(master=self.frame_left, image = self.home_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
-        #self.button3.grid(row=6, column=0, padx=0, pady=0, sticky="sw")
+        self.button3 = customtkinter.CTkButton(master=self.frame_left, image = self.home_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
+        self.button3.grid(row=8, column=0, padx=0, pady=0, sticky="sw")
         
         self.button4 = customtkinter.CTkButton(master=self.frame_left, image = self.settings_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.settings_button)
-        self.button4.grid(row=8, column=0, padx=0, pady=0, sticky="s")
+        self.button4.grid(row=8, column=1, padx=0, pady=0, sticky="s")
         
         self.button5 = customtkinter.CTkButton(master=self.frame_left, image = self.exit_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.exit_button)
-        self.button5.grid(row=8, column=1, padx=0, pady=0, sticky="se")
+        self.button5.grid(row=8, column=2, padx=0, pady=0, sticky="se")
 
 
         
