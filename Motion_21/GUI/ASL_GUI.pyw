@@ -41,6 +41,7 @@ class App(customtkinter.CTk):
         self.geometry("780x520")
         self.window_state = WindowState.HOME
         self.title("ASL Learning App")
+        self.s_title = "Test App Everyone Loves Unit Testing"
 
         # Locks size of window
         self.resizable(False, False)
