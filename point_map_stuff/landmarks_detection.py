@@ -62,56 +62,14 @@ class userSign:
         # Nonmovement Alphabet letters
         # ----------------------------------------------------------------------------------------------------------------------------------------------
 
-        #pre-determined base image array for given letter (A in this case)
-        A = [(70, 166), (103, 164), (134, 140), (146, 111), (138, 91), (122, 103), (126, 79), (119, 105), (116, 116), (100, 100), (104, 79), (100, 111), 
-            (99, 116), (80, 100), (82, 81), (82, 111), (82, 119), (59, 102), (62, 87), (64, 109), (65, 117)]
-        
-        B = [(84, 185), (113, 176), (130, 145), (114, 120), (91, 114), (126, 108), (126, 76), (124, 56), (120, 38), (106, 103), (108, 67), (107, 42), 
-            (106, 21), (89, 106), (90, 71), (91, 48), (91, 28), (70, 115), (71, 86), (73, 67), (73, 50)]
+        filePath = os.path.dirname(os.path.abspath(__file__)) + "\letters" + letter
 
-        C = []
-
-        D = []
-
-        E = []
-
-        F = []
-
-        G = []
-
-        H = []
-
-        I = []
-
-        K = []
-
-        L = []
-
-        M = []
-
-        N = []
-
-        O = []
-
-        P = []
-
-        Q = []
-
-        R = []
-
-        S = []
-
-        T = []
-
-        U = []
-
-        V = []
-
-        W = []
-
-        X = []
-
-        Y = []
+        letterArray = []
+  
+        # Opens the letter file associated with the base letter that was passed
+        with open(filePath, 'r') as f:
+            for line in f:
+                letterArray.append(line.strip())
         
         # Movement Alphabet letters
         # ----------------------------------------------------------------------------------------------------------------------------------------------
@@ -121,54 +79,7 @@ class userSign:
         Z = []
 
         # Returns the base array for the given letter (only non-movement for now)
-        if letter == "A":
-            return A
-        elif letter == "B":
-            return B
-        elif letter == "C":
-            return C
-        elif letter == "D":
-            return D
-        elif letter == "E":
-            return E
-        elif letter == "F":
-            return F
-        elif letter == "G":
-            return G
-        elif letter == "H":
-            return H
-        elif letter == "I":
-            return I
-        elif letter == "K":
-            return K
-        elif letter == "L":
-            return L
-        elif letter == "M":
-            return M
-        elif letter == "N":
-            return N
-        elif letter == "O":
-            return O
-        elif letter == "P":
-            return P
-        elif letter == "Q":
-            return Q
-        elif letter == "R":
-            return R
-        elif letter == "S":
-            return S
-        elif letter == "T":
-            return T
-        elif letter == "U":
-            return U
-        elif letter == "V":
-            return V
-        elif letter == "W":
-            return W
-        elif letter == "X":
-            return X
-        elif letter == "Y":
-            return Y
+        return letterArray
     
     # Creates our user array
     def user_arr_function(self, directory):
@@ -179,8 +90,8 @@ class userSign:
         #if a match is found, flag it
 
         #Get directory
-        directory = r"C:\Users\pccin\source\repos\point_map_stuff\point_map_stuff\hand_images" #change path to user's directory
-        directory2 = r"C:\Users\pccin\source\repos\point_map_stuff\point_map_stuff\hand_edits" #change path to user's directory
+        directory = os.path.dirname(os.path.abspath(__file__)) + "\hand_images"
+        directory2 = os.path.dirname(os.path.abspath(__file__)) + "\hand_edits"
 
         drawingModule = mediapipe.solutions.drawing_utils
         handsModule = mediapipe.solutions.hands
@@ -289,54 +200,63 @@ class userSign:
 
                 chosen_letter = letter[i]
 
-                base_arr = self.base_arr_function(chosen_letter)
+                # Sets our list of base letter arrays
+                base_arr_list = self.base_arr_function(chosen_letter)
 
-                base_arr = np.array(base_arr)
+                for j in range(len(base_arr)):
 
-                # Finds our Z_star of our base A to compare with user's Z_star
-                covarianceBase = self.compute_covariance_matrix(base_arr)
-                pcsBase, LBase = self.find_pcs(covarianceBase)
-                Z_star_base = self.project_data(base_arr, pcsBase, LBase)
+                    # Sets our base numpy array
+                    base_arr = np.array(base_arr_list[j])
 
-                # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
-                Z_star_base_arr = []
+                    # Finds our Z_star of our base A to compare with user's Z_star
+                    covarianceBase = self.compute_covariance_matrix(base_arr)
+                    pcsBase, LBase = self.find_pcs(covarianceBase)
+                    Z_star_base = self.project_data(base_arr, pcsBase, LBase)
 
-                for i in range(len(Z_star_base) - 1):
-                    temp = Z_star_base[i] - Z_star_base[i+1]
-                    Z_star_base_arr.append(temp)
+                    # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
+                    Z_star_base_arr = []
 
-                #for i in range(int(np.size(user_arr))):
-                covariance = self.compute_covariance_matrix(user_arr)
-                pcs, L = self.find_pcs(covariance)
-                Z_star = self.project_data(user_arr, pcs, L)
-                #print(Z_star)
-                #print(base_arr)
+                    for i in range(len(Z_star_base) - 1):
+                        temp = Z_star_base[i] - Z_star_base[i+1]
+                        Z_star_base_arr.append(temp)
 
-                # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
-                Z_star_user_arr = []
+                    #for i in range(int(np.size(user_arr))):
+                    covariance = self.compute_covariance_matrix(user_arr)
+                    pcs, L = self.find_pcs(covariance)
+                    Z_star = self.project_data(user_arr, pcs, L)
+                    #print(Z_star)
+                    #print(base_arr)
 
-                for i in range(len(Z_star) - 1):
-                    temp = Z_star[i] - Z_star[i + 1]
-                    Z_star_user_arr.append(temp)
+                    # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
+                    Z_star_user_arr = []
 
-                # Run a relational algorithm and see if user input matches letter A
-                # (compares Z_star_base_arr with Z_star_user_arr)
-                count = 0
+                    # Finds the relational value between each point in the z-star
+                    for i in range(len(Z_star) - 1):
+                        temp = Z_star[i] - Z_star[i + 1]
+                        Z_star_user_arr.append(temp)
 
-                # Checks if user letter matches base letter
-                for i in range(len(Z_star_user_arr)):
-                    temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
-                    print(temp)
-                    if ((temp >= 60 and temp <= 140) or (temp >= -60 and temp <= -140)): #change these values
-                        count += 1
+                    # Run a relational algorithm and see if user input matches letter A
+                    # (compares Z_star_base_arr with Z_star_user_arr)
+                    count = 0
 
-                # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
-                if(count >= 15): #decreased to 15, can increase for similar hand signs
-                    print("You have correctly signed " + chosen_letter + "!")
-                    matched = True
+                    # Checks if user letter matches base letter
+                    for i in range(len(Z_star_user_arr)):
+                        temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
+                        print(temp)
+                        if ((temp >= 60 and temp <= 140) or (temp >= -60 and temp <= -140)): #change these values
+                            count += 1
+
+                    # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
+                    if(count >= 15): #decreased to 15, can increase for similar hand signs
+                        print("You have correctly signed " + chosen_letter + "!")
+                        matched = True
+                        break
+                    else:
+                        print("Counts that matched: " + str(count))
+
+                # If a match is found we do not have to search through the rest of the letters
+                if(matched == True):
                     break
-                else:
-                    print("Counts that matched: " + str(count))
 
             self.show_plot(user_arr, Z_star)
             matched = True
