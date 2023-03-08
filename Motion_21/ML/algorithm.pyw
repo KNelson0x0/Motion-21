@@ -1,4 +1,4 @@
-"""
+
 
 import cv2
 import mediapipe
@@ -130,9 +130,8 @@ class UserSign(object):
             print(image)
             #cv2.imshow("img", image)
             #cv2.waitKey(0)
-            print("image == Camera().rgb_img_crop: {}".format(str(image == Camera().rgb_img_crop)))
             results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-            imageHeight, imageWidth  = image.shape
+            imageHeight, imageWidth, _  = image.shape
 
             #cv2.imshow("img", image)
             
@@ -166,7 +165,7 @@ class UserSign(object):
 
                 #cv2.waitKey(0)
 
-                print(coordinates_arr)
+                #print(coordinates_arr) # no
                 coordinates_arr = np.array(coordinates_arr)
 
                 user_arr = coordinates_arr
@@ -275,4 +274,3 @@ class UserSign(object):
                 print("no hand lul")
 
     #EOF
-"""

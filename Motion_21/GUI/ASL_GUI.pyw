@@ -4,7 +4,7 @@ from pickle import TRUE
 import customtkinter
 from enum import Enum
 from ML.usertrain import UserTrain
-#from ML.algorithm import UserSign
+from ML.algorithm import UserSign
 from   Utils.constants import *
 from .camera_window import CameraWindow
 from PIL import Image, ImageTk
@@ -653,7 +653,6 @@ class App(customtkinter.CTk):
             self.label6 = CameraWindow(master=self.frame_right, width = 420, height = 320, text = "", compound = "bottom",)
         else:
             self.label6 = customtkinter.CTkLabel(master=self.frame_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
-
         self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
 
         # Label that describes the main camera above
@@ -672,8 +671,6 @@ class App(customtkinter.CTk):
             self.label9 = CameraWindow(master=self.frame_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom",)
         else:
             self.label9 = customtkinter.CTkLabel(master=self.frame_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-
-        
         self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
 
         # Label that describes the example camera above
@@ -800,7 +797,7 @@ class App(customtkinter.CTk):
         if self.window_state == WindowState.TRAINING: # find a better method of doing this later
             self.config_cam_win1.cw_update();
             self.config_cam_win2.cw_update();
-            #UserSign().user_arr_function()
+            UserSign().user_arr_function()
             self.after(200, self.the_afterinator)
 
             #if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
@@ -808,7 +805,3 @@ class App(customtkinter.CTk):
     # Config functions for all the letters
     # ------------------------------------------------------------------------------------   
     
-
-if __name__ == "__main__":
-    app = App()
-    app.start()

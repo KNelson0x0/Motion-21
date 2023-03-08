@@ -27,22 +27,27 @@
 # To Chad -  From Keith
 # [+]: Fixed weird file structure
 # [+]: Fixed SOME camera bugs
+# [++]: (On literally the next commit) Fixed camera bug, alg is running on images. Problem was mainly outdated camera class, grabbed the current one.
 # [+]: Integrated updated UI
 # [+]: Cleaned up a small part of algorithm.pyw
 # [?]: Definitely changed the env from urs to mine so I could use it and I believe those settings change over.
 #      You will need to find ur env and click Add Env -> Existing Env and choose the folder for yours. You will 
 #      will also likely need to update your customtkinter.
-# Note: Pushed to quickly save progress since now the cropped hand camera doesnt wanna work at all :/ (ofc 1 day b4)
-#       demo.
 """
 
+from ML.algorithm import UserSign
 from GUI.ASL_GUI import App
 from Utils.camera import Camera
 from config import Config
 
 if __name__ == "__main__":
     # Loading Window Here!
+
+    # Singletons now exist
     cam = Camera() # init it.
+    alg = UserSign()
     app = App()
+
+    # Start
     app.start()
     
