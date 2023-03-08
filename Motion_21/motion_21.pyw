@@ -23,6 +23,19 @@
 #
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
+"""
+# To Chad -  From Keith
+# [+]: Fixed weird file structure
+# [+]: Fixed SOME camera bugs
+# [+]: Integrated updated UI
+# [+]: Cleaned up a small part of algorithm.pyw
+# [?]: Definitely changed the env from urs to mine so I could use it and I believe those settings change over.
+#      You will need to find ur env and click Add Env -> Existing Env and choose the folder for yours. You will 
+#      will also likely need to update your customtkinter.
+# Note: Pushed to quickly save progress since now the cropped hand camera doesnt wanna work at all :/ (ofc 1 day b4)
+#       demo.
+"""
+
 from GUI.ASL_GUI import App
 from Utils.camera import Camera
 from config import Config

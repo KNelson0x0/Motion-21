@@ -7,9 +7,9 @@ from   Utils.utils import *
 
 class Camera(object): # singleton because every time the camera is initialized there is at least a five second freeze and I'd prefer not to hard global too much.
     stream             = cv2.VideoCapture(0)
-    rgb_img            = np.zeros((5,5), np.float32) # honestly shouldnt be a problem anymore but just in case
-    rgb_img_rect       = np.zeros((5,5), np.float32)
-    rgb_img_crop       = np.zeros((5,5), np.float32)
+    rgb_img            = np.zeros((5,5), np.uint8) # honestly shouldnt be a problem anymore but just in case
+    rgb_img_rect       = np.zeros((5,5), np.uint8)
+    rgb_img_crop       = np.zeros((5,5), np.uint8)
     old_frame          = None
     frame              = None
     cropped_frame      = None

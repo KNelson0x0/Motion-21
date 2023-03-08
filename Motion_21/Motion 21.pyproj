@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Motion 21</Name>
     <RootNamespace>Motion 21</RootNamespace>
-    <InterpreterId>MSBuild|ML-Env|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|ML-Env-310|$(MSBuildProjectFullPath)</InterpreterId>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -27,6 +27,13 @@
     <Compile Include="GUI\ASL_GUI.pyw" />
     <Compile Include="GUI\camera_window.pyw" />
     <Compile Include="GUI\scroll_panel.pyw" />
+    <Compile Include="ML\algorithm.pyw" />
+    <Compile Include="ML\data_collect.py" />
+    <Compile Include="ML\data_collect_new.py" />
+    <Compile Include="ML\edit_image.py" />
+    <Compile Include="ML\landmarks_detection.py" />
+    <Compile Include="ML\point_detection_A.py" />
+    <Compile Include="ML\point_detection_B.py" />
     <Compile Include="ML\usertrain.pyw" />
     <Compile Include="motion_21.pyw" />
     <Compile Include="Utils\camera.pyw" />
@@ -40,14 +47,10 @@
     <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|PythonCore|3.11" />
-    <InterpreterReference Include="Global|VisualStudio|env-custom (Python 3.10 (64-bit))" />
-  </ItemGroup>
-  <ItemGroup>
-    <Interpreter Include="ML-Env\">
-      <Id>ML-Env</Id>
-      <Version>3.11</Version>
-      <Description>ML-Env (Python 3.11 (64-bit))</Description>
+    <Interpreter Include="..\..\Envs\ML-Env-310\">
+      <Id>ML-Env-310</Id>
+      <Version>3.10</Version>
+      <Description>ML-Env-310 (Python 3.10 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
