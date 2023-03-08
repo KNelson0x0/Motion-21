@@ -32,6 +32,7 @@
     <Compile Include="Utils\camera.pyw" />
     <Compile Include="Utils\constants.pyw" />
     <Compile Include="Utils\utils.pyw" />
+    <Compile Include="Utils\wintoast.pyw" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="C++\" />

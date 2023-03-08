@@ -1,4 +1,4 @@
-import json
+import json, base64, hashlib
 from   cryptography.fernet import Fernet
 from   Utils.constants import *
 from   Utils.utils import *
@@ -7,8 +7,37 @@ from   os       import mkdir
 from   os       import remove
 
 # {Header: [size_here, "UserSuccess"]}
-# custom file format to put all the configs in so they werent just laying around in random folders.
-# This is the manager for it.
+
+
+
+# helpers
+def make_key(passcode: str) -> str:
+    md5_obj = hashlib.md5()
+    md5_obj.update(bytes(passcode,'utf-8'))
+    return base64.urlsafe_b64encode(md5_obj.hexdigest().encode('utf-8'))
+
+def end_brace_index(string):
+    brace_c = 1
+    index = string.index('{') + 1
+    
+    while brace_c != 0:
+        if string[index] == '{': brace_c += 1
+        if string[index] == '}': brace_c -= 1
+        index+=1
+
+    return index-1
+
+def get_header(config_str : str):
+    header = config_str.strip().replace('\n','') # in case of formatting
+    header = header[:end_brace_index(header)+1]
+
+    return json.loads(header), header
+
+
+def get_json_size(self, j):
+    return( len(str(j).replace('\n','').strip()) )
+
+
 class Archive():
     def __init__(self): # TODO: fix later
         self.user_path = PATH + "UserData/m21.cfg"
@@ -32,7 +61,7 @@ class Archive():
         for _, value in list(self.header.items()):
             end_brace = self.end_brace_index(config_str[last_size:])
             c_config = config_str[last_size : end_brace + last_size + 1]
-            last_size += value  # one for EOS and one for th?te original len returning human sizings. There should be no size loss as long as the header reports the correct values.
+            last_size += value[0]  # one for EOS and one for th?te original len returning human sizings. There should be no size loss as long as the header reports the correct values.
 
             self.jsons.append(c_config)
 
@@ -60,26 +89,7 @@ class Archive():
 
     def remove_json(self, name):
         pass
-    # helpers
-    def end_brace_index(self, string):
-        brace_c = 1
-        index = string.index('{') + 1
-    
-        while brace_c != 0:
-            if string[index] == '{': brace_c += 1
-            if string[index] == '}': brace_c -= 1
-            index+=1
 
-        return index-1
-
-    def get_header(self):
-        header = self.config_str.strip().replace('\n','') # in case of formatting
-        header = header[:self.end_brace_index(header)+1]
-        self.header_size = len(header)
-        return json.loads(header), header
-
-    def get_json_size(self, j):
-        return( len(str(j).replace('\n','').strip()) )
 
 class Config(): # singleton me later
     def __init__(self, user_name = '', pass_hash = ''): # TODO: fix later
@@ -106,17 +116,12 @@ class Config(): # singleton me later
     def __getitem__(self, x):
         return self.settings[x] # same as above with gets
 
-    def load(self):
-        f = open(self.user_path,'r').read()
-        self.settings = json.loads(f)
-
     def save_var(self, var, name = ""):
         # var  - the variable you want values' saved.
         # name - the name of the variable you want it saved under. please use this though i've added support to do this without a name.
 
         f = open(self.user_path,'r').read() # breaks my peace of mind but python will close this file for me
         if len(f) != 0: f = json.loads(f)
-
 
         if name == "" or len(name) == 0: 
             self.data["CFG_VAR"] = var
@@ -139,7 +144,7 @@ class Config(): # singleton me later
 
         f = open(self.user_path,'w').write(json.dumps(self.settings))
 
-    def save(self, object, attributes = [], name = ""):
+    def save(self, object, name = "", attributes = []):
         # object     - the object you want the values saved from
         # attributes - if its an object you want values saved from, provide a list of the values youd like in string form
         # name       - provide a name for the object youd like saved (advised, otherwise it gets an autoname that you will have to find and deal with yourself https://pixy.org/src/455/4559042.png)
@@ -185,6 +190,11 @@ class Config(): # singleton me later
             self.settings[name] = self.data
         
         f = open(self.user_path,'w').write(json.dumps(self.settings))
+    
+    def load(self, key):
+        f = open(self.user_path,'r').read()
+
+        self.settings = json.loads(f)
 
     def delete(self):
        self.settings = {}
