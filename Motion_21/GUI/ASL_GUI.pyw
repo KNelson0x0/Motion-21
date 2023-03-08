@@ -485,25 +485,25 @@ class App(customtkinter.CTk):
         
 
         # lessons
-        self.lesson1 = customtkinter.CTkButton(master = self.frame_main_right, text = "Lesson 1: A, B, C, D", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson1_letters)
+        self.lesson1 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 1:\n A, B, C, D", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson1_letters)
         self.lesson1.grid(row = 1, column = 1, padx = 2, pady = 2)
         
-        self.lesson2 = customtkinter.CTkButton(master = self.frame_main_right, text = "Lesson 2: E, F, G, H", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson2_letters)
+        self.lesson2 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 2:\n E, F, G, H", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson2_letters)
         self.lesson2.grid(row = 1, column = 2, padx = 2, pady = 2)
 
-        self.lesson3 = customtkinter.CTkButton(master = self.frame_main_right, text = "Lesson 3: I, K, L, M", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson3_letters)
+        self.lesson3 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 3:\n I, K, L, M", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson3_letters)
         self.lesson3.grid(row = 1, column = 3, padx = 2, pady = 2)
         
-        self.lesson4 = customtkinter.CTkButton(master = self.frame_main_right, text = "Lesson 4: N, O, P, Q", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson4_letters)
+        self.lesson4 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 4:\n N, O, P, Q", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson4_letters)
         self.lesson4.grid(row = 3, column = 1, padx = 2, pady = 2)
         
-        self.lesson5 = customtkinter.CTkButton(master = self.frame_main_right, text = "Lesson 5: R, S, T, U", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson5_letters)
+        self.lesson5 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 5:\n R, S, T, U", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson5_letters)
         self.lesson5.grid(row = 3, column = 2, padx = 2, pady = 2)
 
-        self.lesson6 = customtkinter.CTkButton(master = self.frame_main_right, text = "Lesson 6: V, W, X, Y", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson6_letters)
+        self.lesson6 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 6:\n V, W, X, Y", font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson6_letters)
         self.lesson6.grid(row = 3, column = 3, padx = 2, pady = 2)
         
-        self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "Lesson 7: J & Z", font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = self.lesson7_letters)
+        self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = self.lesson7_letters)
         self.lesson7.grid(row = 4, column = 2, padx = 2, pady = 2)
         
     def lesson1_letters(self):
