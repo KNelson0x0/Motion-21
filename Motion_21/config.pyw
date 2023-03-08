@@ -15,28 +15,27 @@ class Archive():
         if not exists(PATH + "UserData/"):
             mkdir    (PATH + "UserData/")
             f = open (PATH + "UserData/m21.cfg", 'w').close()
-
-        self.config_str  = open(PATH + "UserData/m21.cfg", 'r').read()
-        self.header      = self.get_header()
-        self.header_size = 0
-        self.jsons       = []
+        self.header_size                  = 0
+        self.config_str                   = open(PATH + "UserData/m21.cfg", 'r').read()
+        self.header, self.header_str      = self.get_header() # small fix
+        self.jsons                        = []
 
     def parse_arch(self):
         sizes       = list(self.header.values())
-        data_size   = sum(sizes)
-        header_size = len(str(self.header))
+        header_size = len(self.header_str)
       
         config_str = self.config_str.strip().replace('\n','') # in case of formatting
-        blob       = config_str[header_size-1:]
-        last_size  = header_size - 3
+        last_size  = header_size
         self.jsons = []
 
-        for key, value in list(self.header.items()):
-            c_config = config_str[last_size : self.end_brace_index(blob)+last_size]
-            last_size += value - 2 # one for EOS and one for the original len returning human sizings. There should be no size loss as long as the header reports the correct values.
+        for _, value in list(self.header.items()):
+            end_brace = self.end_brace_index(config_str[last_size:])
+            c_config = config_str[last_size : end_brace + last_size + 1]
+            last_size += value  # one for EOS and one for th?te original len returning human sizings. There should be no size loss as long as the header reports the correct values.
+
             self.jsons.append(c_config)
 
-        #print("\n\n\n".join(self.jsons))
+        print("\n\n\n".join( [ "[{}]: {}".format(i, self.jsons[i]) for i in range(len(self.jsons)) ]))
       
     def commit_json(self, name):
         assert len(self.jsons) == len(self.header) # yw guys.
@@ -77,7 +76,7 @@ class Archive():
         header = self.config_str.strip().replace('\n','') # in case of formatting
         header = header[:self.end_brace_index(header)+1]
         self.header_size = len(header)
-        return json.loads(header)
+        return json.loads(header), header
 
     def get_json_size(self, j):
         return( len(str(j).replace('\n','').strip()) )

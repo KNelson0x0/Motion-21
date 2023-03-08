@@ -1,4 +1,5 @@
-
+#from numba import jit # i really dont want to have jitify tkinter, looking into other solutions
+#from numba.experimental import jitclass
 from pickle import TRUE
 import customtkinter
 from enum import Enum
@@ -30,8 +31,11 @@ class WindowState(Enum):
     THEMES   = [4, CameraState.CAM_NOT_REQUIRED]
     CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
     TRAINING = [6, CameraState.CAM_REQUIRED]
+#
+
 
 class App(customtkinter.CTk):
+
     def __init__(self):
         super().__init__()
 
@@ -57,10 +61,11 @@ class App(customtkinter.CTk):
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
-        self.frame_left.destroy()
-        self.frame_right.destroy()
 
-        self.home_window()
+        if self.window_state != WindowState.HOME: # stop reloading if here, more usage to redraw window than to implement this check
+            self.frame_left.destroy()
+            self.frame_right.destroy()
+            self.home_window()
 
     # Button that allows user to change home page preferences
     def home_settings_button(self):

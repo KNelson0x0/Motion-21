@@ -27,11 +27,14 @@ from GUI.ASL_GUI import App
 from Utils.constants import *
 from Utils.camera import Camera
 from config import *
+import sys
+
 
 if __name__ == "__main__":
     # Loading Window Here!
-    cam = Camera() # init it.
-    app = App()
+    #sys.setrecursionlimit(2000)
+    #cam = Camera() # init it.
+    #app = App()
 
     x = 1336.5
 
@@ -42,7 +45,9 @@ if __name__ == "__main__":
     cfg.load()
     """
 
-    app.start()
+    arch = Archive()
+    arch.parse_arch()
+    #app.start()
     
 
 
