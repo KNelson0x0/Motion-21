@@ -1,4 +1,5 @@
 import json
+from   cryptography.fernet import Fernet
 from   Utils.constants import *
 from   Utils.utils import *
 from   os.path  import exists
@@ -42,7 +43,6 @@ class Archive():
         to_commit = str(self.header) + "\n\n\n".join(self.jsons).strip()
 
         print(to_commit)
-
 
     def add_json(self, new_json):
         new_json_d = new_json # d for dict, cause thats what it is, a dictionary.
