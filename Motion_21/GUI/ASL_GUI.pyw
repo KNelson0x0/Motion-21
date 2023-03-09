@@ -3,6 +3,7 @@ import customtkinter
 import tkinter
 from enum import Enum
 #from ML.usertrain import UserTrain
+from ML.algorithm import UserSign
 from Utils.constants import *
 from .camera_window import CameraWindow
 from PIL import Image, ImageTk
@@ -1929,7 +1930,8 @@ class App(customtkinter.CTk):
         if self.window_state == WindowState.LESSONS: # find a better method of doing this later
             self.label_cam.cw_update();
             self.label_cam2.cw_update();
-            self.after(10, self.the_afterinator)
+            UserSign().run_comparison()
+            self.after(200, self.the_afterinator)
             return
 
         #if self.window_state == WindowState.TRAINING: # find a better method of doing this later

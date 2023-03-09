@@ -23,6 +23,7 @@
 #
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
+from ML.algorithm import UserSign
 from GUI.ASL_GUI import App
 from Utils.constants import *
 from Utils.camera import Camera
@@ -31,6 +32,7 @@ from config import *
 if __name__ == "__main__":
     # Loading Window Here!
     cam = Camera() # init it.
+    alg = UserSign()
     app = App()
 
     x = 1336.5
