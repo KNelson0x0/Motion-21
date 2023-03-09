@@ -81,16 +81,17 @@ class Camera(object): # singleton because every time the camera is initialized t
 
                 self.rect_frame = self.frame.copy()
 
-                cv2.rectangle(self.rect_frame, (52,52), (252,252), (255,122,1), 3) # make sure box is divisible by 4
+                cv2.rectangle(self.rect_frame, (52,52), (352,352), (0,255,0), 1) # make sure box is divisible by 4
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
-                self.rgb_img_crop = cv2.cvtColor(self.rect_frame[52:252, 52:252], cv2.COLOR_BGR2RGB)
-                self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
+                self.rgb_img_crop = self.rgb_img_rect[50:350, 50:350]
+                #self.rgb_img_crop = cv2.cvtColor(self.rect_frame[52:252, 52:252], cv2.COLOR_BGR2RGB)
+                #self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
                 
-                roi = self.frame[52:252, 52:252]
-                roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+                #roi = self.frame[52:252, 52:252]
+                #roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
                 #roi = cv2.resize(roi, (28, 28), interpolation = cv2.INTER_AREA)
 
-                self.cropped_frame = roi # still an image
+                self.cropped_frame = self.rgb_img_crop # still an image
                 #self.cropped_frame = roi.reshape(1,28,28,1) # data
                 #self.cropped_frame = self.cropped_frame/255
 

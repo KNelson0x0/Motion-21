@@ -701,7 +701,7 @@ class App(customtkinter.CTk):
     #Image processing function declarations
     # ------------------------------------------------------------------------------------    
     def load_image(self, path, image_size1, image_size2):
-        return ImageTk.PhotoImage(Image.open("C:\\Users\\Resu\\Documents\\Dev\\Py\\Motion 21\\Motion_21\\GUI\\" + path).resize((image_size1, image_size2)))
+        return ImageTk.PhotoImage(Image.open(PATH + "GUI" + path).resize((image_size1, image_size2)))
 
     def on_closing(self, event=0):
         self.destroy()
@@ -797,7 +797,7 @@ class App(customtkinter.CTk):
         if self.window_state == WindowState.TRAINING: # find a better method of doing this later
             self.config_cam_win1.cw_update();
             self.config_cam_win2.cw_update();
-            UserSign().user_arr_function()
+            UserSign().run_comparison()
             self.after(200, self.the_afterinator)
 
             #if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 

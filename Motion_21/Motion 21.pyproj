@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Motion 21</Name>
     <RootNamespace>Motion 21</RootNamespace>
-    <InterpreterId>MSBuild|ML-Env-310|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|demo_env|$(MSBuildProjectFullPath)</InterpreterId>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -47,6 +47,15 @@
     <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
+    <Interpreter Include="..\..\..\..\..\source\repos\Motion-21\Motion_21\demo_env\">
+      <Id>demo_env</Id>
+      <Version>3.9</Version>
+      <Description>demo_env (Python 3.9)</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
     <Interpreter Include="..\..\Envs\ML-Env-310\">
       <Id>ML-Env-310</Id>
       <Version>3.10</Version>
