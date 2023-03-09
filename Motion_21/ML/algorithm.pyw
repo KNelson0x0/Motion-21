@@ -221,65 +221,74 @@ class UserSign(object):
         # Grabs user letter input
         user_arr = self.user_arr_function()
         if len(user_arr)==21:
+            #print(user_arr)
+            has_none = False
+            if None in user_arr:
+                has_none = True
+        
+            if has_none == False:
 
-        # For loop that checks through all our base letters
+            # For loop that checks through all our base letters
             
-            #try:
-            for i in range(len(letter)):
+                #try:
+                for i in range(len(letter)):
 
-                chosen_letter = letter[i]
+                    chosen_letter = letter[i]
 
-                base_arr = self.base_arr_function(chosen_letter)
+                    base_arr = self.base_arr_function(chosen_letter)
 
-                base_arr = np.array(base_arr)
+                    base_arr = np.array(base_arr)
 
-                # Finds our Z_star of our base A to compare with user's Z_star
-                covarianceBase = self.compute_covariance_matrix(base_arr)
-                pcsBase, LBase = self.find_pcs(covarianceBase)
-                Z_star_base = self.project_data(base_arr, pcsBase, LBase)
+                    # Finds our Z_star of our base A to compare with user's Z_star
+                    covarianceBase = self.compute_covariance_matrix(base_arr)
+                    pcsBase, LBase = self.find_pcs(covarianceBase)
+                    Z_star_base = self.project_data(base_arr, pcsBase, LBase)
 
-                # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
-                Z_star_base_arr = []
+                    # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
+                    Z_star_base_arr = []
 
-                for i in range(len(Z_star_base) - 1):
-                    temp = Z_star_base[i] - Z_star_base[i+1]
-                    Z_star_base_arr.append(temp)
+                    for i in range(len(Z_star_base) - 1):
+                        temp = Z_star_base[i] - Z_star_base[i+1]
+                        Z_star_base_arr.append(temp)
 
-                #for i in range(int(np.size(user_arr))):
-                covariance = self.compute_covariance_matrix(user_arr)
-                pcs, L = self.find_pcs(covariance)
-                Z_star = self.project_data(user_arr, pcs, L)
-                #print(Z_star)
-                #print(base_arr)
+                    #for i in range(int(np.size(user_arr))):
+                    covariance = self.compute_covariance_matrix(user_arr)
+                    pcs, L = self.find_pcs(covariance)
+                    Z_star = self.project_data(user_arr, pcs, L)
+                    #print(Z_star)
+                    #print(base_arr)
 
-                # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
-                Z_star_user_arr = []
+                    # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
+                    Z_star_user_arr = []
 
-                for i in range(len(Z_star) - 1):
-                    temp = Z_star[i] - Z_star[i + 1]
-                    Z_star_user_arr.append(temp)
+                    for i in range(len(Z_star) - 1):
+                        temp = Z_star[i] - Z_star[i + 1]
+                        Z_star_user_arr.append(temp)
 
-                # Run a relational algorithm and see if user input matches letter A
-                # (compares Z_star_base_arr with Z_star_user_arr)
-                count = 0
+                    # Run a relational algorithm and see if user input matches letter A
+                    # (compares Z_star_base_arr with Z_star_user_arr)
+                    count = 0
 
-                # Checks if user letter matches base letter
-                for i in range(len(Z_star_user_arr)):
-                    temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
-                    #print(temp)
-                    if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= 140)): #change these values/original was 60, 140
-                        count += 1
+                    # Checks if user letter matches base letter
+                    for i in range(len(Z_star_user_arr)):
+                        temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
+                        #print(temp)
+                        if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= 140)): #change these values/original was 60, 140
+                            count += 1
 
-                # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
-                if(count >= 12): #decreased to 15, can increase for similar hand signs
-                    print("You have correctly signed " + chosen_letter + "!")
-                    break
-                else:
-                    print("Hand detected, no sign detected. Counts that matched: " + str(count))
+                    # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
+                    if(count >= 12): #decreased to 15, can increase for similar hand signs
+                        print("You have correctly signed " + chosen_letter + "!")
+                        break
+                    else:
+                        print("Hand detected, no sign detected. Counts that matched: " + str(count))
+
+            else:
+                print("No FULL hand detected")
 
             
-            #except:
-                #print("No hand detected")
+                #except:
+                    #print("No hand detected")
         else:
             print("No hand detected")
 
