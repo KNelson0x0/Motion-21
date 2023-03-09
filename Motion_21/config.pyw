@@ -7,11 +7,6 @@ from   os       import mkdir
 from   os       import remove
 
 
-#
-# UNFINISHED COMMIT (almost done, i do gotta be making sure everything works), Moving to other git to help fix git issues.
-#
-
-
 def make_key(passcode: str) -> str:
     md5_obj = hashlib.md5()
     passcode = MemKey(passcode)
@@ -19,25 +14,6 @@ def make_key(passcode: str) -> str:
     del passcode
     return base64.urlsafe_b64encode(md5_obj.hexdigest().encode('utf-8'))
 
-def end_brace_index(string):
-    brace_c = 1
-    index = string.index('{') + 1
-    
-    while brace_c != 0:
-        if string[index] == '{': brace_c += 1
-        if string[index] == '}': brace_c -= 1
-        index+=1
-
-    return index-1
-
-def get_header(config_str : str):
-    header = config_str.strip().replace('\n','') # in case of formatting
-    header = header[:end_brace_index(header)+1]
-
-    return json.loads(header), header
-
-def get_json_size(self, j):
-    return( len(str(j).replace('\n','').strip()) )
 
 class MemKey(): # because we arent storing any of this on a server, the least we can do is make sure the key isn't just floating around in memory somewhere
     """
@@ -111,7 +87,7 @@ class Archive(object): # So python apparently does have circular imports but the
             self.config_str                   = open(PATH + "UserData/m21_enc.cfg", 'r').read()
             self.header, self.header_str      = get_header(self.config_str) # small fix
             self.jsons                        = {}
-            self.c_cfg                        = {} # add additional security later
+            self.c_cfg                        = {} # add additional security later, this will require a similar protection to that of vm-based
             self.c_index                      = ''
             self.crypt                        = None
         return self.instance
@@ -125,17 +101,10 @@ class Archive(object): # So python apparently does have circular imports but the
         config_str = self.config_str.strip().replace('\n','') # in case of formatting
         last_size  = header_size
         total_size = last_size
-        self.jsons = {}
         debug_log(len(config_str))
 
         # we do some unpacking
         for k, value in list(self.header.items()):
-            key = None
-            try:
-                key = self.crypt.decrypt(bytes(value[1], 'utf-8'))
-            except:
-                pass
-
             total_size += value[0]
 
             c_config = config_str[total_size - value[0]: total_size]
@@ -146,8 +115,7 @@ class Archive(object): # So python apparently does have circular imports but the
 Key: {}\n\
 Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i]) for i in range(len(self.jsons)) ]))
       
-
-    def commit_json(self, new_json):
+    def update_json(self, new_json): # also uses it
         new_json_s = new_json 
 
         if type(new_json) == "<class 'config.Config'>":
@@ -159,26 +127,21 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         
         debug_log("prot: " + protected)
 
-        self.jsons[self.c_index] = protected
-        print(self.jsons)
+        try:
+            self.jsons[self.c_index] = protected
+        except:
+            print("Config cannot be updated yet as it hasn't been added yet!")
+
         return protected
 
-    def commit_json(self, new_json):
-        new_json_s = new_json 
-
-        if type(new_json) == "<class 'config.Config'>":
-            new_json_s = str(new_json.data).strip().replace("\n",'')
-        if type(new_json) != str:
-            new_json_s = str(new_json).strip().replace("\n",'')
-
-        protected = self.crypt.encrypt(bytes(new_json_s, 'utf-8')).decode()
+    def add_json(self, new_json : dict):
+        new_json_s = json.dumps(new_json)
+        success = self.crypt.encrypt(bytes("UserSuccess", 'utf-8')).decode()
+        self.header[new_json['M21ConfigName']] = [len(json.dumps(new_json)), success]
+        self.json[new_json['M21ConfigName']] = self.crypt.encrypt(bytes(new_json_s, 'utf-8'))
         
-        debug_log("prot: " + protected)
-
-        self.jsons[self.c_index] = protected
-        print(self.jsons)
-        return protected
-
+        self.c_index = success
+        self.c_cfg = self.json[new_json['M21ConfigName']]
 
     def get_json(self, key : str): # also up for name nomination, use_json
         crypt = Fernet(bytes(key, 'utf-8'))
@@ -187,7 +150,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
             try:
                 gate = self.crypt.decrypt(bytes(i, 'utf-8'))
                 if gate == b"UserSuccess":
-                    print(self.jsons[i])
+                    #print(self.jsons[i])
                     self.c_cfg = json.loads(crypt.decrypt(bytes(self.jsons[i],'utf-8')).decode())
                     self.c_index = i
                     return self.c_cfg
@@ -195,12 +158,25 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                 debug_log("[Archive::get_json]: Idk do better or something.")
                 continue
 
-    def save(self, name):
+    def exists(self, name : str):
+        for i in self.headers.keys():
+            try:
+                gate = self.crypt.decrypt(bytes(i[1], 'utf-8'))
+                if gate == b"UserSuccess":
+                   to_search = json.loads(self.crypt.decrypt(bytes(self.jsons[i[1]], 'utf-8')).decode())
+                   return name in to_search.keys()
+            except:
+                pass
+        return False
+
+    def save(self):
         f = open(self.user_path,'w')
         
+        if self.c_index not in self.header.keys(): # if coming directly from config never should be in the keys since it was never added. So, add it.
+            self.add_json(self.c_index)
+
         # add file header
         f.write(json.dumps(self.jsons))
-
 
         # write encrypted bits back
         for k,v in self.jsons:
@@ -208,22 +184,14 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         f.close()
 
- 
-
 
 class Config(): # singleton me later
-    def __init__(self, user_name = '', password = ''): # TODO: fix later
+    def __init__(self, user_name, password): # TODO: fix later
         self.user_name = user_name
         self.password = password
         self.settings  = {'M21ConfigName' : user_name}
         self.data = {}
-        self.user_path = "./UserData/m21_enc.cfg".format(self.user_name)
-
-        if not exists(PATH + "/UserData/m21.cfg"):
-            mkdir(PATH + "/UserData/m21.cfg")
-        if not exists(PATH + "/UserData/m21.cfg"):
-            open(self.user_path,'w').close()
-
+  
     def __setitem__(self, key, new_val):
         self.settings[key] = new_val # probably extremely shallow setting. I, may, add deeper searching sets. 
 
@@ -235,8 +203,7 @@ class Config(): # singleton me later
         # name - the name of the variable you want it saved under. please use this though i've added support to do this without a name.
 
         # HERE
-        f = open(self.user_path,'r').read() # breaks my peace of mind but python will close this file for me
-        if len(f) != 0: f = json.loads(f)
+        f = Archive().c_cfg
 
         if name == "" or len(name) == 0: 
             self.data["CFG_VAR"] = var
@@ -257,7 +224,7 @@ class Config(): # singleton me later
         else:                            
             self.settings[name] = self.data        
 
-        f = open(self.user_path,'w').write(json.dumps(self.settings))
+        Archive().c_cfg = self.settings
 
     def save(self, object, name = "", attributes = []):
         # object     - the object you want the values saved from
@@ -269,8 +236,7 @@ class Config(): # singleton me later
                 debug_log("[Config.Save]> {} not in class {}. Stopping.".format(i), object.__name__)
                 return False
 
-        f = open(self.user_path,'r').read()
-        if len(f) != 0: f = json.loads(f)
+        f = Archive().c_cfg
 
         obj = type(object)
         if type(object) != str: obj = str(obj)
@@ -304,7 +270,7 @@ class Config(): # singleton me later
         else:                            
             self.settings[name] = self.data
         
-        f = open(self.user_path,'w').write(json.dumps(self.settings))
+        Archive().c_cfg = self.settings
     
     def load(self, key):
         self.settings = Archive().get_json(key)
