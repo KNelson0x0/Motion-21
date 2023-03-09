@@ -77,10 +77,10 @@ class App(customtkinter.CTk):
         count = 0
 
         self.frame_right = customtkinter.CTkFrame(master=self, fg_color = "#1A1A1A")
-        self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
+        self.frame_right.grid(row =0, column=1, sticky="nswe", padx=20, pady=20)
 
         self.label_1 = customtkinter.CTkLabel(master=self.frame_right, width=200, height=60, fg_color=("gray70", "gray25"), text="Choose User", corner_radius=6)
-        self.label_1.grid(row= 0, column = 0, padx = 150, pady = 30)
+        self.label_1.grid(row = 0, column = 0, padx = 150, pady = 30)
 
         for path in os.listdir(dir_path):
             if os.path.isfile(os.path.join(dir_path, path)):

@@ -6,14 +6,17 @@ from   os.path  import exists
 from   os       import mkdir
 from   os       import remove
 
-# {Header: [size_here, "UserSuccess"]}
+
+#
+# UNFINISHED COMMIT (almost done, i do gotta be making sure everything works), Moving to other git to help fix git issues.
+#
 
 
-
-# helpers
 def make_key(passcode: str) -> str:
     md5_obj = hashlib.md5()
-    md5_obj.update(bytes(passcode,'utf-8'))
+    passcode = MemKey(passcode)
+    md5_obj.update(bytes(passcode.get_key(),'utf-8'))
+    del passcode
     return base64.urlsafe_b64encode(md5_obj.hexdigest().encode('utf-8'))
 
 def end_brace_index(string):
@@ -33,82 +36,193 @@ def get_header(config_str : str):
 
     return json.loads(header), header
 
-
 def get_json_size(self, j):
     return( len(str(j).replace('\n','').strip()) )
 
+class MemKey(): # because we arent storing any of this on a server, the least we can do is make sure the key isn't just floating around in memory somewhere
+    """
+       [NEVER USE THE ASSIGNMENT OPERATOR WITH THIS CLASS!]
+       In order for the entire point of this class to work the key has to 
+       be in memory for as little time as possible. If you do:
 
-class Archive():
-    def __init__(self): # TODO: fix later
-        self.user_path = PATH + "UserData/m21.cfg"
+       mem_key = MemKey("password")
+
+       and later do:
+       
+       mem_key = "password"
+
+       mem_key is now a string obj and the key is once again in plaintext.
+       Dont do that. Use .set_key.
+    """
+    def __init__(self, key):
+        self.key = self.key_encrypt(key)
+        del key
+
+    def get_key(self):
+        return self.key
+
+    def set_key(self, key):
+        self.key = self.key_encrypt(key)
+        del key
+
+    def key_encrypt(self, msg):
+        substitution_map = {
+            'a': 'Q', 'b': 'W', 'c': 'E', 'd': 'R', 'e': 'T', 'f': 'Y', 'g': 'U', 'h': 'I', 'i': 'O', 'j': 'P', 'k': 'A', 'l': 'S', 'm': 'D', 'n': 'F', 'o': 'G', 'p': 'H', 'q': 'J', 'r': 'K', 's': 'L', 't': 'Z', 'u': 'X', 'v': 'C', 'w': 'V', 'x': 'B', 'y': 'N', 'z': 'M', 
+            'Q': 'a', 'W': 'b', 'E': 'c', 'R': 'd', 'T': 'e', 'Y': 'f', 'U': 'g', 'I': 'h', 'O': 'i', 'P': 'j', 'A': 'k', 'S': 'l', 'D': 'm', 'F': 'n', 'G': 'o', 'H': 'p', 'J': 'q', 'K': 'r', 'L': 's', 'Z': 't', 'X': 'u', 'C': 'v', 'V': 'w', 'B': 'x', 'N': 'y', 'M': 'z'
+        }
+    
+        # Apply the substitution cipher - basic but decently annoying to reverse
+        encrypted_msg = ''
+        for c in msg:
+            if c in substitution_map:
+                encrypted_msg += substitution_map[c]
+            else:
+                try:
+                    encrypted_msg += c
+                except:
+                    encrypted_msg += chr(c)
+    
+        # bit shift every character
+        shifted_msg = ''
+        for c in encrypted_msg: # potentially annoying to reverse
+            shifted_ascii = ord(c) << (1 << 3 << 3 << 7 & (255))  # Shift the ASCII value one by a really cool amount and then make sure it stays within valid ascii range
+            shifted_msg += chr(shifted_ascii)
+    
+        # XOR the shifted message with a super secret and very random key (can be randomized, do this later)
+        key = 'Motion21IsCool'
+        xorred_msg = ''
+        for i in range(len(shifted_msg)): # they are definitely gonna know this is the encrypt function lol
+            key_char = key[i % len(key)]
+            xorred_char = chr(ord(shifted_msg[i]) ^ ord(key_char))
+            xorred_msg += xorred_char
+    
+        return xorred_msg
+    
+class Archive(object): # So python apparently does have circular imports but they are just really stupid and bad so heres another singleton
+    def __new__(self):
+        if not hasattr(self, 'instance'):
+            self.instance = super(Archive, self).__new__(self)
+            self.user_path = PATH + "UserData/m21_enc.cfg"
         
-        if not exists(PATH + "UserData/"):
-            mkdir    (PATH + "UserData/")
-            f = open (PATH + "UserData/m21.cfg", 'w').close()
-        self.header_size                  = 0
-        self.config_str                   = open(PATH + "UserData/m21.cfg", 'r').read()
-        self.header, self.header_str      = self.get_header() # small fix
-        self.jsons                        = []
+            if not exists(PATH + "UserData/"):
+                mkdir    (PATH + "UserData/")
+                f = open (PATH + "UserData/m21_enc.cfg", 'w').close()
+            self.header_size                  = 0
+            self.config_str                   = open(PATH + "UserData/m21_enc.cfg", 'r').read()
+            self.header, self.header_str      = get_header(self.config_str) # small fix
+            self.jsons                        = {}
+            self.c_cfg                        = {} # add additional security later
+            self.c_index                      = ''
+            self.crypt                        = None
+        return self.instance
 
-    def parse_arch(self):
-        sizes       = list(self.header.values())
+    def parse_arch(self, key):
+        self.crypt  = Fernet(make_key(key))
+        sizes       = [x[0] for x in list(self.header.values())]
         header_size = len(self.header_str)
       
+        debug_log("[Header Str]: {}\n\n".format(self.header_str))
         config_str = self.config_str.strip().replace('\n','') # in case of formatting
         last_size  = header_size
-        self.jsons = []
+        total_size = last_size
+        self.jsons = {}
+        debug_log(len(config_str))
 
-        for _, value in list(self.header.items()):
-            end_brace = self.end_brace_index(config_str[last_size:])
-            c_config = config_str[last_size : end_brace + last_size + 1]
-            last_size += value[0]  # one for EOS and one for th?te original len returning human sizings. There should be no size loss as long as the header reports the correct values.
+        # we do some unpacking
+        for k, value in list(self.header.items()):
+            key = None
+            try:
+                key = self.crypt.decrypt(bytes(value[1], 'utf-8'))
+            except:
+                pass
 
-            self.jsons.append(c_config)
+            total_size += value[0]
 
-        print("\n\n\n".join( [ "[{}]: {}".format(i, self.jsons[i]) for i in range(len(self.jsons)) ]))
+            c_config = config_str[total_size - value[0]: total_size]
+
+            self.jsons[value[1]] = c_config
+
+        debug_log("\n\n\n".join([ "[{}]: \n\
+Key: {}\n\
+Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i]) for i in range(len(self.jsons)) ]))
       
-    def commit_json(self, name):
-        assert len(self.jsons) == len(self.header) # yw guys.
-        to_commit = str(self.header) + "\n\n\n".join(self.jsons).strip()
 
-        print(to_commit)
-
-    def add_json(self, new_json):
-        new_json_d = new_json # d for dict, cause thats what it is, a dictionary.
+    def commit_json(self, new_json):
+        new_json_s = new_json 
 
         if type(new_json) == "<class 'config.Config'>":
-            new_json_d = new_json.data
-        if type(new_json) == "<class 'str'>":
-            new_json_d = json.loads(new_json)
+            new_json_s = str(new_json.data).strip().replace("\n",'')
+        if type(new_json) != str:
+            new_json_s = str(new_json).strip().replace("\n",'')
 
-        self.header[new_json_m["M21ConfigName"]] = len(str(new_json_m))
+        protected = self.crypt.encrypt(bytes(new_json_s, 'utf-8')).decode()
+        
+        debug_log("prot: " + protected)
 
-    def get_json(self, name):
-        for i in self.jsons:
-            pass
+        self.jsons[self.c_index] = protected
+        print(self.jsons)
+        return protected
 
-    def remove_json(self, name):
-        pass
+    def commit_json(self, new_json):
+        new_json_s = new_json 
+
+        if type(new_json) == "<class 'config.Config'>":
+            new_json_s = str(new_json.data).strip().replace("\n",'')
+        if type(new_json) != str:
+            new_json_s = str(new_json).strip().replace("\n",'')
+
+        protected = self.crypt.encrypt(bytes(new_json_s, 'utf-8')).decode()
+        
+        debug_log("prot: " + protected)
+
+        self.jsons[self.c_index] = protected
+        print(self.jsons)
+        return protected
+
+
+    def get_json(self, key : str): # also up for name nomination, use_json
+        crypt = Fernet(bytes(key, 'utf-8'))
+        gate = ''
+        for i in self.jsons.keys():
+            try:
+                gate = self.crypt.decrypt(bytes(i, 'utf-8'))
+                if gate == b"UserSuccess":
+                    print(self.jsons[i])
+                    self.c_cfg = json.loads(crypt.decrypt(bytes(self.jsons[i],'utf-8')).decode())
+                    self.c_index = i
+                    return self.c_cfg
+            except Exception as e:
+                debug_log("[Archive::get_json]: Idk do better or something.")
+                continue
+
+    def save(self, name):
+        f = open(self.user_path,'w')
+        
+        # add file header
+        f.write(json.dumps(self.jsons))
+
+
+        # write encrypted bits back
+        for k,v in self.jsons:
+            f.write(v)
+
+        f.close()
+
+ 
 
 
 class Config(): # singleton me later
-    def __init__(self, user_name = '', pass_hash = ''): # TODO: fix later
+    def __init__(self, user_name = '', password = ''): # TODO: fix later
         self.user_name = user_name
-        self.pass_hash = pass_hash
-        self.settings  = {}
+        self.password = password
+        self.settings  = {'M21ConfigName' : user_name}
         self.data = {}
-        self.user_path = "./UserData/{}/m21.cfg".format(self.user_name)
+        self.user_path = "./UserData/m21_enc.cfg".format(self.user_name)
 
         if not exists(PATH + "/UserData/m21.cfg"):
             mkdir(PATH + "/UserData/m21.cfg")
         if not exists(PATH + "/UserData/m21.cfg"):
             open(self.user_path,'w').close()
-
-    def login(self):
-        # check user_name v pass_hash
-        # if good load copy of user data into mem and decrypt as needed
-        # for now decrypted stuff for testing
-        pass
 
     def __setitem__(self, key, new_val):
         self.settings[key] = new_val # probably extremely shallow setting. I, may, add deeper searching sets. 
@@ -120,6 +234,7 @@ class Config(): # singleton me later
         # var  - the variable you want values' saved.
         # name - the name of the variable you want it saved under. please use this though i've added support to do this without a name.
 
+        # HERE
         f = open(self.user_path,'r').read() # breaks my peace of mind but python will close this file for me
         if len(f) != 0: f = json.loads(f)
 
@@ -192,10 +307,7 @@ class Config(): # singleton me later
         f = open(self.user_path,'w').write(json.dumps(self.settings))
     
     def load(self, key):
-        f = open(self.user_path,'r').read()
-
-        self.settings = json.loads(f)
+        self.settings = Archive().get_json(key)
 
     def delete(self):
-       self.settings = {}
-       if exists(self.user_path): remove(self.user_path)
+       self.settings = {} 

@@ -46,7 +46,7 @@ class Camera(object): # singleton because every time the camera is initialized t
             return self.old_frame
 
     def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
-        if type(self.cropped_frame) != None: # takes some time to spin up.
+        if type(self.cropped_frame) != None:
             return self.cropped_frame
 
         return self.get_frame()
