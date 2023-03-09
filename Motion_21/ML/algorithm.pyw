@@ -1,5 +1,3 @@
-
-
 import cv2
 import mediapipe
 import os
@@ -21,9 +19,11 @@ class UserSign(object):
 
     # Function that calculates the covariance matrix
     def compute_covariance_matrix(self, Z):
-        
+        #print(Z)
         # Removes empty array values
-        Z = [x for x in Z if x != None]
+        #masked_array = np.ma.masked_array(Z, mask=np.equal(Z, None))
+        #Z = np.ma.compress_rows(masked_array).data
+        #print(Z)
 
         # Uses numpy to calculate the covariance of Z
         covariance = np.cov(Z.T)
@@ -166,14 +166,15 @@ class UserSign(object):
                                 #coordinates_arr[i] = pixelCoordinatesLandmark
                             coordinates_arr.append(pixelCoordinatesLandmark)
 
-                            
                             full_arr.append(pixelCoordinatesLandmark)
                             #print(normalizedLandmark)
                 
                 #need to find which function generates/stores points
                 #keep in order for later reference (avoid false flagging with similar hand signs)
 
-                #cv2.imshow("img", image)
+                #image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                #cv2.imshow("img", image_rgb)
+
 
                 #cv2.waitKey(0)
 
@@ -190,7 +191,7 @@ class UserSign(object):
                 return user_arr
 
             except:
-                print("no hand lul")
+                print("No hand detected")
 
     # Outputs the single axis data
     def show_plot(self, Z, Z_star):
@@ -226,9 +227,13 @@ class UserSign(object):
         if len(user_arr)==21:
             #print(user_arr)
 
+            has_none = False
+            if None in user_arr:
+                has_none = True
+            if has_none == False:
+
             # For loop that checks through all our base letters
-            
-                #try:
+
                 for i in range(len(letter)):
 
                     chosen_letter = letter[i]
@@ -275,18 +280,14 @@ class UserSign(object):
                             count += 1
 
                     # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
-                    if(count >= 12): #decreased to 15, can increase for similar hand signs
+                    if(count >= 7): #decreased to 15, can increase for similar hand signs
                         print("You have correctly signed " + chosen_letter + "!")
                         break
                     else:
                         print("Hand detected, no sign detected. Counts that matched: " + str(count))
-
             else:
-                print("No FULL hand detected")
+                print("Full hand not detected")
 
-            
-                #except:
-                    #print("No hand detected")
         else:
             print("No hand detected")
 
