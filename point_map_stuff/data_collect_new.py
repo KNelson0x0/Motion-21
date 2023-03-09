@@ -9,10 +9,10 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT,360)
 #cap.set(10,100) #for brightness
 
 
-#if os.path.exists('hand_images'):
-    #shutil.rmtree('hand_images')
+if os.path.exists('hand_images'):
+    shutil.rmtree('hand_images')
 
-#os.mkdir('hand_images')
+os.mkdir('hand_images')
 counter = 0
 
 while True:

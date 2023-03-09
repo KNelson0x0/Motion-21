@@ -3,7 +3,7 @@ import numpy as np
 import os
 from statistics import mean
 
-img = cv2.imread(r"C:\Users\pccin\source\repos\point_map_stuff\point_map_stuff\base_images\base_image_B.jpg") #base image, change directory to user
+img = cv2.imread(r"C:\Users\jason\OneDrive\Documents\GitHub\Motion-21\point_map_stuff\base_images\base_image_B.jpg") #base image, change directory to user
 #cv2.imshow('image', img)
 arr_i = []
 arr_j = []

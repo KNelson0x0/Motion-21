@@ -12,8 +12,8 @@ if os.path.exists('hand_edits'):
 os.mkdir('hand_edits')
 
 #Get directory
-directory = r"C:\Users\pccin\source\repos\point_map_stuff\point_map_stuff\hand_images" #change path to user's directory
-directory2 = r"C:\Users\pccin\source\repos\point_map_stuff\point_map_stuff\hand_edits" #change path to user's directory
+directory = r"C:\Users\jason\OneDrive\Documents\GitHub\Motion-21\point_map_stuff" #change path to user's directory
+directory2 = r"C:\Users\jason\OneDrive\Documents\GitHub\Motion-21\hand_edits" #change path to user's directory
 for images in os.listdir(directory):
     if (images.endswith(".jpg")):
         print(images)
