@@ -1,5 +1,6 @@
 import time
 import tkinter
+import json
 from  .constants import DEBUG
 
 def debug_log(x):
@@ -22,6 +23,26 @@ def find_element(root: tkinter.Frame, name: str, type=None): # okay the type doe
             continue 
     debug_log ('Nothing found')
     return None
+
+def end_brace_index(string):
+    brace_c = 1
+    index = string.index('{') + 1
+    
+    while brace_c != 0:
+        if string[index] == '{': brace_c += 1
+        if string[index] == '}': brace_c -= 1
+        index+=1
+
+    return index-1
+
+def get_header(config_str : str):
+    header = config_str.strip().replace('\n','') # in case of formatting
+    header = header[:end_brace_index(header)+1]
+
+    return json.loads(header), header
+
+def get_json_size(self, j):
+    return( len(str(j).replace('\n','').strip()) )
 
 class Counter:
     def __init__(self, start = 0, increment = 1, ):
