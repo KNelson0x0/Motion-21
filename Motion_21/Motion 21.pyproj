@@ -29,7 +29,9 @@
     <Compile Include="GUI\scroll_panel.pyw" />
     <Compile Include="ML\usertrain.pyw" />
     <Compile Include="motion_21.pyw" />
-    <Compile Include="Utils\camera.pyw" />
+    <Compile Include="Utils\
+			 
+	  .pyw" />
     <Compile Include="Utils\constants.pyw" />
     <Compile Include="Utils\utils.pyw" />
   </ItemGroup>

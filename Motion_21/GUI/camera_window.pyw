@@ -2,8 +2,6 @@ import customtkinter
 from   PIL import Image, ImageTk
 from   Utils.camera import Camera
 
-
-
 class CameraWindow(customtkinter.CTkLabel):
     def __init__(self, *args, width=None, height=None, cropped = False, **kwargs):
         self.width = width

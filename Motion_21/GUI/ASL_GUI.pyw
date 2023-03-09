@@ -1,6 +1,10 @@
 from pickle import GLOBAL
 import customtkinter
 import tkinter
+from enum import Enum
+#from ML.usertrain import UserTrain
+from Utils.constants import *
+from .camera_window import CameraWindow
 from PIL import Image, ImageTk
 import os
 
@@ -17,12 +21,28 @@ if not os.path.exists(dir_path):
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
 
+class CameraState(Enum):
+    CAM_OFF = 0
+    CAM_ON = 1
+    CAM_REQUIRED = 2
+    CAM_NOT_REQUIRED = 3
+
+class WindowState(Enum):
+    UNKNOWN  = [0, CameraState.CAM_NOT_REQUIRED] # for unstated windows, really only for debugging
+    HOME     = [1, CameraState.CAM_NOT_REQUIRED]
+    LESSONS  = [2, CameraState.CAM_REQUIRED]
+    SETTINGS = [3, CameraState.CAM_NOT_REQUIRED]
+    THEMES   = [4, CameraState.CAM_NOT_REQUIRED]
+    CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
+    TRAINING = [6, CameraState.CAM_REQUIRED]
+
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
         #Size of window and title
         self.geometry("740x520")
+        self.window_state = WindowState.HOME
         self.title("ASL Learning App")
 
         # Locks size of window
@@ -45,6 +65,7 @@ class App(customtkinter.CTk):
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
+        self.window_state = WindowState.HOME
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -423,8 +444,8 @@ class App(customtkinter.CTk):
         #self.label_8.grid(row=7, column=0, padx=0, pady=0, sticky="w")
 
     # Button that allows the user to change volume options
-    def volume_button(self):
-        print("testing volume button")
+    #def volume_button(self):
+    #    print("testing volume button")
 
     # Button that allows the user to change notification options
     def notif_button(self):
@@ -822,15 +843,20 @@ class App(customtkinter.CTk):
         self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z"))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
     
+    def back_button(self):
+        self.window_state = WindowState.HOME
+        self.lesson_select()
+
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
     def letter_lessons(self, letter):
+        self.window_state = WindowState.LESSONS
         self.frame_main_right.destroy()
 
         self.back_to_lesson = customtkinter.CTkButton(master=self.frame_main_left, text = "Lesson Select", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
         self.back_to_lesson.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
 
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Back", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
+        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Back", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.back_button)
         self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
         
         self.frame_main_right = customtkinter.CTkFrame(master = self)
@@ -854,6 +880,12 @@ class App(customtkinter.CTk):
                 # Once a camera is linked we create the same size window but with the camera output
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
 
                 # Label that describes the main camera above
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera", text_color = THEME_OPP)
@@ -883,20 +915,35 @@ class App(customtkinter.CTk):
                 # Window for the user hand camera
                 # For now this is just an error message of "No Camera Found"
                 # Once a camera is linked we create the same size window but with the camera output
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
 
                 # Label that describes the user hand camera above
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
 
                 # Label that describes the user's accuracy
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "B":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP,width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera", text_color = THEME_OPP)
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"B\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -908,16 +955,29 @@ class App(customtkinter.CTk):
                 self.B_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera", text_color = THEME_OPP)
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+
+                self.update()
+                self.the_afterinator()
 
             case "C":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera", text_color = THEME_OPP)
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"C\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -929,17 +989,30 @@ class App(customtkinter.CTk):
                 self.C_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera", text_color = THEME_OPP)
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "D":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera", text_color = THEME_OPP)
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"D\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -951,17 +1024,30 @@ class App(customtkinter.CTk):
                 self.D_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera", text_color = THEME_OPP,)
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "E":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera", text_color = THEME_OPP)
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"E\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -973,17 +1059,30 @@ class App(customtkinter.CTk):
                 self.E_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera", text_color = THEME_OPP)
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "F":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera", text_color = THEME_OPP)
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"F\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -995,17 +1094,30 @@ class App(customtkinter.CTk):
                 self.F_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera", text_color = THEME_OPP)
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "G":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera", text_color = THEME_OPP)
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"G\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1017,17 +1129,30 @@ class App(customtkinter.CTk):
                 self.G_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera", text_color = THEME_OPP)
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "H":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera", text_color = THEME_OPP)
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"H\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1039,17 +1164,30 @@ class App(customtkinter.CTk):
                 self.H_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera", text_color = THEME_OPP)
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "I":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"I\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1061,17 +1199,30 @@ class App(customtkinter.CTk):
                 self.I_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "K":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"K\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1083,17 +1234,30 @@ class App(customtkinter.CTk):
                 self.K_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "L":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"L\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1105,17 +1269,30 @@ class App(customtkinter.CTk):
                 self.L_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "M":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"M\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1127,17 +1304,30 @@ class App(customtkinter.CTk):
                 self.M_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "N":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"N\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1149,17 +1339,30 @@ class App(customtkinter.CTk):
                 self.N_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "O":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"O\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1171,17 +1374,30 @@ class App(customtkinter.CTk):
                 self.O_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "P":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"P\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1193,17 +1409,30 @@ class App(customtkinter.CTk):
                 self.P_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "Q":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"Q\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1215,17 +1444,30 @@ class App(customtkinter.CTk):
                 self.Q_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "R":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"R\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1237,17 +1479,30 @@ class App(customtkinter.CTk):
                 self.R_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "S":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"S\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1259,17 +1514,30 @@ class App(customtkinter.CTk):
                 self.S_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "T":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"T\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1281,17 +1549,30 @@ class App(customtkinter.CTk):
                 self.T_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "U":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"U\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1303,17 +1584,30 @@ class App(customtkinter.CTk):
                 self.U_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "V":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"V\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1325,17 +1619,30 @@ class App(customtkinter.CTk):
                 self.V_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "W":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"W\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1347,17 +1654,30 @@ class App(customtkinter.CTk):
                 self.W_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "X":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"X\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1369,17 +1689,30 @@ class App(customtkinter.CTk):
                 self.X_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "Y":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"Y\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1391,17 +1724,30 @@ class App(customtkinter.CTk):
                 self.Y_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+
+                self.update()
+                self.the_afterinator()
             
             case "J":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"J\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1413,17 +1759,30 @@ class App(customtkinter.CTk):
                 self.J_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.update()
+                self.the_afterinator()
+
             case "Z":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
                 self.label6.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+                if USE_CAMERA:
+                    self.label_cam = CameraWindow(master=self.frame_main_right, width = 420, height = 320, text = "", compound = "bottom")
+                else:
+                    self.label_cam = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
+                self.label_cam.grid(row=0, column=0, sticky="n", padx=10, pady=10)
                 self.label7 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Main Camera")
                 self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)
                 self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Please sign the letter \"Z\" \nas provided in the example!", font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
@@ -1435,13 +1794,21 @@ class App(customtkinter.CTk):
                 self.Z_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
                 self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Camera")
                 self.label10.grid(row=0, column=1, padx=0, pady=0) 
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-                self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-                self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera")
-                self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
+                #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
+                #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+                if USE_CAMERA:
+                    self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
+                else:
+                    self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+                self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+
+                self.update()
+                self.the_afterinator()
 
     # Button that opens lesson select page
     def lesson_select_button(self, choice):
@@ -1556,6 +1923,22 @@ class App(customtkinter.CTk):
 
         self.motion21_title = customtkinter.CTkLabel(master=self.frame_right, text = "Motion 21 is an American Sign Language Learning Application,\n using computer vision and machine learning to provide\n the user with live feedback on what gesture or character\n they are holding up on screen.", text_color = THEME_OPP, width = 20, height = 150, font = ("Segoe UI", 20), fg_color=("white", "gray20"))
         self.motion21_title.grid(row=2, column=0, padx=0, pady=50, sticky = "we")
+    
+    def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
+        # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
+        if self.window_state == WindowState.LESSONS: # find a better method of doing this later
+            self.label_cam.cw_update();
+            self.label_cam2.cw_update();
+            self.after(10, self.the_afterinator)
+            return
+
+        #if self.window_state == WindowState.TRAINING: # find a better method of doing this later
+        #    self.config_cam_win1.cw_update();
+        #    self.config_cam_win2.cw_update();
+        #    self.after(10, self.the_afterinator)
+
+            #if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
+
 
     # Config functions for all the letters
     # ------------------------------------------------------------------------------------   
