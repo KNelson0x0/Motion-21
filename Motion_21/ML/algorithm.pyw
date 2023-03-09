@@ -22,6 +22,9 @@ class UserSign(object):
     # Function that calculates the covariance matrix
     def compute_covariance_matrix(self, Z):
         
+        # Removes empty array values
+        Z = [x for x in Z if x != None]
+
         # Uses numpy to calculate the covariance of Z
         covariance = np.cov(Z.T)
 
@@ -222,11 +225,6 @@ class UserSign(object):
         user_arr = self.user_arr_function()
         if len(user_arr)==21:
             #print(user_arr)
-            has_none = False
-            if None in user_arr:
-                has_none = True
-        
-            if has_none == False:
 
             # For loop that checks through all our base letters
             
