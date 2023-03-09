@@ -66,6 +66,9 @@ class App(customtkinter.CTk):
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
+        if self.window_state == WindowState.HOME:
+            return
+
         self.window_state = WindowState.HOME
         self.frame_left.destroy()
         self.frame_right.destroy()
@@ -457,6 +460,7 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
+        self.window_state = WindowState.LESSONS
         self.frame_left.destroy()
         self.frame_right.destroy()
 
