@@ -92,8 +92,13 @@ class Archive(object): # So python apparently does have circular imports but the
             self.crypt                        = None
         return self.instance
 
+    def set_password(self, key : str): # needs to be here for user switch
+        self.crypt  = Fernet(make_key(key))
+        del key
+
     def parse_arch(self, key):
         self.crypt  = Fernet(make_key(key))
+        del key
         sizes       = [x[0] for x in list(self.header.values())]
         header_size = len(self.header_str)
       
@@ -145,6 +150,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
     def get_json(self, key : str): # also up for name nomination, use_json
         crypt = Fernet(bytes(key, 'utf-8'))
+        del key
         gate = ''
         for i in self.jsons.keys():
             try:
@@ -186,11 +192,15 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
 
 class Config(): # singleton me later
-    def __init__(self, user_name, password): # TODO: fix later
+    def __init__(self, user_name : str, password : str): # TODO: fix later
         self.user_name = user_name
         self.password = password
         self.settings  = {'M21ConfigName' : user_name}
         self.data = {}
+
+        Archive().set_password(password)
+        if not Archive().exists(user_name):
+            Archive().add_json(self.settings)
   
     def __setitem__(self, key, new_val):
         self.settings[key] = new_val # probably extremely shallow setting. I, may, add deeper searching sets. 

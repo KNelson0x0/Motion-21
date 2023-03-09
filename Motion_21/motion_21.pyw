@@ -36,7 +36,7 @@ import sys
 if __name__ == "__main__":
     # Loading Window Here!
     # cam = Camera() # init it.
-    app = App()
+    #app = App()
 
     # x = 1336.5
 
@@ -53,17 +53,22 @@ if __name__ == "__main__":
     """
     key = make_key("swag")
     crypt = Fernet(key)
-    print(crypt.encrypt(bytes('{"M21ConfigName":"Beem","a":1,"b":2}','utf-8')))
+    print(crypt.encrypt(bytes('{"M21ConfigName":"Test2","a":1,"b":2,"long_var":"some_str"}','utf-8')))
     print("==========================================")
     print(key)
-    #print(crypt.decrypt(bytes('gAAAAABkCXHAO04PhuDDAK0pOfA2QMYZVXW0ofHJCHoNy6EGrp07Sx7fy77zsikNcuxd0bfZ3GJSRWpx7E3CvCKnUeNfSILnFgES18xJyEfjYOBGidAyMGgZLK6sfuPa4m-gEQuOkaay','utf-8')).decode())
-    Archive().parse_arch("swag")
+    print(crypt.decrypt(bytes('gAAAAABkCgySeaEjQgRuLlXdseicPeTPfemysGf3uzJbCbIPpPP9wjUdUN8jNqkEqh8ZGjDqFSkBmnsbXfykCLWvekBu_RNOuw==','utf-8')).decode())
+
+
+    print(Archive().get_json(key.decode()))
+    """
     print(Archive().get_json(key.decode()))
     print("==========================================")
     protected = Archive().update_json('{"M21ConfigName":"Beem","a":1,"b":2}')
     print(crypt.decrypt(bytes(protected,'utf-8')).decode())
     print(Archive().get_json(key.decode()))
     # Passes are swag, Swag, swag
+
+    """
     #app.start()
    
 
