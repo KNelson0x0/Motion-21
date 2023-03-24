@@ -57,120 +57,22 @@ def project_data(Z, pcs, L):
 # Creates our base arrays
 def base_arr_function(letter):
 
-    # Nonmovement Alphabet letters
-    # ----------------------------------------------------------------------------------------------------------------------------------------------
+    filePath = os.path.dirname(os.path.abspath(__file__)) + "\letters" + letter
+    letterArray = []
 
-    #pre-determined base image array for given letter (A in this case)
-    A = [(70, 166), (103, 164), (134, 140), (146, 111), (138, 91), (122, 103), (126, 79), (119, 105), (116, 116), (100, 100), (104, 79), (100, 111), 
-         (99, 116), (80, 100), (82, 81), (82, 111), (82, 119), (59, 102), (62, 87), (64, 109), (65, 117)]
-    
-    B = [(84, 185), (113, 176), (130, 145), (114, 120), (91, 114), (126, 108), (126, 76), (124, 56), (120, 38), (106, 103), (108, 67), (107, 42), 
-         (106, 21), (89, 106), (90, 71), (91, 48), (91, 28), (70, 115), (71, 86), (73, 67), (73, 50)]
+    # Opens the letter file associated with the base letter that was passed
+    with open(filePath, 'r') as f:
 
-    C = [(70, 153), (92, 150), (118, 135), (138, 128), (157, 125), (100, 91), (118, 74), (136, 75), (149, 81), (91, 88), (115, 67), (135, 70), 
-          (149, 80), (85, 90), (109, 68), (131, 71), (147, 79), (82, 97), (105, 81), (123, 79), (137, 81)]
+        contents = f.read().strip()
+        arrays = contents.split('\n')
 
-    D = [(75, 168), (103, 163), (125, 153), (125, 130), (104, 116), (130, 103), (136, 72), (140, 51), (140, 33), (110, 97), (116, 68), (111, 95), 
-          (110, 110), (91, 97), (94, 68), (93, 92), (92, 111), (71, 105), (75, 83), (79, 99), (81, 114)]
+        for line in f:
+            array = eval(line.strip())
+            letterArray.append(array)
 
-    E = [(56, 141), (84, 138), (106, 123), (99, 98), (76, 92), (110, 85), (120, 57), (111, 71), (104, 85), (92, 75), (101, 48), (92, 72), (88, 85), 
-         (75, 71), (80, 44), (76, 65), (73, 81), (55, 76), (59, 54), (62, 66), (62, 81)]
+    # Returns the base array for the given letter
+    return letterArray
 
-    F = [(71, 167), (96, 163), (120, 153), (136, 140), (129, 129), (120, 105), (132, 89), (131, 100), (125, 114), (102, 93), (115, 65), (125, 47), 
-         (133, 29), (82, 90), (83, 58), (85, 36), (88, 17), (61, 96), (52, 68), (46, 51), (43, 35)]
-
-    G = []
-
-    H = []
-
-    I = []
-
-    K = []
-
-    L = []
-
-    M = []
-
-    N = []
-
-    O = []
-
-    P = []
-
-    Q = []
-
-    R = []
-
-    S = []
-
-    T = []
-
-    U = []
-
-    V = []
-
-    W = []
-
-    X = []
-
-    Y = []
-    
-    # Movement Alphabet letters
-    # ----------------------------------------------------------------------------------------------------------------------------------------------
-
-    J = []
-
-    Z = []
-
-    # Returns the base array for the given letter (only non-movement for now)
-    if letter == "A":
-        return A
-    elif letter == "B":
-        return B
-    elif letter == "C":
-        return C
-    elif letter == "D":
-        return D
-    elif letter == "E":
-        return E
-    elif letter == "F":
-        return F
-    elif letter == "G":
-        return G
-    elif letter == "H":
-        return H
-    elif letter == "I":
-        return I
-    elif letter == "K":
-        return K
-    elif letter == "L":
-        return L
-    elif letter == "M":
-        return M
-    elif letter == "N":
-        return N
-    elif letter == "O":
-        return O
-    elif letter == "P":
-        return P
-    elif letter == "Q":
-        return Q
-    elif letter == "R":
-        return R
-    elif letter == "S":
-        return S
-    elif letter == "T":
-        return T
-    elif letter == "U":
-        return U
-    elif letter == "V":
-        return V
-    elif letter == "W":
-        return W
-    elif letter == "X":
-        return X
-    elif letter == "Y":
-        return Y
 # Creates our user array
 def user_arr_function():
 
