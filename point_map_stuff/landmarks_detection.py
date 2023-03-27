@@ -57,7 +57,7 @@ def project_data(Z, pcs, L):
 # Creates our base arrays
 def base_arr_function(letter):
 
-    filePath = os.path.dirname(os.path.abspath(__file__)) + "\letters" + letter
+    filePath = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter + ".txt"
     letterArray = []
 
     # Opens the letter file associated with the base letter that was passed
@@ -66,9 +66,13 @@ def base_arr_function(letter):
         contents = f.read().strip()
         arrays = contents.split('\n')
 
-        for line in f:
+        for line in arrays:
+
             array = eval(line.strip())
+
             letterArray.append(array)
+
+        print(letterArray)
 
     # Returns the base array for the given letter
     return letterArray
@@ -190,67 +194,72 @@ while not matched:
 
         chosen_letter = letter[num_letters]
 
-        base_arr = base_arr_function(chosen_letter)
+        base_arr_all = base_arr_function(chosen_letter)
 
-        base_arr = np.array(base_arr)
+        base_arr_all = np.array(base_arr_all)
 
-        # Finds our Z_star of our base A to compare with user's Z_star
-        covarianceBase = compute_covariance_matrix(base_arr)
-        pcsBase, LBase = find_pcs(covarianceBase)
-        Z_star_base = project_data(base_arr, pcsBase, LBase)
+        for num_base_letters in range(len(base_arr_all)):
 
-        # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
-        Z_star_base_arr = []
+            base_arr = base_arr_all[num_base_letters]
 
-        for i in range(len(Z_star_base) - 1):
-            temp = Z_star_base[i] - Z_star_base[i+1]
-            Z_star_base_arr.append(temp)
+            print("User Calculations")
+            print("Base Letter 2D Hand Map Array " + letter[num_letters] + " No. " + str(num_base_letters + 1))
+            print(base_arr)
 
-        #for i in range(int(np.size(user_arr))):
-        covariance = compute_covariance_matrix(user_arr)
-        pcs, L = find_pcs(covariance)
-        Z_star = project_data(user_arr, pcs, L)
+            # Finds our Z_star of our base A to compare with user's Z_star
+            covarianceBase = compute_covariance_matrix(base_arr)
+            pcsBase, LBase = find_pcs(covarianceBase)
+            Z_star_base = project_data(base_arr, pcsBase, LBase)
 
-        # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
-        Z_star_user_arr = []
+            # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
+            Z_star_base_arr = []
 
-        for i in range(len(Z_star) - 1):
-            temp = Z_star[i] - Z_star[i + 1]
-            Z_star_user_arr.append(temp)
+            for i in range(len(Z_star_base) - 1):
+                temp = Z_star_base[i] - Z_star_base[i+1]
+                Z_star_base_arr.append(temp)
 
-        print("User Calculations")
-        print("Base Letter 2D Hand Map Array")
-        print(base_arr)
-        print("Base Letter 1D Z-star Array")
-        print(Z_star)
-        print("User 1D Point Relationship Array")
-        print(Z_star_user_arr)
+            #for i in range(int(np.size(user_arr))):
+            covariance = compute_covariance_matrix(user_arr)
+            pcs, L = find_pcs(covariance)
+            Z_star = project_data(user_arr, pcs, L)
 
-        print("Letter " + chosen_letter + " Calculations")
-        print("Letter " + chosen_letter + " 1D Point Relationship Array")
-        print(Z_star_base_arr)
-        
+            # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
+            Z_star_user_arr = []
 
-        # Run a relational algorithm and see if user input matches letter A
-        # (compares Z_star_base_arr with Z_star_user_arr)
-        count = 0
+            for i in range(len(Z_star) - 1):
+                temp = Z_star[i] - Z_star[i + 1]
+                Z_star_user_arr.append(temp)
 
-        print("Complete Match Percentage")
+            print("Base Letter 1D Z-star Array " + letter[num_letters] + " No. " + str(num_base_letters + 1))
+            print(Z_star)
+            print("User 1D Point Relationship Array")
+            print(Z_star_user_arr)
 
-        # Checks if user letter matches base letter
-        for i in range(len(Z_star_user_arr)):
-            temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
-            print(temp)
-            if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values
-                count += 1
+            print("Letter " + chosen_letter + " Calculations")
+            print("Letter " + chosen_letter + " 1D Point Relationship Array")
+            print(Z_star_base_arr)
+            
 
-        # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
-        if(count >= 15): #decreased to 15, can increase for similar hand signs
-            print("You have correctly signed " + chosen_letter + "!")
-            matched = True
-            break
-        else:
-            print("Counts that matched: " + str(count))
+            # Run a relational algorithm and see if user input matches letter A
+            # (compares Z_star_base_arr with Z_star_user_arr)
+            count = 0
+
+            print("Complete Match Percentage")
+
+            # Checks if user letter matches base letter
+            for i in range(len(Z_star_user_arr)):
+                temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
+                print(temp)
+                if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values
+                    count += 1
+
+            # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
+            if(count >= 15): #decreased to 15, can increase for similar hand signs
+                print("You have correctly signed " + chosen_letter + "!")
+                matched = True
+                break
+            else:
+                print("Counts that matched: " + str(count))
 
     show_plot(user_arr, Z_star)
     matched = True
