@@ -138,6 +138,7 @@ def user_arr_function():
             #cv2.waitKey(0)
 
             print(coordinates_arr)
+
             coordinates_arr = np.array(coordinates_arr)
 
             user_arr = coordinates_arr
