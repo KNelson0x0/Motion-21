@@ -1,7 +1,7 @@
 import os
 
 # ====== Debug Options ======
-DEBUG = 0
+DEBUG = 1
 USE_CAMERA = 1;
 # ======================
 

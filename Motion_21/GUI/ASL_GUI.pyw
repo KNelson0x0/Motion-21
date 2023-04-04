@@ -7,6 +7,7 @@ from Utils.utils     import *
 from Utils.constants import *
 from Utils.camera    import *
 from ML.usertrain    import UserTrain
+from ML.algorithm    import UserSign
 from .camera_window  import CameraWindow
 from .custom_tabview import CustomTabview
 
@@ -1995,8 +1996,8 @@ class App(customtkinter.CTk):
         if self.window_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
             self.label_cam.cw_update();
             self.label_cam2.cw_update();
-            #UserSign().run_comparison()
-            self.after(10, self.the_afterinator)
+            UserSign().run_comparison()
+            self.after(200, self.the_afterinator)
             return
 
         #if self.window_state == WindowState.TRAINING: # find a better method of doing this later

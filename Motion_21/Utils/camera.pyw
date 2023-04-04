@@ -100,7 +100,7 @@ class Camera(object): # singleton because every time the camera is initialized t
                     offsets = self.previous_offsets
                     cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (255, 122,1), 3)
 
-                debug_log("X: {}, Y: {}".format(offsets[0], offsets[1]))
+                #debug_log("X: {}, Y: {}".format(offsets[0], offsets[1]))
 
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
                 self.rgb_img_crop = cv2.cvtColor(self.rect_frame[52 + offsets[1] : 252 + offsets[1], 52 + offsets[0] : 252 + offsets[0]], cv2.COLOR_BGR2RGB)
