@@ -78,10 +78,14 @@ class UserSign(object):
             (99, 116), (80, 100), (82, 81), (82, 111), (82, 119), (59, 102), (62, 87), (64, 109), (65, 117)],
             "B": [(84, 185), (113, 176), (130, 145), (114, 120), (91, 114), (126, 108), (126, 76), (124, 56), (120, 38), (106, 103), (108, 67), (107, 42), 
             (106, 21), (89, 106), (90, 71), (91, 48), (91, 28), (70, 115), (71, 86), (73, 67), (73, 50)],
-            "C" : [],
-            "D" : [],
-            "E" : [],
-            "F" : [],
+            "C" : [(70, 153), (92, 150), (118, 135), (138, 128), (157, 125), (100, 91), (118, 74), (136, 75), (149, 81), (91, 88), (115, 67), (135, 70), 
+            (149, 80), (85, 90), (109, 68), (131, 71), (147, 79), (82, 97), (105, 81), (123, 79), (137, 81)],
+            "D" : [(75, 168), (103, 163), (125, 153), (125, 130), (104, 116), (130, 103), (136, 72), (140, 51), (140, 33), (110, 97), (116, 68), (111, 95), 
+            (110, 110), (91, 97), (94, 68), (93, 92), (92, 111), (71, 105), (75, 83), (79, 99), (81, 114)],
+            "E" : [(56, 141), (84, 138), (106, 123), (99, 98), (76, 92), (110, 85), (120, 57), (111, 71), (104, 85), (92, 75), (101, 48), (92, 72), (88, 85), 
+            (75, 71), (80, 44), (76, 65), (73, 81), (55, 76), (59, 54), (62, 66), (62, 81)],
+            "F" : [(71, 167), (96, 163), (120, 153), (136, 140), (129, 129), (120, 105), (132, 89), (131, 100), (125, 114), (102, 93), (115, 65), (125, 47), 
+            (133, 29), (82, 90), (83, 58), (85, 36), (88, 17), (61, 96), (52, 68), (46, 51), (43, 35)],
             "G" : [],
             "H" : [],
             "I" : [],
@@ -131,7 +135,7 @@ class UserSign(object):
             #image = cv2.imread(path)
 
 
-            #image = Camera().rgb_img_rect
+            #image = Camera().rgb_img_crop
             image = Camera().get_cropped_frame()
 
 
@@ -153,6 +157,7 @@ class UserSign(object):
                         for point in handsModule.HandLandmark:
         
                             drawingModule.draw_landmarks(image, handLandmarks, handsModule.HAND_CONNECTIONS)
+                            #self.frame_q.put(image)
 
                             normalizedLandmark = handLandmarks.landmark[point]
                             pixelCoordinatesLandmark = drawingModule._normalized_to_pixel_coordinates(normalizedLandmark.x, normalizedLandmark.y, imageWidth, imageHeight)
@@ -172,9 +177,10 @@ class UserSign(object):
                 #need to find which function generates/stores points
                 #keep in order for later reference (avoid false flagging with similar hand signs)
 
-                #image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                #cv2.imshow("img", image_rgb)
-
+                Camera().frame_q.put(image)
+                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                cv2.imshow("img", image_rgb)
+                #Camera().rgb_img_crop = image
 
                 #cv2.waitKey(0)
 
@@ -207,6 +213,7 @@ class UserSign(object):
 
     # Runs the comparison function between the user letter sign and the base letters
     def run_comparison(self):
+
         #print("it's working")
         # Checks to see if user input is matched with any of our base letters
         #matched = False
@@ -220,13 +227,14 @@ class UserSign(object):
 
         # Variable declarations
         # Letter only contains non-movement letters for now
-        letter = ["A", "B"]#, "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
+        letter = ["A", "B", "C", "D", "E", "F"]#, "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
 
         # Grabs user letter input
         user_arr = self.user_arr_function()
-        if user_arr == None:
-            print("user_arr returned None")
+        if type(user_arr) == type(None): 
+            print("user arr was none")
             return
+
         if len(user_arr)==21:
             #print(user_arr)
 
@@ -282,16 +290,19 @@ class UserSign(object):
                         if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= 140)): #change these values/original was 60, 140
                             count += 1
 
-                    # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
-                    if(count >= 7): #decreased to 15, can increase for similar hand signs
-                        print("You have correctly signed " + chosen_letter + "!")
-                        break
-                    else:
-                        print("Hand detected, no sign detected. Counts that matched: " + str(count))
-            else:
-                print("Full hand not detected")
+                    #STATE 0 = no hand detected, 1 = hand detected but no sign, 2 = hand detected with sign
 
-        else:
-            print("No hand detected")
+                    # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
+                    if(count >= 10): #decreased to 15, can increase for similar hand signs
+                        print("You have correctly signed " + chosen_letter + "!")
+                        return chosen_letter
+        return None
+                        #break
+                    #else:
+                        #print("No sign detected") #Counts that matched: " + str(count))
+            #else:
+                #print("Full hand not detected")
+        #else:
+            #print("No hand detected")
 
     #EOF

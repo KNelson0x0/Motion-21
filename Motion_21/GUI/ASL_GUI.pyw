@@ -38,6 +38,52 @@ class WindowState(Enum):
     CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
     TRAINING = [6, CameraState.CAM_REQUIRED]
 
+class LetterState():
+    DESIRED_LETTER = ["_", CameraState.CAM_REQUIRED]
+    def __init__(self, letter='_'):
+        self.set_letter(letter)
+
+    def set_letter(self, letter):
+        self.DESIRED_LETTER = [letter,CameraState.CAM_REQUIRED]
+
+class AverageList:
+    def __init__(self, letter = None):
+        self.letter        = letter
+        self.last_average  = 100
+        self.count_limit   = 10
+        self.current_count = 0
+        self.let_list = [letter for i in range(100)]
+
+    def reinit(self, letter):
+        self.let_list = [letter for i in range(100)]
+        for i in range(10): debug_log("REINITED")
+
+    def add(self, value, override_count = 1):
+        if value == None and self.current_count != self.count_limit:
+            self.current_count += 1
+            return
+
+        for i in range(override_count):
+            self.let_list.insert(0, value)
+            del self.let_list[-1]
+
+        current_count = 0
+    
+    def l_average(self):
+        try:
+            nones             = self.let_list.count(None)
+            letters           = self.let_list.count(self.letter)
+
+            self.average      = ( letters )
+            self.last_average = self.average
+
+            print("Counted[{}]: {}".format(letters, self.average))
+            return (letters)
+        
+        except Exection as e:
+            print(e)
+            return last_average
+
 class EventHandler(object):
     x = 0
     y = 0
@@ -86,7 +132,6 @@ class EventHandler(object):
         debug_log("arrow left: {}".format(self.x))
         Camera().q.put([self.x, self.y, None])
 
-
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -98,11 +143,14 @@ class App(customtkinter.CTk):
             self.bind('<Up>',    EventHandler().arrow_key_up)
             self.bind('<Down>',  EventHandler().arrow_key_down)
 
-
         #Size of window and title
         self.geometry("740x520")
         self.window_state = WindowState.HOME
+        self.letter_state = LetterState('_')
         self.title("ASL Learning App")
+        self.average_list = AverageList()
+        self.curr_accuracy = 100
+
 
         # Locks size of window
         self.resizable(False, False)
@@ -917,10 +965,10 @@ class App(customtkinter.CTk):
         self.frame_main_right.destroy()
 
         self.back_to_lesson = customtkinter.CTkButton(master=self.frame_main_left, text = "Lesson Select", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
-        self.back_to_lesson.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
+        self.back_to_lesson.grid(row = 9, column = 0, padx = 0, pady = 0, sticky = "s")
 
         self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Back", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.back_button)
-        self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
+        self.lesson_home.grid(row = 9, column = 0, padx = 0, pady = 0, sticky = "s")
         
         self.frame_main_right = customtkinter.CTkFrame(master = self)
         self.frame_main_right.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "nswe")
@@ -997,11 +1045,14 @@ class App(customtkinter.CTk):
                 self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
 
                 # Label that describes the user's accuracy
-                self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
+                self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: {}%".format(self.curr_accuracy), text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.average_list.reinit("A")
+                self.letter_state.set_letter("A")
                 self.update()
                 self.the_afterinator()
+                self.camera_aftinerator()
 
             case "B":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP,width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
@@ -1034,8 +1085,10 @@ class App(customtkinter.CTk):
                 self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: 100%", text_color = THEME_OPP, font=("Segoe UI", 14))
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.average_list.reinit("B")
                 self.update()
                 self.the_afterinator()
+                self.camera_aftinerator()
 
             case "C":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
@@ -1069,8 +1122,10 @@ class App(customtkinter.CTk):
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.average_list.reinit("C")
                 self.update()
                 self.the_afterinator()
+                self.camera_aftinerator()
 
             case "D":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
@@ -1104,8 +1159,10 @@ class App(customtkinter.CTk):
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.average_list.reinit("D")
                 self.update()
                 self.the_afterinator()
+                self.camera_aftinerator()
 
             case "E":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
@@ -1139,6 +1196,7 @@ class App(customtkinter.CTk):
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.average_list.reinit("E")
                 self.update()
                 self.the_afterinator()
 
@@ -1896,11 +1954,11 @@ class App(customtkinter.CTk):
         
         customtkinter.set_appearance_mode(new_appearance_mode)
         if new_appearance_mode == "Dark":
-            THEME = "#101010"
+            THEME     = "#101010"
             THEME_OPP = "#FFFFFF"
             print("Dark")
         elif new_appearance_mode == "Light":
-            THEME = "#FFFFFF"
+            THEME     = "#FFFFFF"
             THEME_OPP = "#101010"
             print("Light")
         self.themes_button()
@@ -1920,7 +1978,6 @@ class App(customtkinter.CTk):
 
     # Creates the home window
     def home_window(self):
-
         # Configures grid layout of 2x1
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -1964,8 +2021,6 @@ class App(customtkinter.CTk):
         
         self.button5 = customtkinter.CTkButton(master=self.frame_left, image = self.exit_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.exit_button)
         self.button5.grid(row=8, column=2, padx=0, pady=0, sticky="se")
-
-
         
         # Creates right sub-window
         # ------------------------------------------------------------------------------------   
@@ -1996,8 +2051,7 @@ class App(customtkinter.CTk):
         if self.window_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
             self.label_cam.cw_update();
             self.label_cam2.cw_update();
-            UserSign().run_comparison()
-            self.after(200, self.the_afterinator)
+            self.after(10, self.the_afterinator)
             return
 
         #if self.window_state == WindowState.TRAINING: # find a better method of doing this later
@@ -2005,93 +2059,38 @@ class App(customtkinter.CTk):
         #    self.config_cam_win2.cw_update();
         #    self.after(10, self.the_afterinator)
 
-            #if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
+        # if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
+    def camera_aftinerator(self):
+        if self.window_state == WindowState.LESSONS and USE_CAMERA == 1:
+            let = UserSign().run_comparison()
 
+            if let == None: 
+                self.after(210, self.camera_aftinerator)
+                return
 
-    # Config functions for all the letters
-    # ------------------------------------------------------------------------------------   
-    '''
-    def config_A(self):
-        
-        id = 'A'
+            if let == self.letter_state.DESIRED_LETTER[0]:
+                self.window_state = WindowState.HOME
+                print("FOUND!!!!!!!")
+                self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
+                self.label8.update()
+                return
 
-        self.user_train(id)
+            try:
+                if(let == None):
+                    self.average_list.add(self.average_list.letter, 1)
+                else:
+                    self.average_list.add(let, 5)
 
-    def config_B(self):
-        print("testing config B")
+                self.curr_accuracy = int(self.average_list.l_average())
+                #print(self.average_list.let_list)
+                #print("Curr Accurancy[{}]: {} - {}".format(let, self.curr_accuracy, int(self.average_list.l_average())))
 
-    def config_C(self):
-        print("testing config C")
+                self.label12.configure(text = "Total Accuracy: {}%".format(self.curr_accuracy))
+                self.label12.update()
+            except Exception as e: 
+                print(e)
 
-    def config_D(self):
-        print("testing config D")
-
-    def config_E(self):
-        print("testing config E")
-
-    def config_F(self):
-        print("testing config F")
-
-    def config_G(self):
-        print("testing config G")
-
-    def config_H(self):
-        print("testing config H")
-
-    def config_I(self):
-        print("testing config I")
-
-    def config_J(self):
-        print("testing config J")
-
-    def config_K(self):
-        print("testing config K")
-
-    def config_L(self):
-        print("testing config L")
-
-    def config_M(self):
-        print("testing config M")
-
-    def config_N(self):
-        print("testing config N")
-
-    def config_O(self):
-        print("testing config O")
-
-    def config_P(self):
-        print("testing config P")
-
-    def config_Q(self):
-        print("testing config Q")
-
-    def config_R(self):
-        print("testing config R")
-
-    def config_S(self):
-        print("testing config S")
-
-    def config_T(self):
-        print("testing config T")
-
-    def config_U(self):
-        print("testing config U")
-
-    def config_V(self):
-        print("testing config V")
-
-    def config_W(self):
-        print("testing config W")
-
-    def config_X(self):
-        print("testing config X")
-
-    def config_Y(self):
-        print("testing config Y")
-
-    def config_Z(self):
-        print("testing config Z")
-    '''
+            self.after(200, self.camera_aftinerator)
 
 
 if __name__ == "__main__":
