@@ -1,18 +1,18 @@
-from pickle import GLOBAL
-import customtkinter
-import tkinter
-from enum import Enum
-#from ML.usertrain import UserTrain
-from ML.algorithm import UserSign
-from Utils.constants import *
-from .camera_window import CameraWindow
-from PIL import Image, ImageTk
 import os
+import customtkinter
+from enum import Enum
+from queue import Queue
+from PIL import Image, ImageTk
+from Utils.utils     import *
+from Utils.constants import *
+from Utils.camera    import *
+from ML.usertrain    import UserTrain
+from .camera_window  import CameraWindow
+from .custom_tabview import CustomTabview
+
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-THEME = "#101010"
-THEME_OPP = "#FFFFFF"
-FONT = "#101010"
+main_cam_frame = []
 
 dir_path = '%s\\ASL_Learning\\' %  os.environ['APPDATA'] 
 if not os.path.exists(dir_path):
@@ -37,9 +37,66 @@ class WindowState(Enum):
     CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
     TRAINING = [6, CameraState.CAM_REQUIRED]
 
+class EventHandler(object):
+    x = 0
+    y = 0
+  
+    def __new__(self):
+        if not USE_CAMERA: return 
+        if not hasattr(self, 'instance'):
+            self.instance = super(EventHandler, self).__new__(self)
+        return self.instance
+
+    # 420 | 320
+    # top left -50, -50
+    # top right 385, -50
+    # bottom right 385, 225
+    # bottom left -50, 225
+
+    def arrow_key_up(self, _):
+        if (self.y == -50): 
+           Camera().q.put([self.x, self.y, 1])
+           return
+        self.y -= 5
+        debug_log("arrow up: {}".format(self.y))
+        Camera().q.put([self.x, self.y, None])
+
+    def arrow_key_down(self, _):
+        if (self.y == 225): 
+           Camera().q.put([self.x, self.y, 1])
+           return
+        self.y += 5
+        debug_log("arrow down: {}".format(self.y))
+        Camera().q.put([self.x, self.y, None])
+
+    def arrow_key_left(self, _):
+        if (self.x == -50):
+            Camera().q.put([self.x, self.y, 1])
+            return
+        self.x -= 5
+        debug_log("arrow left: {}".format(self.x))
+        Camera().q.put([self.x, self.y, None])
+
+    def arrow_key_right(self, _):
+        if (self.x == 385):
+            Camera().q.put([self.x, self.y, 1])
+            return
+        self.x += 5
+        debug_log("arrow left: {}".format(self.x))
+        Camera().q.put([self.x, self.y, None])
+
+
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+
+        if USE_CAMERA: 
+            self.event_handler = EventHandler() # init eventhandler
+            self.bind('<Left>',  EventHandler().arrow_key_left)
+            self.bind('<Right>', EventHandler().arrow_key_right)
+            self.bind('<Up>',    EventHandler().arrow_key_up)
+            self.bind('<Down>',  EventHandler().arrow_key_down)
+
 
         #Size of window and title
         self.geometry("740x520")
@@ -872,6 +929,10 @@ class App(customtkinter.CTk):
         self.frame_main_right.grid_rowconfigure(7, weight=1)      
         self.frame_main_right.grid_rowconfigure(9, minsize=0)
         
+        self.tabview = CustomTabview(master=self.frame_main_left, width=25)
+        self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(5, 0), sticky="nsew")
+        self.tabview.add("Debug")
+
         '''
         we can change these into lessons and call to lesssons "A-D" functions and etc and just call the function here
         add next and retry functionalities
@@ -1931,11 +1992,11 @@ class App(customtkinter.CTk):
     
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        if self.window_state == WindowState.LESSONS: # find a better method of doing this later
+        if self.window_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
             self.label_cam.cw_update();
             self.label_cam2.cw_update();
-            UserSign().run_comparison()
-            self.after(200, self.the_afterinator)
+            #UserSign().run_comparison()
+            self.after(10, self.the_afterinator)
             return
 
         #if self.window_state == WindowState.TRAINING: # find a better method of doing this later
