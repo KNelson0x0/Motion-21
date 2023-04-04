@@ -224,6 +224,9 @@ class UserSign(object):
 
         # Grabs user letter input
         user_arr = self.user_arr_function()
+        if user_arr == None:
+            print("user_arr returned None")
+            return
         if len(user_arr)==21:
             #print(user_arr)
 
