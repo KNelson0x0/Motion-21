@@ -1,13 +1,18 @@
-#from numba import jit # i really dont want to have jitify tkinter, looking into other solutions
-#from numba.experimental import jitclass
+
 from pickle import TRUE
 import customtkinter
 from enum import Enum
-from ML.usertrain import UserTrain
-from   Utils.constants import *
-from .camera_window import CameraWindow
+from queue import Queue
 from PIL import Image, ImageTk
+from Utils.utils     import *
+from Utils.constants import *
+from Utils.camera    import *
+from ML.usertrain    import UserTrain
+from .camera_window  import CameraWindow
+from .custom_tabview import CustomTabview
+
 import os
+main_cam_frame = []
 
 #Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
@@ -31,7 +36,54 @@ class WindowState(Enum):
     THEMES   = [4, CameraState.CAM_NOT_REQUIRED]
     CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
     TRAINING = [6, CameraState.CAM_REQUIRED]
-#
+
+class EventHandler(object):
+    x = 0
+    y = 0
+  
+    def __new__(self):
+        if not USE_CAMERA: return 
+        if not hasattr(self, 'instance'):
+            self.instance = super(EventHandler, self).__new__(self)
+        return self.instance
+
+    # 420 | 320
+    # top left -50, -50
+    # top right 385, -50
+    # bottom right 385, 225
+    # bottom left -50, 225
+
+    def arrow_key_up(self, _):
+        if (self.y == -50): 
+           Camera().q.put([self.x, self.y, 1])
+           return
+        self.y -= 5
+        debug_log("arrow up: {}".format(self.y))
+        Camera().q.put([self.x, self.y, None])
+
+    def arrow_key_down(self, _):
+        if (self.y == 225): 
+           Camera().q.put([self.x, self.y, 1])
+           return
+        self.y += 5
+        debug_log("arrow down: {}".format(self.y))
+        Camera().q.put([self.x, self.y, None])
+
+    def arrow_key_left(self, _):
+        if (self.x == -50):
+            Camera().q.put([self.x, self.y, 1])
+            return
+        self.x -= 5
+        debug_log("arrow left: {}".format(self.x))
+        Camera().q.put([self.x, self.y, None])
+
+    def arrow_key_right(self, _):
+        if (self.x == 385):
+            Camera().q.put([self.x, self.y, 1])
+            return
+        self.x += 5
+        debug_log("arrow left: {}".format(self.x))
+        Camera().q.put([self.x, self.y, None])
 
 
 class App(customtkinter.CTk):
@@ -39,6 +91,12 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
+        if USE_CAMERA: 
+            self.event_handler = EventHandler() # init eventhandler
+            self.bind('<Left>',  EventHandler().arrow_key_left)
+            self.bind('<Right>', EventHandler().arrow_key_right)
+            self.bind('<Up>',    EventHandler().arrow_key_up)
+            self.bind('<Down>',  EventHandler().arrow_key_down)
 
         #Size of window and title
         self.configure_guard = False;
@@ -128,7 +186,6 @@ class App(customtkinter.CTk):
         if count == 0:
             self.Button_C = customtkinter.CTkButton(master=self.frame_right, text="Create User", corner_radius=6, width=150, height = 50, fg_color = "#292929", border_color="#101010", command=self.createU)
             self.Button_C.grid(row= 1, column = 0, padx = 150, pady = 20)
-
 
     def buttonu1(self):
         file_path = '%suser1' % dir_path
@@ -252,7 +309,6 @@ class App(customtkinter.CTk):
         self.Button_n = customtkinter.CTkButton(master=self.frame_right, text="No", corner_radius=6, width=200, fg_color = "#292929", border_color="#101010", command=self.buttonBD)
         self.Button_n.grid(row= 3, column = 0, padx = 150, pady = 20)
 
-
     def buttonud2(self):
         self.frame_right.destroy()
 
@@ -304,7 +360,6 @@ class App(customtkinter.CTk):
         os.remove(file_path)
         self.users_button()
 
-
     # Button that recreates window with the theme page
     def themes_button(self):
         self.window_state = WindowState.THEMES
@@ -345,8 +400,8 @@ class App(customtkinter.CTk):
         self.label_2.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
         # Creates theme drop down menu to change general theme details all at once
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.frame_right, values=["System", "Light", "Dark"], fg_color = "#292929", command=self.change_appearance_mode)
-        self.optionmenu_1.grid(row=0, column=1, padx=5, pady=10, sticky="w")
+        #self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.frame_right, values=["System", "Light", "Dark"], fg_color = "#292929", command=self.change_appearance_mode)
+        #self.optionmenu_1.grid(row=0, column=1, padx=5, pady=10, sticky="w")
 
         # Creates label with the text "Font Size:" to describe what the slider below it does
         self.label_3 = customtkinter.CTkLabel(master=self.frame_right, text="Font Size:")
@@ -437,12 +492,9 @@ class App(customtkinter.CTk):
             buttons.append(new_button)
             if col % 6 == 0: col=0
             
-      
     def configure_button_handler(self, calling):
         print(calling)
         self.user_train(calling)
-
-
 
     def user_train(self, id):
         self.window_state = WindowState.TRAINING
@@ -542,7 +594,6 @@ class App(customtkinter.CTk):
         self.training.on_begin()
 
     def settings_button(self):
-
         # Destroyed old window
         self.frame_left.destroy()
         self.frame_right.destroy()
@@ -617,8 +668,9 @@ class App(customtkinter.CTk):
 
     # Button that returns to previous lesson
     def start_lesson(self):
+        print("LESSON")
         self.window_state = WindowState.LESSONS
-        self.button1.destroy()
+        self.button1.destroy() # why
         self.label_1.destroy()
         self.label_2.destroy()
         self.label_3.destroy()
@@ -638,9 +690,17 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
 
+        
+        self.tabview = CustomTabview(master=self.frame_left, width=25)
+        self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(5, 0), sticky="nsew")
+        self.tabview.add("Debug")
+
+        # _draw_engine
+
+        
         # configure grid layout (2x5)
         self.frame_right.grid_rowconfigure((0, 1, 2, 3), weight=1)     # sets weights of standard rows
-        self.frame_right.grid_rowconfigure(5, weight=1)               # sets weight of last row
+        self.frame_right.grid_rowconfigure(5, weight=1)                # sets weight of last row
         self.frame_right.grid_columnconfigure((0, 1), weight=1)        # sets weights of standard columns
         self.frame_right.grid_columnconfigure(2, weight=0)             # creates empty row with weight 0
 
@@ -693,6 +753,9 @@ class App(customtkinter.CTk):
         self.label11 = customtkinter.CTkLabel(master=self.frame_right, text = "Total Accuracy: 100%", font=("Segoe UI", 14))
         self.label11.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+        #shape1={'bounds': [20, 20, 80, 50], 'kind': 'rect', 'fill': True}
+        #self.frame_right._draw_engine._canvas.create_rectangle(list(shape1.values())[0], fill='white')
+        #self.frame_right._draw()
         self.update()
         self.the_afterinator()
 
@@ -703,7 +766,7 @@ class App(customtkinter.CTk):
     #Image processing function declarations
     # ------------------------------------------------------------------------------------    
     def load_image(self, path, image_size1, image_size2):
-        return ImageTk.PhotoImage(Image.open("C:\\Users\\Resu\\Documents\\Dev\\Py\\Motion 21\\Motion_21\\GUI\\" + path).resize((image_size1, image_size2)))
+        return ImageTk.PhotoImage(Image.open("C:\\Users\\Resu\\Documents\\Dev\\Py\\Motion21\\Motion_21\\GUI\\" + path).resize((image_size1, image_size2)))
 
     def on_closing(self, event=0):
         self.destroy()
@@ -790,7 +853,9 @@ class App(customtkinter.CTk):
 
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        if self.window_state == WindowState.LESSONS: # find a better method of doing this later
+        if self.window_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
+            global main_cam_frame
+            main_cam_frame = [self.label6.width, self.label6.height]
             self.label6.cw_update();
             self.label9.cw_update();
             self.after(10, self.the_afterinator)

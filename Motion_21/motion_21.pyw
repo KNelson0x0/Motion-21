@@ -31,26 +31,21 @@ from   Utils.camera import Camera
 from   config import *
 import sys
 
-
-
 if __name__ == "__main__":
     # Loading Window Here!
-    # cam = Camera() # init it.
-    #app = App()
+    cam = Camera() # init it.
+    app = App()
 
     # x = 1336.5
-
+    """
     Archive().parse_arch("swag")
 
-    """
     cfg = Config("Beemer", "swag") 
     cfg.save(app, ['geometry','title'])
     cfg.save(app, ['geometry','title'], 'Test Name')
     cfg.save_var(x, 'x')
     cfg.load()
-   
-    
-    """
+
     key = make_key("swag")
     crypt = Fernet(key)
     print(crypt.encrypt(bytes('{"M21ConfigName":"Test2","a":1,"b":2,"long_var":"some_str"}','utf-8')))
@@ -58,18 +53,18 @@ if __name__ == "__main__":
     print(key)
     print(crypt.decrypt(bytes('gAAAAABkCgySeaEjQgRuLlXdseicPeTPfemysGf3uzJbCbIPpPP9wjUdUN8jNqkEqh8ZGjDqFSkBmnsbXfykCLWvekBu_RNOuw==','utf-8')).decode())
 
-
     print(Archive().get_json(key.decode()))
-    """
+
     print(Archive().get_json(key.decode()))
     print("==========================================")
     protected = Archive().update_json('{"M21ConfigName":"Beem","a":1,"b":2}')
     print(crypt.decrypt(bytes(protected,'utf-8')).decode())
     print(Archive().get_json(key.decode()))
     # Passes are swag, Swag, swag
-
     """
-    #app.start()
+    app.start()
+
+
    
 
     

@@ -26,6 +26,7 @@
     <Compile Include="config.pyw" />
     <Compile Include="GUI\ASL_GUI.pyw" />
     <Compile Include="GUI\camera_window.pyw" />
+    <Compile Include="GUI\custom_tabview.py" />
     <Compile Include="GUI\scroll_panel.pyw" />
     <Compile Include="ML\usertrain.pyw" />
     <Compile Include="motion_21.pyw" />
