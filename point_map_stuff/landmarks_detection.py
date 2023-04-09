@@ -72,7 +72,10 @@ def base_arr_function(letter):
 
             letterArray.append(array)
 
-        print(letterArray)
+        # Debug print functions to show the combined base letter array
+        # ------------------------------------------------------------
+        #print(letterArray)
+        # ------------------------------------------------------------
 
     # Returns the base array for the given letter
     return letterArray
@@ -137,7 +140,11 @@ def user_arr_function():
 
             #cv2.waitKey(0)
 
-            print(coordinates_arr)
+            # Debug print functions to label and print the user 2D hand map
+            # ------------------------------------------------------------------------
+            #print("User 2D Hand Map")
+            #print(coordinates_arr)
+            # ------------------------------------------------------------------------
 
             coordinates_arr = np.array(coordinates_arr)
 
@@ -173,10 +180,14 @@ directory2 = r"C:\Users\jason\OneDrive\Documents\GitHub\Motion-21\hand_edits" #c
 drawingModule = mediapipe.solutions.drawing_utils
 handsModule = mediapipe.solutions.hands
 
-counter = 0
 full_arr = []
 
 # Checks to see if user input is matched with any of our base letters
+
+# REPLACE LESSON_LETTER WITH FUNCTION PARAMETER ONCE CONVERTED INTO A FUNCTION 
+lesson_letter = "A"
+
+matched_letter = ""
 matched = False
 
 # While loop to check through all our base letters
@@ -201,11 +212,17 @@ while not matched:
 
         for num_base_letters in range(len(base_arr_all)):
 
+            count = 0
+
             base_arr = base_arr_all[num_base_letters]
 
             print("User Calculations")
-            print("Base Letter 2D Hand Map Array " + letter[num_letters] + " No. " + str(num_base_letters + 1))
-            print(base_arr)
+
+            # Debug print functions to label and print the base letter 2D hand map arrays that were read in (2D hand map array)
+            # ----------------------------------------------------------------------------------------------------
+            #print("Base Letter 2D Hand Map Array " + letter[num_letters] + " No. " + str(num_base_letters + 1))
+            #print(base_arr)
+            # ----------------------------------------------------------------------------------------------------
 
             # Finds our Z_star of our base A to compare with user's Z_star
             covarianceBase = compute_covariance_matrix(base_arr)
@@ -231,38 +248,64 @@ while not matched:
                 temp = Z_star[i] - Z_star[i + 1]
                 Z_star_user_arr.append(temp)
 
-            print("Base Letter 1D Z-star Array " + letter[num_letters] + " No. " + str(num_base_letters + 1))
-            print(Z_star)
-            print("User 1D Point Relationship Array")
-            print(Z_star_user_arr)
+            # Debug print functions to label and print the base letter 1D Z-star arrays (1D covariance array between X and Y)
+            # ----------------------------------------------------------------------------------------------------
+            #print("Base Letter 1D Z-star Array " + letter[num_letters] + " No. " + str(num_base_letters + 1))
+            #print(Z_star)
+            # ----------------------------------------------------------------------------------------------------
 
-            print("Letter " + chosen_letter + " Calculations")
-            print("Letter " + chosen_letter + " 1D Point Relationship Array")
-            print(Z_star_base_arr)
-            
+            # Debug print functions to label and print the user sign point relationship array (1D 20 number array of relational data between points)
+            # ----------------------------------------------------------------------------------------------------
+            #print("User 1D Point Relationship Array")
+            #print(Z_star_user_arr)
+            # ----------------------------------------------------------------------------------------------------
+
+            # Debug print functions to label and print the base letter point relationship array (1D 20 number array of relational data between points)
+            # ----------------------------------------------------------------------------------------------------
+            #print("Letter " + chosen_letter + " Calculations")
+            #print("Letter " + chosen_letter + " 1D Point Relationship Array")
+            #print(Z_star_base_arr)
+            # ----------------------------------------------------------------------------------------------------
 
             # Run a relational algorithm and see if user input matches letter A
             # (compares Z_star_base_arr with Z_star_user_arr)
+
+            # Declare count here so it resets every base letter
             count = 0
 
-            print("Complete Match Percentage")
+            # Debug print function to label the match percentages
+            print("Complete Match Percentage for base letter " + chosen_letter + " No. " + str(num_base_letters + 1))
 
             # Checks if user letter matches base letter
             for i in range(len(Z_star_user_arr)):
                 temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
-                print(temp)
                 if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values
                     count += 1
 
-            # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
+                # Debug print functions to label and print the match percentages per point
+                # ------------------------------------------------------------------------              
+                print(temp)
+                # ------------------------------------------------------------------------ 
+
+            # If a set number of points are similarly related, then the user has successfully signed the base image that we compared it to
             if(count >= 15): #decreased to 15, can increase for similar hand signs
-                print("You have correctly signed " + chosen_letter + "!")
+                print("Counts that matched: " + str(count))
+                print(chosen_letter + " signed correctly")
                 matched = True
+                matched_letter = chosen_letter
                 break
             else:
                 print("Counts that matched: " + str(count))
+                print(chosen_letter + " was not a match")
 
+    # If matched has been flagged, then the user has successfully signed the lesson letter and outputs a message accordingly
+    if(matched == True and lesson_letter == matched_letter):
+        print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
+    else:
+        matched = True
+        print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
+
+    # Shows the plot of the user hand image
     show_plot(user_arr, Z_star)
-    matched = True
 
 #EOF
