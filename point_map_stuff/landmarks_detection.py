@@ -57,7 +57,7 @@ def project_data(Z, pcs, L):
 # Creates our base arrays
 def base_arr_function(letter):
 
-    filePath = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter + ".txt"
+    filePath = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter + "_relation"
     letterArray = []
 
     # Opens the letter file associated with the base letter that was passed
@@ -218,24 +218,6 @@ while not matched:
 
             print("User Calculations")
 
-            # Debug print functions to label and print the base letter 2D hand map arrays that were read in (2D hand map array)
-            # ----------------------------------------------------------------------------------------------------
-            #print("Base Letter 2D Hand Map Array " + letter[num_letters] + " No. " + str(num_base_letters + 1))
-            #print(base_arr)
-            # ----------------------------------------------------------------------------------------------------
-
-            # Finds our Z_star of our base A to compare with user's Z_star
-            covarianceBase = compute_covariance_matrix(base_arr)
-            pcsBase, LBase = find_pcs(covarianceBase)
-            Z_star_base = project_data(base_arr, pcsBase, LBase)
-
-            # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
-            Z_star_base_arr = []
-
-            for i in range(len(Z_star_base) - 1):
-                temp = Z_star_base[i] - Z_star_base[i+1]
-                Z_star_base_arr.append(temp)
-
             #for i in range(int(np.size(user_arr))):
             covariance = compute_covariance_matrix(user_arr)
             pcs, L = find_pcs(covariance)
@@ -248,23 +230,10 @@ while not matched:
                 temp = Z_star[i] - Z_star[i + 1]
                 Z_star_user_arr.append(temp)
 
-            # Debug print functions to label and print the base letter 1D Z-star arrays (1D covariance array between X and Y)
-            # ----------------------------------------------------------------------------------------------------
-            #print("Base Letter 1D Z-star Array " + letter[num_letters] + " No. " + str(num_base_letters + 1))
-            #print(Z_star)
-            # ----------------------------------------------------------------------------------------------------
-
             # Debug print functions to label and print the user sign point relationship array (1D 20 number array of relational data between points)
             # ----------------------------------------------------------------------------------------------------
             #print("User 1D Point Relationship Array")
             #print(Z_star_user_arr)
-            # ----------------------------------------------------------------------------------------------------
-
-            # Debug print functions to label and print the base letter point relationship array (1D 20 number array of relational data between points)
-            # ----------------------------------------------------------------------------------------------------
-            #print("Letter " + chosen_letter + " Calculations")
-            #print("Letter " + chosen_letter + " 1D Point Relationship Array")
-            #print(Z_star_base_arr)
             # ----------------------------------------------------------------------------------------------------
 
             # Run a relational algorithm and see if user input matches letter A
@@ -278,7 +247,7 @@ while not matched:
 
             # Checks if user letter matches base letter
             for i in range(len(Z_star_user_arr)):
-                temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
+                temp = (Z_star_user_arr[i] / base_arr[i]) * 100
                 if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values
                     count += 1
 
