@@ -57,7 +57,7 @@ class Camera(object): # singleton because every time the camera is initialized t
     def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
          try:  
             if type(self.cropped_frame) != None:
-                frame = self.frame_q.get(timeout=.1)
+                frame = self.frame_q.get(timeout=.01)
                 if frame != None:
                     return frame
                
@@ -70,7 +70,6 @@ class Camera(object): # singleton because every time the camera is initialized t
          
 
     def warmup(self): # camera seems to need a bit to warmup. not joking.
-
         try:
             for i in range(100):
                 _, self.frame = self.stream.read() 

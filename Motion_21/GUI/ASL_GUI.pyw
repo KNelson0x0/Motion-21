@@ -188,11 +188,17 @@ class App(customtkinter.CTk):
     # Button that recreates window with users page
     def users_button(self):
         self.frame_right.destroy()
-        
-        count = 0
+        self.user_list = []
 
+        len_user = 2 # ill add functionality from the config menu 
         self.frame_right = customtkinter.CTkFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
+
+        for i in range(len_user):
+            btn = customtkinter.CTkButton(master=self.frame_right, text= self.users[0], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonu1)
+            self.user_list.append()
+
+        """
 
         self.label_1 = customtkinter.CTkLabel(master=self.frame_right, width=200, height=60, fg_color=("gray70", "gray25"), text="Choose User", corner_radius=6)
         self.label_1.grid(row= 0, column = 0, padx = 150, pady = 30)
@@ -243,7 +249,7 @@ class App(customtkinter.CTk):
         if count == 0:
             self.Button_C = customtkinter.CTkButton(master=self.frame_right, text="Create User", text_color = THEME_OPP, corner_radius=6, width=150, height = 50, fg_color = THEME, border_color=THEME, command=self.createU)
             self.Button_C.grid(row= 1, column = 0, padx = 150, pady = 20)
-
+        """
 
     def buttonu1(self):
         file_path = '%suser1' % dir_path

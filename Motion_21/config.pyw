@@ -64,7 +64,7 @@ class MemKey(): # because we arent storing any of this on a server, the least we
             shifted_ascii = ord(c) << (1 << 3 << 3 << 7 & (255))  # Shift the ASCII value one by a really cool amount and then make sure it stays within valid ascii range
             shifted_msg += chr(shifted_ascii)
     
-        # XOR the shifted message with a super secret and very random key (can be randomized, do this later)
+        # XOR the shifted message with a super secret and very random key (can be randomized based on HWID, do this later)
         key = 'Motion21IsCool'
         xorred_msg = ''
         for i in range(len(shifted_msg)): # they are definitely gonna know this is the encrypt function lol
@@ -77,7 +77,7 @@ class MemKey(): # because we arent storing any of this on a server, the least we
 class Archive(object): # So python apparently does have circular imports but they are just really stupid and bad so heres another singleton
     def __new__(self):
         if not hasattr(self, 'instance'):
-            self.instance = super(Archive, self).__new__(self)
+            self.instance  = super(Archive, self).__new__(self)
             self.user_path = PATH + "UserData/m21_enc.cfg"
         
             if not exists(PATH + "UserData/"):
@@ -159,10 +159,12 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                     #print(self.jsons[i])
                     self.c_cfg = json.loads(crypt.decrypt(bytes(self.jsons[i],'utf-8')).decode())
                     self.c_index = i
+                    self.crypt = crypt
                     return self.c_cfg
             except Exception as e:
                 debug_log("[Archive::get_json]: Idk do better or something.")
                 continue
+        return False
 
     def exists(self, name : str):
         for i in self.headers.keys():
@@ -190,17 +192,24 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         f.close()
 
+class Config(object): # singleton me later
+    def __new__(self, user_name : str = "", password : str = ""):
+        if not hasattr(self, 'instance'):
+            self.instance  = super(Config, self).__new__(self)
+            self.user_name = user_name
+            self.password  = password
+            self.settings  = {'M21ConfigName' : user_name}
+            self.data      = {}
 
-class Config(): # singleton me later
-    def __init__(self, user_name : str, password : str): # TODO: fix later
-        self.user_name = user_name
-        self.password = password
-        self.settings  = {'M21ConfigName' : user_name}
-        self.data = {}
-
-        Archive().set_password(password)
-        if not Archive().exists(user_name):
-            Archive().add_json(self.settings)
+            Archive().parse_arch(self.password) # password is swag.
+            key   = make_key("swag")
+            c_cfg = Archive().get_json(key.decode())
+            Archive().set_password(password)
+            #if not Archive().exists(user_name) and self.user_name != "":
+                #Archive().add_json(self.settings)
+            #   return
+            self.users     = list(Archive().header.keys())
+        return self.instance
   
     def __setitem__(self, key, new_val):
         self.settings[key] = new_val # probably extremely shallow setting. I, may, add deeper searching sets. 
@@ -212,7 +221,6 @@ class Config(): # singleton me later
         # var  - the variable you want values' saved.
         # name - the name of the variable you want it saved under. please use this though i've added support to do this without a name.
 
-        # HERE
         f = Archive().c_cfg
 
         if name == "" or len(name) == 0: 
@@ -223,7 +231,7 @@ class Config(): # singleton me later
             self.data["both"] = [var, str(type(var))] # allow for weird syntax
 
         if name == "" or len(name) == 0: 
-            tag = "MVar_Unique0"
+            tag  = "MVar_Unique0"
             keys = [i for i in list(self.settings.keys()) if "MVar_Unique" in i]
             keys.sort()
 
