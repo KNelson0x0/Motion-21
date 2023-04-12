@@ -1,5 +1,4 @@
 
-import enum
 import os
 import customtkinter
 from enum import Enum
@@ -151,8 +150,6 @@ class StateHandler(object):
         print("Done")
         return []
 
-
-
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -172,8 +169,6 @@ class App(customtkinter.CTk):
         self.title("ASL Learning App")
         self.average_list = AverageList()
         self.curr_accuracy = 100
-        print(type(WindowState.HOME))
-        print(type(WindowState.__class__))
 
         # Locks size of window
         self.resizable(False, False)
@@ -215,67 +210,17 @@ class App(customtkinter.CTk):
         btn_list = []
 
         len_users = len(Config().users)
-        self.frame_right = customtkinter.CTkFrame(master=self)
+        self.frame_right = customtkinter.CTkScrollableFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
-        for i in range(len_users):
-            btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command = lambda : print("clicked"))
-            btn.grid(row = i, column = 0, padx = 150, pady = 20)
-            btn_list.append(btn)
+        for x in range(10):
+            for i in range(len_users):
+                btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command = lambda : print("clicked"))
+                btn.grid(row = x+i, column = 0, padx = 150, pady = 20)
+                btn_list.append(btn)
 
         self.del_list = btn_list
-
-        """
-        self.label_1 = customtkinter.CTkLabel(master=self.frame_right, width=200, height=60, fg_color=("gray70", "gray25"), text="Choose User", corner_radius=6)
-        self.label_1.grid(row= 0, column = 0, padx = 150, pady = 30)
-
-        for path in os.listdir(dir_path):
-            if os.path.isfile(os.path.join(dir_path, path)):
-                count += 1
-        self.users = os.listdir(dir_path)
-        if count == 3:
-
-            self.Button_1 = customtkinter.CTkButton(master=self.frame_right, text= self.users[0], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonu1)
-            self.Button_1.grid(row= 1, column = 0, padx = 150, pady = 20)
-
-            self.Button_2 = customtkinter.CTkButton(master=self.frame_right, text= self.users[1], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonu2)
-            self.Button_2.grid(row= 2, column = 0, padx = 150, pady = 20)
-
-            self.Button_3 = customtkinter.CTkButton(master=self.frame_right, text= self.users[2], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonu3)
-            self.Button_3.grid(row= 3, column = 0, padx = 150, pady = 20)
-
-            self.Button_D = customtkinter.CTkButton(master=self.frame_right, text="Delete User", text_color = THEME_OPP, corner_radius=6, width=100, fg_color = THEME, border_color=THEME, command=self.deleteU)
-            self.Button_D.grid(row= 4, column = 0, padx = 150, pady = 20)
-            
-        if count == 2:
-
-            self.Button_1 = customtkinter.CTkButton(master=self.frame_right, text= self.users[0], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonu1)
-            self.Button_1.grid(row= 1, column = 0, padx = 150, pady = 20)
-
-            self.Button_2 = customtkinter.CTkButton(master=self.frame_right, text= self.users[1], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonu2)
-            self.Button_2.grid(row= 2, column = 0, padx = 150, pady = 20)
-
-            self.Button_C = customtkinter.CTkButton(master=self.frame_right, text="Create User", text_color = THEME_OPP, corner_radius=6, width=100, fg_color = THEME, border_color=THEME, command=self.createU)
-            self.Button_C.grid(row= 3, column = 0, padx = 128, pady = 20, sticky = "w")
-
-            self.Button_D = customtkinter.CTkButton(master=self.frame_right, text="Delete User", text_color = THEME_OPP, corner_radius=6, width=100, fg_color = THEME, border_color=THEME, command=self.deleteU)
-            self.Button_D.grid(row= 3, column = 0, padx = 128, pady = 20, sticky = "e")
-
-        if count == 1:
-
-            self.Button_1 = customtkinter.CTkButton(master=self.frame_right, text= self.users[0], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonu1)
-            self.Button_1.grid(row= 1, column = 0, padx = 150, pady = 20)
-
-            self.Button_C = customtkinter.CTkButton(master=self.frame_right, text="Create User", text_color = THEME_OPP, corner_radius=6, width=100, fg_color = THEME, border_color=THEME, command=self.createU)
-            self.Button_C.grid(row= 2, column = 0, padx = 128, pady = 20, sticky = "w")
-
-            self.Button_D = customtkinter.CTkButton(master=self.frame_right, text="Delete User", text_color = THEME_OPP, corner_radius=6, width=100, fg_color = THEME, border_color=THEME, command=self.deleteU)
-            self.Button_D.grid(row= 2, column = 0, padx = 128, pady = 20, sticky = "e")
-
-        if count == 0:
-            self.Button_C = customtkinter.CTkButton(master=self.frame_right, text="Create User", text_color = THEME_OPP, corner_radius=6, width=150, height = 50, fg_color = THEME, border_color=THEME, command=self.createU)
-            self.Button_C.grid(row= 1, column = 0, padx = 150, pady = 20)
-        """
+        
 
     def createU(self):
         self.frame_right.destroy()
@@ -497,19 +442,6 @@ class App(customtkinter.CTk):
                                                 number_of_steps=10,
                                                 command=self.progressbar.set)
         self.slider_1.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")   
-
-        # Creates label with the text "Button Size:" to describe what the slider below it does
-        #self.label_3 = customtkinter.CTkLabel(master=self.frame_right, text="Button Size:")
-        #self.label_3.grid(row=3, column=0, padx=5, pady=5, sticky="w")
-
-        # Creates font size progress bar to change font size of application
-        #self.slider_2 = customtkinter.CTkSlider(master=self.frame_right,
-        #                                        from_=0,
-        #                                        to=1,
-        #                                        number_of_steps=10,
-        #                                        command=self.progressbar.set)
-        #self.slider_2.grid(row=4, column=0, columnspan=2, pady=10, padx=20, sticky="we")   
-
 
     # Button that recreates window with settings page
     def settings_button(self):
