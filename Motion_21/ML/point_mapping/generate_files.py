@@ -63,7 +63,7 @@ directory = dir + '\hand_images_' + letter
 #directory2 = r"C:\Users\pccin\source\repos\point_map_stuff\point_map_stuff\hand_edits" #change path to user's directory
 #filePath1 = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter + ".txt"
 #filePath2 = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter_pca + ".txt"
-filePath2 = r"C:\Users\pccin\OneDrive\Documents\GitHub\Motion_21\ML\base_letters\\" + letter + ".txt"
+filePath2 = r"C:\Users\pccin\OneDrive\Documents\Motion_21_Github\Motion_21\ML\base_letters\\" + letter + ".txt"
  
 drawingModule = mediapipe.solutions.drawing_utils
 handsModule = mediapipe.solutions.hands

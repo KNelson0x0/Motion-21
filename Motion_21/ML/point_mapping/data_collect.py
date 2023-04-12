@@ -17,9 +17,9 @@ dir = os.path.dirname(__file__) #directory of this file
 #print(dir)
 path = dir + '\hand_images_' + letter
 
-if os.path.exists(path):
-    shutil.rmtree(path)
-os.mkdir(path)
+#if os.path.exists(path):
+#    shutil.rmtree(path)
+#os.mkdir(path)
 
 counter = 0
 

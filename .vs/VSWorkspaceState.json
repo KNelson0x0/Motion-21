@@ -1,10 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Motion_21",
-    "\\Motion_21\\ML",
-    "\\Motion_21\\ML\\point_mapping"
+    "\\Motion_21"
   ],
-  "SelectedNode": "\\Motion_21\\ML\\point_mapping",
+  "SelectedNode": "\\Motion_21\\ML",
   "PreviewInSolutionExplorer": false
 }
