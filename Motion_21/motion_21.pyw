@@ -38,7 +38,7 @@ if __name__ == "__main__":
         #Archive().parse_arch("swag") # password is swag.
         #key = make_key("swag")
         #print(Archive().get_json(key.decode()))
-        Config("Beemer", "swag")
+        Config("Test2", "swag")
     except:
         print("Demo Day Error! This error should only ever appear if it is demo day and this error has been thoroughly checked and tested for.\n\
               There should be 0 reason this ever prints other than 'it broke because our professors were looking at it' and 'because ofc it would'.")

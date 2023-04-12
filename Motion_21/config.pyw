@@ -148,20 +148,28 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         self.c_index = success
         self.c_cfg = self.json[new_json['M21ConfigName']]
 
-    def get_json(self, key : str): # also up for name nomination, use_json
+    def get_json(self, user_name : str="", key : str=""): # also up for name nomination, use_json
         crypt = Fernet(bytes(key, 'utf-8'))
         del key
         gate = ''
-        for i in self.jsons.keys():
+
+        if not user_name: return False # purely so I can have a key-value input without things being confusing
+
+        for i, k in enumerate(self.jsons.keys()):
             try:
-                gate = self.crypt.decrypt(bytes(i, 'utf-8'))
+                keys = list(self.header.keys())
+                if user_name == "" or user_name != keys[i]:
+                   print("Continuing")
+                   continue
+                gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    #print(self.jsons[i])
-                    self.c_cfg = json.loads(crypt.decrypt(bytes(self.jsons[i],'utf-8')).decode())
-                    self.c_index = i
+                    #print(self.jsons[k])
+                    self.c_cfg = json.loads(crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode())
+                    self.c_index = k
                     self.crypt = crypt
                     return self.c_cfg
             except Exception as e:
+                print(e)
                 debug_log("[Archive::get_json]: Idk do better or something.")
                 continue
         return False
@@ -201,14 +209,23 @@ class Config(object): # singleton me later
             self.settings  = {'M21ConfigName' : user_name}
             self.data      = {}
 
-            Archive().parse_arch(self.password) # password is swag.
+            Archive().parse_arch(password) # password is swag.
+                
             key   = make_key("swag")
-            c_cfg = Archive().get_json(key.decode())
-            Archive().set_password(password)
-            #if not Archive().exists(user_name) and self.user_name != "":
-                #Archive().add_json(self.settings)
-            #   return
+
+            if user_name:
+                c_cfg = Archive().get_json(user_name, key.decode()) # password is swag.
+            else:
+                c_cfg = Archive().get_json(password = key.decode())
+
+            if c_cfg == False: 
+                self.user_name = ""
+                self.password  = ""
+                return False
+
+            self.c_cfg = c_cfg 
             self.users     = list(Archive().header.keys())
+
         return self.instance
   
     def __setitem__(self, key, new_val):
