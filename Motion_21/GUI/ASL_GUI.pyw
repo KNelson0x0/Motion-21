@@ -1,8 +1,11 @@
+
+import enum
 import os
 import customtkinter
 from enum import Enum
 from queue import Queue
 from PIL import Image, ImageTk
+from config          import *
 from Utils.utils     import *
 from Utils.constants import *
 from Utils.camera    import *
@@ -132,6 +135,24 @@ class EventHandler(object):
         debug_log("arrow left: {}".format(self.x))
         Camera().q.put([self.x, self.y, None])
 
+class StateHandler(object):
+    def __new__(self):
+        if not hasattr(self, 'instance'):
+            self.instance  = super(StateHandler, self).__new__(self)
+            self.c_state   = WindowState.HOME
+        return self.instance
+
+    def change_state(self, state : WindowState, del_list : list = []):
+        self.c_state = state
+
+        if del_list == [] or del_list == None: return
+        [i.destroy() for i in del_list]
+        del_list = []
+        print("Done")
+        return []
+
+
+
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -145,12 +166,14 @@ class App(customtkinter.CTk):
 
         #Size of window and title
         self.geometry("740x520")
-        self.window_state = WindowState.HOME
+        state_init = StateHandler()
+        self.del_list = []
         self.letter_state = LetterState('_')
         self.title("ASL Learning App")
         self.average_list = AverageList()
         self.curr_accuracy = 100
-
+        print(type(WindowState.HOME))
+        print(type(WindowState.__class__))
 
         # Locks size of window
         self.resizable(False, False)
@@ -172,10 +195,10 @@ class App(customtkinter.CTk):
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
-        if self.window_state == WindowState.HOME:
+        if StateHandler().c_state == WindowState.HOME:
             return
 
-        self.window_state = WindowState.HOME
+        StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -187,19 +210,22 @@ class App(customtkinter.CTk):
 
     # Button that recreates window with users page
     def users_button(self):
+        StateHandler().change_state(WindowState.SETTINGS, self.del_list)
         self.frame_right.destroy()
-        self.user_list = []
+        btn_list = []
 
-        len_user = 2 # ill add functionality from the config menu 
+        len_users = len(Config().users)
         self.frame_right = customtkinter.CTkFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
-        for i in range(len_user):
-            btn = customtkinter.CTkButton(master=self.frame_right, text= self.users[0], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonu1)
-            self.user_list.append()
+        for i in range(len_users):
+            btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command = lambda : print("clicked"))
+            btn.grid(row = i, column = 0, padx = 150, pady = 20)
+            btn_list.append(btn)
+
+        self.del_list = btn_list
 
         """
-
         self.label_1 = customtkinter.CTkLabel(master=self.frame_right, width=200, height=60, fg_color=("gray70", "gray25"), text="Choose User", corner_radius=6)
         self.label_1.grid(row= 0, column = 0, padx = 150, pady = 30)
 
@@ -250,15 +276,6 @@ class App(customtkinter.CTk):
             self.Button_C = customtkinter.CTkButton(master=self.frame_right, text="Create User", text_color = THEME_OPP, corner_radius=6, width=150, height = 50, fg_color = THEME, border_color=THEME, command=self.createU)
             self.Button_C.grid(row= 1, column = 0, padx = 150, pady = 20)
         """
-
-    def buttonu1(self):
-        file_path = '%suser1' % dir_path
-
-    def buttonu2(self):
-        file_path = '%suser2' % dir_path
-
-    def buttonu3(self):
-        file_path = '%suser3' % dir_path
 
     def createU(self):
         self.frame_right.destroy()
@@ -373,7 +390,6 @@ class App(customtkinter.CTk):
         self.Button_n = customtkinter.CTkButton(master=self.frame_right, text="No", text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command=self.buttonBD)
         self.Button_n.grid(row= 3, column = 0, padx = 150, pady = 20)
 
-
     def buttonud2(self):
         self.frame_right.destroy()
 
@@ -427,7 +443,7 @@ class App(customtkinter.CTk):
 
     # Button that recreates window with the theme page
     def themes_button(self):
-       
+        self.del_list = StateHandler().change_state(WindowState.SETTINGS, self.del_list)
         # Destroyed old window
         self.frame_left.destroy()
         self.frame_right.destroy()
@@ -498,6 +514,7 @@ class App(customtkinter.CTk):
     # Button that recreates window with settings page
     def settings_button(self):
         global THEME
+        self.del_list = StateHandler().change_state(WindowState.SETTINGS, self.del_list)
 
         # Destroyed old window
         self.frame_left.destroy()
@@ -556,12 +573,6 @@ class App(customtkinter.CTk):
         self.label_6.grid(row=5, column=0, padx=0, pady=0, sticky="w")
         self.label_7 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Notifications: Change notification options for the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
         self.label_7.grid(row=6, column=0, padx=0, pady=0, sticky="w")
-        #self.label_8 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Configure Letter: Lets you train Motion 21 to better suit your needs for letters\n", text_color = THEME_OPP, font=("Segoe UI", 12))
-        #self.label_8.grid(row=7, column=0, padx=0, pady=0, sticky="w")
-
-    # Button that allows the user to change volume options
-    #def volume_button(self):
-    #    print("testing volume button")
 
     # Button that allows the user to change notification options
     def notif_button(self):
@@ -572,7 +583,7 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
-        self.window_state = WindowState.LESSONS
+        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -961,13 +972,13 @@ class App(customtkinter.CTk):
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
     
     def back_button(self):
-        self.window_state = WindowState.HOME
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.lesson_select()
 
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
     def letter_lessons(self, letter):
-        self.window_state = WindowState.LESSONS
+        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         self.frame_main_right.destroy()
 
         self.back_to_lesson = customtkinter.CTkButton(master=self.frame_main_left, text = "Lesson Select", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
@@ -1985,6 +1996,7 @@ class App(customtkinter.CTk):
     # Creates the home window
     def home_window(self):
         # Configures grid layout of 2x1
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -2054,20 +2066,15 @@ class App(customtkinter.CTk):
     
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        if self.window_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
+        if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
             self.label_cam.cw_update();
             self.label_cam2.cw_update();
             self.after(10, self.the_afterinator)
             return
 
-        #if self.window_state == WindowState.TRAINING: # find a better method of doing this later
-        #    self.config_cam_win1.cw_update();
-        #    self.config_cam_win2.cw_update();
-        #    self.after(10, self.the_afterinator)
-
-        # if DEBUG: cv2.imshow("Sanity Window.", Camera().get_cropped_frame()) 
+    
     def camera_aftinerator(self):
-        if self.window_state == WindowState.LESSONS and USE_CAMERA == 1:
+        if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
             let = UserSign().run_comparison()
 
             if let == None: 
@@ -2075,7 +2082,7 @@ class App(customtkinter.CTk):
                 return
 
             if let == self.letter_state.DESIRED_LETTER[0]:
-                self.window_state = WindowState.HOME
+                self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
                 print("FOUND!!!!!!!")
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 self.label8.update()
