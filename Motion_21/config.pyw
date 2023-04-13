@@ -228,7 +228,7 @@ class Config(object): # singleton me later
                 return False
 
             self.c_cfg = c_cfg 
-            self.users     = list(Archive().header.keys())
+            self.users = list(Archive().header.keys())
 
         return self.instance
   
