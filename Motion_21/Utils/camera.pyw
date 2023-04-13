@@ -5,10 +5,8 @@ import numpy as np
 
 from time import sleep
 from queue import Queue
-from   Utils.utils import *
-from   Utils.constants import *
-
-
+from Utils.utils import *
+from Utils.constants import *
 
 class Camera(object): # singleton because every time the camera is initialized there is at least a five second freeze and I'd prefer not to hard global too much.
     stream             = cv2.VideoCapture(0)

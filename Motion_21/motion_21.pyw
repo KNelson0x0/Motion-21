@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
         Config("Beemer", "swag2")
         print(Config().c_cfg)
-        Archive().save_config()
+        Archive().save_config("Beemer")
         print("Stop")
 
         """
