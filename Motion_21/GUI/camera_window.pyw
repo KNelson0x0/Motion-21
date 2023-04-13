@@ -2,8 +2,6 @@ import customtkinter
 from   PIL import Image, ImageTk
 from   Utils.camera import Camera
 
-
-
 class CameraWindow(customtkinter.CTkLabel):
     def __init__(self, *args, width=None, height=None, cropped = False, **kwargs):
         self.width = width
@@ -16,7 +14,7 @@ class CameraWindow(customtkinter.CTkLabel):
         self.cw_update();
 
     def cw_update(self):
-        img         = Image.fromarray(Camera().rgb_img_rect if not self.cropped else Camera().rgb_img_crop)
+        img         = Image.fromarray(Camera().rgb_img_rect if not self.cropped else Camera().get_cropped_frame())
 
         if self.width != None and self.height != None:
             img = img.resize((self.width, self.height))

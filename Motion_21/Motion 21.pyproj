@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Motion 21</Name>
     <RootNamespace>Motion 21</RootNamespace>
-    <InterpreterId>MSBuild|ML-Env|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|test-env|$(MSBuildProjectFullPath)</InterpreterId>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -29,7 +29,9 @@
     <Compile Include="GUI\scroll_panel.pyw" />
     <Compile Include="ML\usertrain.pyw" />
     <Compile Include="motion_21.pyw" />
-    <Compile Include="Utils\camera.pyw" />
+    <Compile Include="Utils\
+			 
+	  .pyw" />
     <Compile Include="Utils\constants.pyw" />
     <Compile Include="Utils\utils.pyw" />
   </ItemGroup>
@@ -48,6 +50,15 @@
       <Id>ML-Env</Id>
       <Version>3.11</Version>
       <Description>ML-Env (Python 3.11 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+    <Interpreter Include="test-env\">
+      <Id>test-env</Id>
+      <Version>3.11</Version>
+      <Description>test-env (Python 3.11 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
