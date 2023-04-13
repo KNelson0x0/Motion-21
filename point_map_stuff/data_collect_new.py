@@ -3,16 +3,19 @@ import shutil
 import os
 import uuid
 
+################################# CHANGE THIS BASED ON WHICH LETTER YOU ARE DOING ####################################
+letter = 'B'
+
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH,640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT,360)
 #cap.set(10,100) #for brightness
 
+path = 'hand_images_' + letter
+if os.path.exists(path):
+    shutil.rmtree(path)
 
-if os.path.exists('hand_images'):
-    shutil.rmtree('hand_images')
-
-os.mkdir('hand_images')
+os.mkdir(path)
 counter = 0
 
 while True:
@@ -28,5 +31,5 @@ while True:
     key = cv2.waitKey(1)
     if key == ord("s"):
         counter += 1
-        cv2.imwrite(os.path.join('hand_images', '{}.jpg'.format(uuid.uuid1())), crop_img)
+        cv2.imwrite(os.path.join(path, '{}.jpg'.format(uuid.uuid1())), crop_img)
         print(counter)
