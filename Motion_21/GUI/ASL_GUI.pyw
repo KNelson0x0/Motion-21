@@ -1,14 +1,14 @@
 import os
 import customtkinter
-from queue import Queue
-from PIL   import Image, ImageTk
+from queue           import Queue
+from PIL             import Image, ImageTk
 from config          import *
 from Utils.utils     import *
 from Utils.constants import *
 from Utils.camera    import *
 from Utils.states    import *
-from ML.usertrain    import UserTrain
 from ML.algorithm    import UserSign
+from ML.usertrain    import UserTrain
 from .camera_window  import CameraWindow
 from .custom_tabview import CustomTabview
 
@@ -22,6 +22,16 @@ if not os.path.exists(dir_path):
 #Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
+
+
+def dynamic_printer(x):
+    print(x)
+
+
+def callback_factory(x):
+    def _callback():
+        return dynamic_printer(x)
+    return _callback
 
 class AverageList:
     def __init__(self, letter = None):
@@ -126,13 +136,12 @@ class App(customtkinter.CTk):
 
         for x in range(0,10,2):
             for i in range(len_users):
-                btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command = lambda : print("clicked"))
+                btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color=THEME_OPP, corner_radius=6, width=200, fg_color=THEME, border_color=THEME, command = callback_factory(x+i))
                 btn.grid(row = x+i, column = 0, padx = 150, pady = 20)
                 btn_list.append(btn)
 
         self.del_list = btn_list
         
-
     def createU(self):
         self.frame_right.destroy()
 
