@@ -53,7 +53,7 @@ def project_data(Z, pcs, L):
     return Z_star
 
 ##################### CHANGE THIS FOR DIFFERENT LETTERS #########################
-control_letter = 'D'
+control_letter = 'F'
 
 letter = control_letter
 letter_pca = letter + '_relation'
@@ -70,6 +70,10 @@ handsModule = mediapipe.solutions.hands
 
 counter = 0
 full_arr = []
+
+#erases current contents
+f = open(filePath2, 'w')
+f.close()
 
 for images in os.listdir(directory):
 

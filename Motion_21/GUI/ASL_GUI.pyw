@@ -1086,6 +1086,7 @@ class App(customtkinter.CTk):
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
                 self.average_list.reinit("B")
+                self.letter_state.set_letter("B")
                 self.update()
                 self.the_afterinator()
                 self.camera_aftinerator()
@@ -1123,6 +1124,7 @@ class App(customtkinter.CTk):
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
                 self.average_list.reinit("C")
+                self.letter_state.set_letter("C")
                 self.update()
                 self.the_afterinator()
                 self.camera_aftinerator()
@@ -1160,6 +1162,7 @@ class App(customtkinter.CTk):
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
                 self.average_list.reinit("D")
+                self.letter_state.set_letter("D")
                 self.update()
                 self.the_afterinator()
                 self.camera_aftinerator()
@@ -1197,8 +1200,10 @@ class App(customtkinter.CTk):
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
                 self.average_list.reinit("E")
+                self.letter_state.set_letter("E")
                 self.update()
                 self.the_afterinator()
+                self.camera_aftinerator()
 
             case "F":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
@@ -1232,8 +1237,11 @@ class App(customtkinter.CTk):
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
                 self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+                self.average_list.reinit("F")
+                self.letter_state.set_letter("F")
                 self.update()
                 self.the_afterinator()
+                self.camera_aftinerator()
 
             case "G":
                 self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))

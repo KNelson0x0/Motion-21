@@ -197,7 +197,7 @@ class UserSign(object):
     def run_comparison(self):
 
         #REPLACE LESSON_LETTER WITH FUNCTION PARAMETER AKA GUI STUFF
-        lesson_letter = "A"
+        lesson_letter = "F"
 
         matched_letter = ""
         matched = False
@@ -217,7 +217,7 @@ class UserSign(object):
 
         # Variable declarations
         # Letter only contains non-movement letters for now
-        letter = ["A", "B", "C", "D", "E", "F"]#, "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
+        #letter = ["A", "B", "C", "D", "E", "F"]#, "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
 
         # Grabs user letter input
         user_arr = self.user_arr_function()
@@ -238,10 +238,9 @@ class UserSign(object):
 
                     #chosen_letter = letter[num_letters]
 
-                    base_arr_all = self.base_arr_function(lesson_letter)
+                    base_arr_all = self.base_arr_function(lesson_letter) #lesson_letter
 
                     base_arr_all = np.array(base_arr_all)
-
 
                     for num_base_letters in range(len(base_arr_all)):
 
@@ -275,8 +274,9 @@ class UserSign(object):
                         # Checks if user letter matches base letter
                         for i in range(len(Z_star_user_arr)):
                             temp = (Z_star_user_arr[i] / base_arr[i]) * 100
-                            if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= 140)): #change these values/original was 60, 140
+                            if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values/original was 60, 140
                                 count += 1
+                            #print("[{}]: {}".format(i,count))
 
                             # Debug print functions to label and print the match percentages per point
                             # ------------------------------------------------------------------------              
