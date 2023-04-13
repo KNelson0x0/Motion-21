@@ -1,10 +1,10 @@
 import json, base64, hashlib
-from   cryptography.fernet import Fernet
-from   Utils.constants import *
 from   Utils.utils import *
+from   Utils.constants import *
 from   os.path  import exists
 from   os       import mkdir
 from   os       import remove
+from   cryptography.fernet import Fernet
 
 
 def make_key(passcode: str) -> str:
@@ -148,7 +148,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         self.c_index = success
         self.c_cfg = self.json[new_json['M21ConfigName']]
 
-    def get_json(self, user_name : str="", key : str=""): # also up for name nomination, use_json
+    def get_json(self, user_name : str = "", key : str = ""): # also up for name nomination, use_json
         crypt = Fernet(bytes(key, 'utf-8'))
         del key
         gate = ''
@@ -159,17 +159,14 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
             try:
                 keys = list(self.header.keys())
                 if user_name == "" or user_name != keys[i]:
-                   print("Continuing")
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    #print(self.jsons[k])
-                    self.c_cfg = json.loads(crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode())
+                    self.c_cfg   = json.loads(crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode())
                     self.c_index = k
-                    self.crypt = crypt
+                    self.crypt   = crypt
                     return self.c_cfg
             except Exception as e:
-                print(e)
                 debug_log("[Archive::get_json]: Idk do better or something.")
                 continue
         return False
@@ -185,19 +182,24 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                 pass
         return False
 
-    def save(self):
-        f = open(self.user_path,'w')
+    def save_config(self):
+        f = open(self.user_path,'r')
         
-        if self.c_index not in self.header.keys(): # if coming directly from config never should be in the keys since it was never added. So, add it.
-            self.add_json(self.c_index)
+        #if self.c_index not in self.header.keys(): # if coming directly from config never should be in the keys since it was never added. So, add it.
+        #    self.add_json(self.c_index)
 
         # add file header
-        f.write(json.dumps(self.jsons))
+        #f.write(json.dumps(self.jsons))
+        print("[------]\n{}".format(self.c_cfg))
+        crypted = self.crypt.encrypt(bytes(str(self.c_cfg), 'utf-8')).decode()
 
+        #self.jsons[self.c_index] = crypted
         # write encrypted bits back
-        for k,v in self.jsons:
-            f.write(v)
+        for k,v in self.jsons.items():
+            print("Key: {}\nValue: {}".format(k,v))
+            #f.write(v)
 
+        print("[------]")
         f.close()
 
 class Config(object): # singleton me later
@@ -205,13 +207,14 @@ class Config(object): # singleton me later
         if not hasattr(self, 'instance'):
             self.instance  = super(Config, self).__new__(self)
             self.user_name = user_name
-            self.password  = password
             self.settings  = {'M21ConfigName' : user_name}
             self.data      = {}
+            self.users     = 0
 
             Archive().parse_arch(password) # password is swag.
                 
-            key   = make_key("swag")
+            key   = make_key(password)
+            del password
 
             if user_name:
                 c_cfg = Archive().get_json(user_name, key.decode()) # password is swag.
@@ -220,7 +223,6 @@ class Config(object): # singleton me later
 
             if c_cfg == False: 
                 self.user_name = ""
-                self.password  = ""
                 return False
 
             self.c_cfg = c_cfg 
@@ -306,6 +308,7 @@ class Config(object): # singleton me later
             self.settings[name] = self.data
         
         Archive().c_cfg = self.settings
+        #Archive().save_config()
     
     def load(self, key):
         self.settings = Archive().get_json(key)

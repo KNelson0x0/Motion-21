@@ -1,18 +1,16 @@
-
 import os
 import customtkinter
-from enum import Enum
 from queue import Queue
-from PIL import Image, ImageTk
+from PIL   import Image, ImageTk
 from config          import *
 from Utils.utils     import *
 from Utils.constants import *
 from Utils.camera    import *
+from Utils.states    import *
 from ML.usertrain    import UserTrain
 from ML.algorithm    import UserSign
 from .camera_window  import CameraWindow
 from .custom_tabview import CustomTabview
-
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 main_cam_frame = []
@@ -24,29 +22,6 @@ if not os.path.exists(dir_path):
 #Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
-
-class CameraState(Enum):
-    CAM_OFF = 0
-    CAM_ON = 1
-    CAM_REQUIRED = 2
-    CAM_NOT_REQUIRED = 3
-
-class WindowState(Enum):
-    UNKNOWN  = [0, CameraState.CAM_NOT_REQUIRED] # for unstated windows, really only for debugging
-    HOME     = [1, CameraState.CAM_NOT_REQUIRED]
-    LESSONS  = [2, CameraState.CAM_REQUIRED]
-    SETTINGS = [3, CameraState.CAM_NOT_REQUIRED]
-    THEMES   = [4, CameraState.CAM_NOT_REQUIRED]
-    CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
-    TRAINING = [6, CameraState.CAM_REQUIRED]
-
-class LetterState():
-    DESIRED_LETTER = ["_", CameraState.CAM_REQUIRED]
-    def __init__(self, letter='_'):
-        self.set_letter(letter)
-
-    def set_letter(self, letter):
-        self.DESIRED_LETTER = [letter,CameraState.CAM_REQUIRED]
 
 class AverageList:
     def __init__(self, letter = None):
@@ -85,70 +60,6 @@ class AverageList:
         except Exection as e:
             print(e)
             return last_average
-
-class EventHandler(object):
-    x = 0
-    y = 0
-  
-    def __new__(self):
-        if not USE_CAMERA: return 
-        if not hasattr(self, 'instance'):
-            self.instance = super(EventHandler, self).__new__(self)
-        return self.instance
-
-    # 420 | 320
-    # top left -50, -50
-    # top right 385, -50
-    # bottom right 385, 225
-    # bottom left -50, 225
-
-    def arrow_key_up(self, _):
-        if (self.y == -50): 
-           Camera().q.put([self.x, self.y, 1])
-           return
-        self.y -= 5
-        debug_log("arrow up: {}".format(self.y))
-        Camera().q.put([self.x, self.y, None])
-
-    def arrow_key_down(self, _):
-        if (self.y == 225): 
-           Camera().q.put([self.x, self.y, 1])
-           return
-        self.y += 5
-        debug_log("arrow down: {}".format(self.y))
-        Camera().q.put([self.x, self.y, None])
-
-    def arrow_key_left(self, _):
-        if (self.x == -50):
-            Camera().q.put([self.x, self.y, 1])
-            return
-        self.x -= 5
-        debug_log("arrow left: {}".format(self.x))
-        Camera().q.put([self.x, self.y, None])
-
-    def arrow_key_right(self, _):
-        if (self.x == 385):
-            Camera().q.put([self.x, self.y, 1])
-            return
-        self.x += 5
-        debug_log("arrow left: {}".format(self.x))
-        Camera().q.put([self.x, self.y, None])
-
-class StateHandler(object):
-    def __new__(self):
-        if not hasattr(self, 'instance'):
-            self.instance  = super(StateHandler, self).__new__(self)
-            self.c_state   = WindowState.HOME
-        return self.instance
-
-    def change_state(self, state : WindowState, del_list : list = []):
-        self.c_state = state
-
-        if del_list == [] or del_list == None: return
-        [i.destroy() for i in del_list]
-        del_list = []
-        print("Done")
-        return []
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -213,7 +124,7 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkScrollableFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
-        for x in range(10):
+        for x in range(0,10,2):
             for i in range(len_users):
                 btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color = THEME_OPP, corner_radius=6, width=200, fg_color = THEME, border_color=THEME, command = lambda : print("clicked"))
                 btn.grid(row = x+i, column = 0, padx = 150, pady = 20)
@@ -402,7 +313,7 @@ class App(customtkinter.CTk):
         # ------------------------------------------------------------------------------------
         
         # Creates label with the text "Users:"
-        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, text="Users:", text_color = THEME_OPP)
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, text = "Users:", text_color = THEME_OPP)
         self.label_1.grid(row=0, column=0, padx=10, pady=10, sticky="we")
 
         # Default user settings button to reset all changes
@@ -1955,7 +1866,7 @@ class App(customtkinter.CTk):
         #Images for left side of window
         self.home_image = self.load_image("/images/home.png", 25, 25)
         self.home_example_image = self.load_image("/images/HomeExample.png", 700, 635)
-        self.home_description = self.load_image("/images/home2.png", 600, 250)
+        
         self.settings_image = self.load_image("/images/settings.png", 25, 25)
         self.exit_image = self.load_image("/images/exit.png", 25, 25)
         
@@ -1974,12 +1885,6 @@ class App(customtkinter.CTk):
         
         # Creates right sub-window
         # ------------------------------------------------------------------------------------   
-        #self.frame_right = customtkinter.CTkFrame(master=self)
-        #self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
-
-        #Prints the home page help screen on the right window
-        #self.label4 = customtkinter.CTkLabel(master=self.frame_right, text = "", width = 550, height = 500)
-        #self.label4.grid(row=0, column=0, padx=0, pady=0, sticky="nswe")
 
         # Create a Label on the right of our Application Title
         self.motion21_title = customtkinter.CTkLabel(master=self.frame_right, text = "MOTION 21", text_color = THEME_OPP, width = 20, height = 20, font = ("Segoe UI", 100, "bold"), fg_color=("white","grey38"))
