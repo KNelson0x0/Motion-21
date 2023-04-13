@@ -139,17 +139,8 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         return protected
 
-    def add_json(self, new_json : dict):
-        new_json_s = json.dumps(new_json)
-        success = self.crypt.encrypt(bytes("UserSuccess", 'utf-8')).decode()
-        self.header[new_json['M21ConfigName']] = [len(json.dumps(new_json)), success]
-        self.json[new_json['M21ConfigName']] = self.crypt.encrypt(bytes(new_json_s, 'utf-8'))
-        
-        self.c_index = success
-        self.c_cfg = self.json[new_json['M21ConfigName']]
-
-    def get_json(self, user_name : str = "", key : str = ""): # also up for name nomination, use_json
-        crypt = Fernet(bytes(key, 'utf-8'))
+    def get_json(self, user_name : str = "", key : bytes = ""): # also up for name nomination, use_json
+        crypt = Fernet(key)
         del key
         gate = ''
 
@@ -162,11 +153,14 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    self.c_cfg   = json.loads(crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode())
+                    # json hates single quotes and dumps doesnt do everything I thought it did
+                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode().replace("\'",'"')
+                    self.c_cfg   = json.loads(down_down)
                     self.c_index = k
                     self.crypt   = crypt
-                    return self.c_cfg
+                    return self.c_cfg,
             except Exception as e:
+                print(e)
                 debug_log("[Archive::get_json]: Idk do better or something.")
                 continue
         return False
@@ -195,13 +189,19 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         self.jsons[self.c_index] = crypted
         self.header[username]    = [len(crypted), self.header[username][1]]
-        
+        bak = f.read()
+        f.close()
+        f = open(self.user_path,'w')
+
+        stang = json.dumps(self.header)
+
         # write encrypted bits back
         for k,v in self.jsons.items():
             print("Key: {}\nValue: {}".format(k,v))
-            #f.write(v)
+            stang += v  
 
         print("[------]")
+        f.write(stang)
         f.close()
 
 class Config(object): # singleton me later
@@ -219,15 +219,15 @@ class Config(object): # singleton me later
             del password
 
             if user_name:
-                c_cfg = Archive().get_json(user_name, key.decode()) # password is swag.
+                c_cfg = Archive().get_json(user_name, key) # password is swag.
             else:
-                c_cfg = Archive().get_json(password = key.decode())
+                c_cfg = Archive().get_json(password = key)
 
             if c_cfg == False: 
                 self.user_name = ""
                 return False
 
-            self.c_cfg = c_cfg 
+            self.c_cfg = c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
             self.users = list(Archive().header.keys())
 
         return self.instance
@@ -236,7 +236,7 @@ class Config(object): # singleton me later
         self.settings[key] = new_val # probably extremely shallow setting. I, may, add deeper searching sets. 
 
     def __getitem__(self, x):
-        return self.settings[x] # same as above with gets
+        return self.c_cfg[x] # same as above with gets
 
     def save_var(self, var, name = ""):
         # var  - the variable you want values' saved.
