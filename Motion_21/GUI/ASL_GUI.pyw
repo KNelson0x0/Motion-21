@@ -23,16 +23,6 @@ if not os.path.exists(dir_path):
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
 
-
-def dynamic_printer(x):
-    print(x)
-
-
-def callback_factory(x):
-    def _callback():
-        return dynamic_printer(x)
-    return _callback
-
 class AverageList:
     def __init__(self, letter = None):
         self.letter        = letter
@@ -134,13 +124,16 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkScrollableFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
-        for x in range(0,10,2):
-            for i in range(len_users):
-                btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color=THEME_OPP, corner_radius=6, width=200, fg_color=THEME, border_color=THEME, command = callback_factory(x+i))
-                btn.grid(row = x+i, column = 0, padx = 150, pady = 20)
-                btn_list.append(btn)
+        for i in range(len_users):
+            btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color=THEME_OPP, corner_radius=6, width=200, fg_color=THEME, border_color=THEME, command = lambda l = i: self.testing(l+1))
+            btn.grid(row = i, column = 0, padx = 150, pady = 20)
+            btn_list.append(btn)
 
         self.del_list = btn_list
+
+
+    def testing(self, i):
+        print(i)
         
     def createU(self):
         self.frame_right.destroy()
@@ -517,7 +510,7 @@ class App(customtkinter.CTk):
 
 
         # letters A - D letters to select on screen
-        self.A_image = self.load_image("/images/letters/a.JPG", 150, 150) 
+        self.A_image = self.load_image("/images/letters/a.JPG", 150, 150)
         self.buttonA = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.A_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("A"))
         self.buttonA.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "nswe")
 
