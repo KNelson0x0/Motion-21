@@ -182,7 +182,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                 pass
         return False
 
-    def save_config(self):
+    def save_config(self, username):
         f = open(self.user_path,'r')
         
         #if self.c_index not in self.header.keys(): # if coming directly from config never should be in the keys since it was never added. So, add it.
@@ -193,7 +193,9 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         print("[------]\n{}".format(self.c_cfg))
         crypted = self.crypt.encrypt(bytes(str(self.c_cfg), 'utf-8')).decode()
 
-        #self.jsons[self.c_index] = crypted
+        self.jsons[self.c_index] = crypted
+        self.header[username]    = [len(crypted), self.header[username][1]]
+        
         # write encrypted bits back
         for k,v in self.jsons.items():
             print("Key: {}\nValue: {}".format(k,v))
