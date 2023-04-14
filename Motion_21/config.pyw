@@ -183,6 +183,27 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         self.header[user_name] = [len(payload), success]
         self.jsons[success] = payload
         self.save_config(user_name)
+        self.crypt = crypt
+
+    def del_config(self, user_name : str, key : bytes):
+        self.crypt = Fernet(key)
+        for i, k in enumerate(self.jsons.keys()):
+            try:
+                keys = list(self.header.keys())
+                if user_name == "" or user_name != keys[i]:
+                   continue
+                gate = self.crypt.decrypt(bytes(k, 'utf-8'))
+                if gate == b"UserSuccess":
+                    # json hates single quotes and dumps doesnt do everything I thought it did
+                    del self.header[user_name]
+                    del self.jsons[k]
+                    self.c_cfg = {}
+                    del self.crypt
+                    return True
+            except Exception as e:
+                debug_log("[Archive::del_config]: Nope!")
+                continue
+        return False
 
     def save_config(self, user_name):
         f = open(self.user_path,'r')
@@ -319,6 +340,11 @@ class Config(object): # singleton me later
         key = make_key(password)
         del password
         Archive().add_config(user_name, key)
+
+    def delete_user(self, user_name : str, password : str):
+        key = make_key(password)
+        del password
+        Archive().del_config(user_name, key)
 
     def load(self, key):
         self.settings = Archive().get_json(key)
