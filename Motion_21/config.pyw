@@ -153,7 +153,6 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    # json hates single quotes and dumps doesnt do everything I thought it did
                     down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode().replace("\'",'"')
                     self.c_cfg   = json.loads(down_down)
                     self.c_index = k
@@ -194,7 +193,6 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    # json hates single quotes and dumps doesnt do everything I thought it did
                     del self.header[user_name]
                     del self.jsons[k]
                     self.c_cfg = {}
