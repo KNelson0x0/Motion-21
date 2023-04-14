@@ -7,7 +7,7 @@ from   os       import remove
 from   cryptography.fernet import Fernet
 
 
-def make_key(passcode: str) -> str:
+def make_key(passcode: str) -> bytes:
     md5_obj = hashlib.md5()
     passcode = MemKey(passcode)
     md5_obj.update(bytes(passcode.get_key(),'utf-8'))
@@ -176,19 +176,23 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                 pass
         return False
 
-    def save_config(self, username):
+    def add_config(self, user_name : str, key : bytes): 
+        crypt = Fernet(key)
+        payload = crypt.encrypt(bytes('{{"M21ConfigName" : "{}"}}'.format(user_name), 'utf-8')).decode()
+        success = crypt.encrypt(b"UserSuccess").decode()
+        self.header[user_name] = [len(payload), success]
+        self.jsons[success] = payload
+        self.save_config(user_name)
+
+    def save_config(self, user_name):
         f = open(self.user_path,'r')
         
-        #if self.c_index not in self.header.keys(): # if coming directly from config never should be in the keys since it was never added. So, add it.
-        #    self.add_json(self.c_index)
-
         # add file header
-        #f.write(json.dumps(self.jsons))
         print("[------]\n{}".format(self.c_cfg))
         crypted = self.crypt.encrypt(bytes(str(self.c_cfg), 'utf-8')).decode()
 
         self.jsons[self.c_index] = crypted
-        self.header[username]    = [len(crypted), self.header[username][1]]
+        self.header[user_name]   = [len(crypted), self.header[user_name][1]]
         bak = f.read()
         f.close()
         f = open(self.user_path,'w')
@@ -197,7 +201,6 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         # write encrypted bits back
         for k,v in self.jsons.items():
-            print("Key: {}\nValue: {}".format(k,v))
             stang += v  
 
         print("[------]")
@@ -312,8 +315,13 @@ class Config(object): # singleton me later
         Archive().c_cfg = self.settings
         #Archive().save_config()
     
+    def add_user(self, user_name : str, password : str): # plaintext user and pass
+        key = make_key(password)
+        del password
+        Archive().add_config(user_name, key)
+
     def load(self, key):
         self.settings = Archive().get_json(key)
 
     def delete(self):
-       self.settings = {} 
+        self.settings = {} 

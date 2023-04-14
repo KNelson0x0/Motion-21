@@ -51,23 +51,25 @@ if __name__ == "__main__":
         usertext   = cipher.encrypt(bytes('UserSuccess', 'utf-8'))
         print("Text:\n{}".format(ciphertext))
         print("UserSuccess: {}".format(usertext))
-
         print("Pass out: {}".format(cipher.decrypt(bytes('gAAAAABkN66_2sTEV5untdK-H_UKUuVd4rSb7jaxayoQ5FAz6XDnHG0fewnBoNOrj3JJ4a1g8JYcDqK2G-NsHhA9qPhB-aWvXRo85ikp56JKffQvqII_IZFyAd8WYK4duy5-VaR91Q0j','utf-8'))))
 
 
+        #Config("Stupendous", "Amazing")
         Config("Beemer", "swag2")
         print(Config().c_cfg)
-        print(Config()["c"])
-        Archive().save_config("Beemer")
+        #print(Config()["c"])
+        #Archive().save_config("Beemer")
+        Config().add_user("Stupendous", "Amazing")
         print("Stop")
 
-      
-        
         #to_enc = {"M21ConfigName":"Beemer","c":2}
     
-    except:
+    except Exception as e:
+        print("Except: {}".format(e))
+        """
         print("Demo Day Error! This error should only ever appear if it is demo day and this error has been thoroughly checked and tested for.\n\
               There should be 0 reason this ever prints other than 'it broke because our professors were looking at it' and 'because ofc it would'.")
-    print("=================================================")
+        """
+        print("=================================================")
 
     #app.start()
