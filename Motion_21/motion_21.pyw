@@ -36,31 +36,21 @@ from config import *
 if __name__ == "__main__":
     # Loading Window Here!
     cam = Camera() # init it.
-    #app = App()
+    app = App()
     
     print("================= Config Read! ==================")
     try:
-        #Archive().parse_arch("swag") # password is swag.
-        #key = make_key("swag")
-        #print(Archive().get_json(key.decode()))
+        ()
 
-        key    = make_key("swag2")
-        cipher = Fernet(key)
-
-        ciphertext = cipher.encrypt(bytes('{"M21ConfigName":"Beemer","c":2}', 'utf-8'))
-        usertext   = cipher.encrypt(bytes('UserSuccess', 'utf-8'))
-        print("Text:\n{}".format(ciphertext))
-        print("UserSuccess: {}".format(usertext))
-        print("Pass out: {}".format(cipher.decrypt(bytes('gAAAAABkN66_2sTEV5untdK-H_UKUuVd4rSb7jaxayoQ5FAz6XDnHG0fewnBoNOrj3JJ4a1g8JYcDqK2G-NsHhA9qPhB-aWvXRo85ikp56JKffQvqII_IZFyAd8WYK4duy5-VaR91Q0j','utf-8'))))
 
 
         #Config("Stupendous", "Amazing")
-        Config("Beemer", "swag2")
-        print(Config().c_cfg)
+        #Config("Beemer", "swag2")
+        #print(Config().c_cfg)
         #print(Config()["c"])
         #Archive().save_config("Beemer")
-        Config().add_user("Stupendous", "Amazing")
-        print("Stop")
+        #Config().add_user("Stupendous", "Amazing")
+        #print("Stop")
 
         #to_enc = {"M21ConfigName":"Beemer","c":2}
     
@@ -72,4 +62,4 @@ if __name__ == "__main__":
         """
         print("=================================================")
 
-    #app.start()
+    app.start()

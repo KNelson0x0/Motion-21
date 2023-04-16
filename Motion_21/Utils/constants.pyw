@@ -2,7 +2,7 @@ import os
 
 # ====== Debug Options ======
 DEBUG = 1
-USE_CAMERA = 0;
+USE_CAMERA = 1;
 # ======================
 
 WEIRD_TKINTER_SPACE = 114
