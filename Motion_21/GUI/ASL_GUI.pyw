@@ -24,15 +24,6 @@ customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
 
 
-def dynamic_printer(x):
-    print(x)
-
-
-def callback_factory(x):
-    def _callback():
-        return dynamic_printer(x)
-    return _callback
-
 class AverageList:
     def __init__(self, letter = None):
         self.letter        = letter
@@ -134,11 +125,10 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkScrollableFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
-        for x in range(0,10,2):
-            for i in range(len_users):
-                btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color=THEME_OPP, corner_radius=6, width=200, fg_color=THEME, border_color=THEME, command = callback_factory(x+i))
-                btn.grid(row = x+i, column = 0, padx = 150, pady = 20)
-                btn_list.append(btn)
+        for i in range(len_users):
+            btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], text_color=THEME_OPP, corner_radius=6, width=200, fg_color=THEME, border_color=THEME, command = lambda l = i: self.testing(l+1))
+            btn.grid(row = i, column = 0, padx = 150, pady = 20)
+            btn_list.append(btn)
 
         self.del_list = btn_list
         
