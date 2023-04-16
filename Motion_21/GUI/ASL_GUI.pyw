@@ -906,9 +906,7 @@ class App(customtkinter.CTk):
 
     def back_button_lessons(self):
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-        self.label_cam.destroy()
-        self.label_cam2.destroy()
-        self.lesson_select()
+        self.lesson_select
 
     # Button that opens lesson select page
     def lesson_select_button(self, choice):
@@ -1023,6 +1021,8 @@ class App(customtkinter.CTk):
             self.label_cam2.cw_update();
             self.after(10, self.the_afterinator)
             return
+        else:
+            return 1
 
     
     def camera_aftinerator(self):
@@ -1056,6 +1056,9 @@ class App(customtkinter.CTk):
                 print(e)
 
             self.after(200, self.camera_aftinerator)
+        else:
+            return 1
+
 
 
 if __name__ == "__main__":
