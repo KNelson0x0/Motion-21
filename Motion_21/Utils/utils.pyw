@@ -1,6 +1,6 @@
 import time
-import tkinter
 import json
+import tkinter
 from  .constants import DEBUG
 
 def debug_log(x):

@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Motion 21</Name>
     <RootNamespace>Motion 21</RootNamespace>
-    <InterpreterId>MSBuild|ML-Env-310|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|test-env|$(MSBuildProjectFullPath)</InterpreterId>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -26,15 +26,14 @@
     <Compile Include="config.pyw" />
     <Compile Include="GUI\ASL_GUI.pyw" />
     <Compile Include="GUI\camera_window.pyw" />
-    <Compile Include="GUI\custom_tabview.py" />
     <Compile Include="GUI\scroll_panel.pyw" />
     <Compile Include="ML\usertrain.pyw" />
     <Compile Include="motion_21.pyw" />
-    <Compile Include="Utils\camera.pyw" />
+    <Compile Include="Utils\
+			 
+	  .pyw" />
     <Compile Include="Utils\constants.pyw" />
-    <Compile Include="Utils\IHateUnitTesting.pyw" />
     <Compile Include="Utils\utils.pyw" />
-    <Compile Include="Utils\wintoast.pyw" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="C++\" />
@@ -43,13 +42,23 @@
     <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.11" />
     <InterpreterReference Include="Global|VisualStudio|env-custom (Python 3.10 (64-bit))" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="..\..\Envs\ML-Env-310\">
-      <Id>ML-Env-310</Id>
-      <Version>3.10</Version>
-      <Description>ML-Env-310 (Python 3.10 (64-bit))</Description>
+    <Interpreter Include="ML-Env\">
+      <Id>ML-Env</Id>
+      <Version>3.11</Version>
+      <Description>ML-Env (Python 3.11 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+    <Interpreter Include="test-env\">
+      <Id>test-env</Id>
+      <Version>3.11</Version>
+      <Description>test-env (Python 3.11 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>

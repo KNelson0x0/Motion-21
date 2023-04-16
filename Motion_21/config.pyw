@@ -1,13 +1,13 @@
 import json, base64, hashlib
-from   cryptography.fernet import Fernet
-from   Utils.constants import *
 from   Utils.utils import *
+from   Utils.constants import *
 from   os.path  import exists
 from   os       import mkdir
 from   os       import remove
+from   cryptography.fernet import Fernet
 
 
-def make_key(passcode: str) -> str:
+def make_key(passcode: str) -> bytes:
     md5_obj = hashlib.md5()
     passcode = MemKey(passcode)
     md5_obj.update(bytes(passcode.get_key(),'utf-8'))
@@ -64,7 +64,7 @@ class MemKey(): # because we arent storing any of this on a server, the least we
             shifted_ascii = ord(c) << (1 << 3 << 3 << 7 & (255))  # Shift the ASCII value one by a really cool amount and then make sure it stays within valid ascii range
             shifted_msg += chr(shifted_ascii)
     
-        # XOR the shifted message with a super secret and very random key (can be randomized, do this later)
+        # XOR the shifted message with a super secret and very random key (can be randomized based on HWID, do this later)
         key = 'Motion21IsCool'
         xorred_msg = ''
         for i in range(len(shifted_msg)): # they are definitely gonna know this is the encrypt function lol
@@ -77,7 +77,7 @@ class MemKey(): # because we arent storing any of this on a server, the least we
 class Archive(object): # So python apparently does have circular imports but they are just really stupid and bad so heres another singleton
     def __new__(self):
         if not hasattr(self, 'instance'):
-            self.instance = super(Archive, self).__new__(self)
+            self.instance  = super(Archive, self).__new__(self)
             self.user_path = PATH + "UserData/m21_enc.cfg"
         
             if not exists(PATH + "UserData/"):
@@ -139,30 +139,30 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         return protected
 
-    def add_json(self, new_json : dict):
-        new_json_s = json.dumps(new_json)
-        success = self.crypt.encrypt(bytes("UserSuccess", 'utf-8')).decode()
-        self.header[new_json['M21ConfigName']] = [len(json.dumps(new_json)), success]
-        self.json[new_json['M21ConfigName']] = self.crypt.encrypt(bytes(new_json_s, 'utf-8'))
-        
-        self.c_index = success
-        self.c_cfg = self.json[new_json['M21ConfigName']]
-
-    def get_json(self, key : str): # also up for name nomination, use_json
-        crypt = Fernet(bytes(key, 'utf-8'))
+    def get_json(self, user_name : str = "", key : bytes = ""): # also up for name nomination, use_json
+        crypt = Fernet(key)
         del key
         gate = ''
-        for i in self.jsons.keys():
+
+        if not user_name: return False # purely so I can have a key-value input without things being confusing
+
+        for i, k in enumerate(self.jsons.keys()):
             try:
-                gate = self.crypt.decrypt(bytes(i, 'utf-8'))
+                keys = list(self.header.keys())
+                if user_name == "" or user_name != keys[i]:
+                   continue
+                gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    #print(self.jsons[i])
-                    self.c_cfg = json.loads(crypt.decrypt(bytes(self.jsons[i],'utf-8')).decode())
-                    self.c_index = i
-                    return self.c_cfg
+                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode().replace("\'",'"')
+                    self.c_cfg   = json.loads(down_down)
+                    self.c_index = k
+                    self.crypt   = crypt
+                    return self.c_cfg,
             except Exception as e:
+                print(e)
                 debug_log("[Archive::get_json]: Idk do better or something.")
                 continue
+        return False
 
     def exists(self, name : str):
         for i in self.headers.keys():
@@ -175,44 +175,95 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                 pass
         return False
 
-    def save(self):
-        f = open(self.user_path,'w')
-        
-        if self.c_index not in self.header.keys(): # if coming directly from config never should be in the keys since it was never added. So, add it.
-            self.add_json(self.c_index)
+    def add_config(self, user_name : str, key : bytes): 
+        crypt = Fernet(key)
+        payload = crypt.encrypt(bytes('{{"M21ConfigName" : "{}"}}'.format(user_name), 'utf-8')).decode()
+        success = crypt.encrypt(b"UserSuccess").decode()
+        self.header[user_name] = [len(payload), success]
+        self.jsons[success] = payload
+        self.save_config(user_name)
+        self.crypt = crypt
 
+    def del_config(self, user_name : str, key : bytes):
+        self.crypt = Fernet(key)
+        for i, k in enumerate(self.jsons.keys()):
+            try:
+                keys = list(self.header.keys())
+                if user_name == "" or user_name != keys[i]:
+                   continue
+                gate = self.crypt.decrypt(bytes(k, 'utf-8'))
+                if gate == b"UserSuccess":
+                    del self.header[user_name]
+                    del self.jsons[k]
+                    self.c_cfg = {}
+                    del self.crypt
+                    return True
+            except Exception as e:
+                debug_log("[Archive::del_config]: Nope!")
+                continue
+        return False
+
+    def save_config(self, user_name):
+        f = open(self.user_path,'r')
+        
         # add file header
-        f.write(json.dumps(self.jsons))
+        print("[------]\n{}".format(self.c_cfg))
+        crypted = self.crypt.encrypt(bytes(str(self.c_cfg), 'utf-8')).decode()
+
+        self.jsons[self.c_index] = crypted
+        self.header[user_name]   = [len(crypted), self.header[user_name][1]]
+        bak = f.read()
+        f.close()
+        f = open(self.user_path,'w')
+
+        stang = json.dumps(self.header)
 
         # write encrypted bits back
-        for k,v in self.jsons:
-            f.write(v)
+        for k,v in self.jsons.items():
+            stang += v  
 
+        print("[------]")
+        f.write(stang)
         f.close()
 
+class Config(object): # singleton me later
+    def __new__(self, user_name : str = "", password : str = ""):
+        if not hasattr(self, 'instance'):
+            self.instance  = super(Config, self).__new__(self)
+            self.user_name = user_name
+            self.settings  = {'M21ConfigName' : user_name}
+            self.data      = {}
+            self.users     = 0
 
-class Config(): # singleton me later
-    def __init__(self, user_name : str, password : str): # TODO: fix later
-        self.user_name = user_name
-        self.password = password
-        self.settings  = {'M21ConfigName' : user_name}
-        self.data = {}
+            Archive().parse_arch(password) # password is swag.
+                
+            key   = make_key(password)
+            del password
 
-        Archive().set_password(password)
-        if not Archive().exists(user_name):
-            Archive().add_json(self.settings)
+            if user_name:
+                c_cfg = Archive().get_json(user_name, key) # password is swag.
+            else:
+                c_cfg = Archive().get_json(password = key)
+
+            if c_cfg == False: 
+                self.user_name = ""
+                return False
+
+            self.c_cfg = c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
+            self.users = list(Archive().header.keys())
+
+        return self.instance
   
     def __setitem__(self, key, new_val):
         self.settings[key] = new_val # probably extremely shallow setting. I, may, add deeper searching sets. 
 
     def __getitem__(self, x):
-        return self.settings[x] # same as above with gets
+        return self.c_cfg[x] # same as above with gets
 
     def save_var(self, var, name = ""):
         # var  - the variable you want values' saved.
         # name - the name of the variable you want it saved under. please use this though i've added support to do this without a name.
 
-        # HERE
         f = Archive().c_cfg
 
         if name == "" or len(name) == 0: 
@@ -223,7 +274,7 @@ class Config(): # singleton me later
             self.data["both"] = [var, str(type(var))] # allow for weird syntax
 
         if name == "" or len(name) == 0: 
-            tag = "MVar_Unique0"
+            tag  = "MVar_Unique0"
             keys = [i for i in list(self.settings.keys()) if "MVar_Unique" in i]
             keys.sort()
 
@@ -281,9 +332,20 @@ class Config(): # singleton me later
             self.settings[name] = self.data
         
         Archive().c_cfg = self.settings
+        #Archive().save_config()
     
+    def add_user(self, user_name : str, password : str): # plaintext user and pass
+        key = make_key(password)
+        del password
+        Archive().add_config(user_name, key)
+
+    def delete_user(self, user_name : str, password : str):
+        key = make_key(password)
+        del password
+        Archive().del_config(user_name, key)
+
     def load(self, key):
         self.settings = Archive().get_json(key)
 
     def delete(self):
-       self.settings = {} 
+        self.settings = {} 

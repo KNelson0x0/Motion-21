@@ -5,6 +5,7 @@ import customtkinter
 from   os.path  import exists
 from   os       import mkdir
 from   os       import remove
+import os
 from   Utils.utils import *
 from   Utils.camera import Camera
 from   Utils.constants import *
@@ -20,7 +21,6 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 class UserTrain:
     def __init__(self, username, symbol, main_window = None):
-        self.user_path = "./UserData/{}/"
         self.user_name = username
         self.symbol = symbol
         self.main_window = main_window
@@ -28,11 +28,22 @@ class UserTrain:
         self.frames_collected = 0
 
         if self.main_window == None: return;
-        if not exists("./UserData/{}/ML/{}".format(self.user_name, symbol)): # bad but i need it to work just for now)
-            mkdir("Replace with your path".format(self.user_name, symbol)) # change path to actually be dynamic
-            mkdir("Replace with your path".format(self.user_name, symbol))
-        #if not exists(self.user_path):
-        #    open(self.user_path,'w').close()
+
+        self.main_path = os.path.abspath(os.path.join(file, os.pardir))
+        self.higher_p = os.path.abspath(os.path.join(self.main_path, os.pardir))
+        self.main_train = self.higher_p + r"\UserData"
+
+        if not exists(self.main_train):
+            mkdir(self.main_train)
+
+        if not exists(self.main_train + r"\ML"): # bad but i need it to work just for now)
+            mkdir(self.main_train + r"\ML") # change path to actually be dynamic
+
+        if not exists(self.main_train + r"\ML\train"):
+            mkdir(self.main_train + r"\ML\train")
+
+        if not exists(self.main_train + r"\ML\test"):
+            mkdir(self.main_train + r"\ML\test")
 
     def augment(self):
         train_datagen = ImageDataGenerator(rescale=1./255, rotation_range=30, width_shift_range=0.3, height_shift_range=0.3, horizontal_flip=False, fill_mode='nearest')
