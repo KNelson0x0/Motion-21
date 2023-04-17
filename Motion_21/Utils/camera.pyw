@@ -100,34 +100,24 @@ class Camera(object): # singleton because every time the camera is initialized t
                 self.rect_frame = self.frame.copy()
 
                 try:
-                    offsets = self.q.get(timeout=.1)
+                    offsets = self.q.get(timeout=.01)
                     self.previous_offsets = offsets
                     if offsets[2] != None:
-                        #cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (350 + offsets[0], 350 + offsets[1]), (1, 2,255), 3)
                         cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (1, 2,255), 3)
                     else:
-                        #cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (350 + offsets[0], 350 + offsets[1]), (255, 122,1), 3)
                         cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (255, 122,1), 3)
                 except:
                     offsets = self.previous_offsets
-                    #cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (350 + offsets[0], 350 + offsets[1]), (255, 122,1), 3)
                     cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (255, 122,1), 3)
+                
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
                 self.rgb_img_crop = cv2.cvtColor(self.rect_frame[52 + offsets[1] : 252 + offsets[1], 52 + offsets[0] : 252 + offsets[0]], cv2.COLOR_BGR2RGB)
-                # self.rgb_img_crop = cv2.cvtColor(self.rect_frame[50 + offsets[1] : 350 + offsets[1], 50 + offsets[0] : 350 + offsets[0]], cv2.COLOR_BGR2RGB)
                 self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
-                
-                #roi = self.rect_frame[50 + offsets[1] : 350 + offsets[1], 50 + offsets[0] : 350 + offsets[0]]
+
                 roi = self.rect_frame[52 + offsets[1] : 252 + offsets[1], 52 + offsets[0] : 252 + offsets[0]]
-                #roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
                 self.cropped_frame = roi # still an image
-
-
             except Exception as e:
                 debug_log("Something Happened! [");
                 debug_log(str(e))
                 debug_log("]")
-
-            
-            #time.sleep(0.1)         # pErFoRmAnCe
