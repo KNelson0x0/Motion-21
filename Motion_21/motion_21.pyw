@@ -41,9 +41,6 @@ if __name__ == "__main__":
     print("================= Config Read! ==================")
     try:
         ()
-
-
-
         #Config("Stupendous", "Amazing")
         #Config("Beemer", "swag2")
         #print(Config().c_cfg)

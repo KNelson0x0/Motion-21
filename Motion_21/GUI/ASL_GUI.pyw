@@ -81,6 +81,8 @@ class App(customtkinter.CTk):
         self.title("ASL Learning App")
         self.average_list = AverageList()
         self.curr_accuracy = 100
+        self.after_id = ""
+        self.cam_after_id = ""
 
         # Locks size of window
         self.resizable(False, False)
@@ -426,6 +428,9 @@ class App(customtkinter.CTk):
 
     def lesson_select(self):
         self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
+        if self.after_id:     self.after_cancel(self.after_id)
+        if self.cam_after_id: self.after_cancel(self.cam_after_id)
+
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -906,7 +911,7 @@ class App(customtkinter.CTk):
 
     def back_button_lessons(self):
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-        self.lesson_select
+        self.lesson_select()
 
     # Button that opens lesson select page
     def lesson_select_button(self, choice):
@@ -983,10 +988,6 @@ class App(customtkinter.CTk):
         self.settings_image = self.load_image("/images/settings.png", 25, 25)
         self.exit_image = self.load_image("/images/exit.png", 25, 25)
         
-        #Button mapping and functionality
-        #self.current_user = customtkinter.CTkButton(master=self.frame_left, text = "User\nIcon", width = 180, height = 40, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000")
-        #self.current_user.grid(row=0, column=0, padx=0, pady=0, sticky="n")
-        
         self.button3 = customtkinter.CTkButton(master=self.frame_left, image = self.home_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
         self.button3.grid(row=8, column=0, padx=0, pady=0, sticky="sw")
         
@@ -1007,9 +1008,6 @@ class App(customtkinter.CTk):
         self.button1 = customtkinter.CTkButton(master=self.frame_right, text = "Lesson Select", text_color = THEME_OPP, font = ("Seoue UI", 50, "bold"), width = 200, height = 50, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
         self.button1.grid(row=1, column=0, padx=0, pady=5, sticky="we")
 
-        # Create a label based on the image of the home description
-        #self.motion21_description = customtkinter.CTkLabel(master=self.frame_right, text = "", image = self.home_description, width = 20, height = 20, fg_color=("white", "gray38"))
-        #self.motion21_description.grid(row=2, column=0, padx=0, pady=5)
 
         self.motion21_title = customtkinter.CTkLabel(master=self.frame_right, text = "Motion 21 is an American Sign Language Learning Application,\n using computer vision and machine learning to provide\n the user with live feedback on what gesture or character\n they are holding up on screen.", text_color = THEME_OPP, width = 20, height = 150, font = ("Segoe UI", 20), fg_color=("white", "gray20"))
         self.motion21_title.grid(row=2, column=0, padx=0, pady=50, sticky = "we")
@@ -1019,18 +1017,14 @@ class App(customtkinter.CTk):
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
             self.label_cam.cw_update();
             self.label_cam2.cw_update();
-            self.after(10, self.the_afterinator)
-            return
-        else:
-            return 1
+            self.after_id = self.after(10, self.the_afterinator)
 
-    
     def camera_aftinerator(self):
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
             let = UserSign().run_comparison()
 
             if let == None: 
-                self.after(210, self.camera_aftinerator)
+                self.cam_after_id = self.after(210, self.camera_aftinerator)
                 return
 
             if let == self.letter_state.DESIRED_LETTER[0]:
@@ -1038,6 +1032,8 @@ class App(customtkinter.CTk):
                 print("FOUND!!!!!!!")
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 self.label8.update()
+                self.after_cancel(self.after_id)
+                self.after_cancel(self.cam_after_id)
                 return
 
             try:
@@ -1055,9 +1051,8 @@ class App(customtkinter.CTk):
             except Exception as e: 
                 print(e)
 
-            self.after(200, self.camera_aftinerator)
-        else:
-            return 1
+            self.cam_after_id = self.after(200, self.camera_aftinerator)
+
 
 
 
