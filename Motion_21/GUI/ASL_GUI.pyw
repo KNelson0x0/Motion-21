@@ -430,7 +430,7 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
 
@@ -824,7 +824,7 @@ class App(customtkinter.CTk):
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
     def letter_lessons(self, letter):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         self.frame_main_right.destroy()
 
         self.back_to_lesson = customtkinter.CTkButton(master=self.frame_main_left, text = "Lesson Select", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)

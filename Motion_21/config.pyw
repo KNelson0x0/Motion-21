@@ -20,13 +20,10 @@ class MemKey(): # because we arent storing any of this on a server, the least we
        [NEVER USE THE ASSIGNMENT OPERATOR WITH THIS CLASS!]
        In order for the entire point of this class to work the key has to 
        be in memory for as little time as possible. If you do:
-
        mem_key = MemKey("password")
-
        and later do:
        
        mem_key = "password"
-
        mem_key is now a string obj and the key is once again in plaintext.
        Dont do that. Use .set_key.
     """
@@ -243,7 +240,7 @@ class Config(object): # singleton me later
             if user_name:
                 c_cfg = Archive().get_json(user_name, key) # password is swag.
             else:
-                c_cfg = Archive().get_json(password = key)
+                c_cfg = Archive().get_json(username = key)
 
             if c_cfg == False: 
                 self.user_name = ""
@@ -348,4 +345,4 @@ class Config(object): # singleton me later
         self.settings = Archive().get_json(key)
 
     def delete(self):
-        self.settings = {} 
+        self.settings = {}
