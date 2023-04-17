@@ -1032,12 +1032,13 @@ class App(customtkinter.CTk):
     def camera_aftinerator(self):
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
             self.border_change = 0
+            print(self.border_change)
             let = UserSign().run_comparison()
             
             #initial_frame = self.initial_rectframe
             #print(initial_frame)
 
-            if let == None: 
+            if let == None and self.border_change == 0: 
                 self.cam_after_id = self.after(210, self.camera_aftinerator)
                 return
 
