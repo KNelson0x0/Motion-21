@@ -359,6 +359,227 @@ class App(customtkinter.CTk):
                                                 number_of_steps=10,
                                                 command=self.progressbar.set)
         self.slider_1.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")   
+    
+    # Model Training front end, configuring letter (pulled from old and converting and dynamifying)
+    def configure_button(self): 
+        global THEME
+        global THEME_OPP
+
+        self.del_list = StateHandler().change_state(WindowState.SETTINGS, self.del_list)
+        if self.after_id:     self.after_cancel(self.after_id)
+        if self.cam_after_id: self.after_cancel(self.cam_after_id)
+
+        self.usertrain_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+        #trainlist_length = len(self.usertrain_letters)
+        
+        # Destroyed old window
+        self.frame_left.destroy()
+        self.frame_right.destroy()
+
+        # Creates left sub-window
+        # ------------------------------------------------------------------------------------
+        self.frame_left = customtkinter.CTkFrame(master=self, width=200, corner_radius=0, fg_color = THEME)
+        self.frame_left.grid(row=0, column=0, sticky="nswe")
+
+        # configure grid layout (1x8)
+        self.frame_left.grid_rowconfigure(2, minsize=150)      # empty row as spacing
+        self.frame_left.grid_rowconfigure(4, minsize=150)      # empty row as spacing
+        self.frame_left.grid_rowconfigure(8, minsize=0)     # sets minimum size from bottom of screen to buttons
+
+        # Creates label with the text "Configure Motion 21"
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, text="Configure Motion 21:", text_color = THEME_OPP, font=("Segoe UI", 14))
+        self.label_1.grid(row=1, column=0, padx=1, pady=1, sticky="we")
+
+        # Creates label with the description of the configure button menu
+        self.label_3 = customtkinter.CTkLabel(master=self.frame_left, text="Is Motion 21 having trouble\n recognizing your signs?\n Reconfigure it to fit you \ninstead! Please click any of the\n letters from A to Z on the right \n and we will train our model\n based on your examples!\n", text_color = THEME_OPP, font=("Segoe UI", 11))
+        self.label_3.grid(row=3, column=0, padx=1, pady=5, sticky="nswe")
+
+        # Creates Return button
+        self.button7 = customtkinter.CTkButton(master=self.frame_left, text = "Return", text_color = THEME_OPP, width = 150, height = 60, border_width = 1, corner_radius = 5, fg_color = THEME, border_color=THEME, command=self.return_function)
+        self.button7.grid(row=7, column=0, padx=0, pady=10, sticky="we")
+
+        # Creates right sub-window
+        # ------------------------------------------------------------------------------------   
+        self.frame_right = customtkinter.CTkFrame(master=self, fg_color = THEME)
+        self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
+
+        # configure grid layout (8x9)
+        self.frame_right.grid_rowconfigure(1, minsize=50)      # empty row as spacing
+        self.frame_right.grid_rowconfigure(8, minsize=0)       # sets minimum size from bottom of screen to buttons
+        self.frame_right.grid_columnconfigure(0, minsize=25)   # empty column as spacing
+
+        # Creates label with the text "Settings Page:"
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_right, text="Select a Letter to Change:", text_color = THEME_OPP, font=("Segoe UI", 20))
+        self.label_1.grid(row=0, column=0, columnspan=5, padx=0, pady=0, sticky="we")
+        
+        # attempting to make this dynamic, having issues
+        '''
+        for i in range(trainlist_length):
+            if self.usertrain_letters[0:6]:
+                letter_button = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[i], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command = self.config_letter(self.usertrain_letters[0:6]))
+                #print(self.usertrain_letters[0:6])
+                letter_button.grid(row = 2, column = i, padx = 15, pady = 10)
+            
+            if self.usertrain_letters[6:12]:
+                print(self.usertrain_letters[6:12])
+                letter_button.grid(row = 3, column = 1, columnspan = 6, padx = 15, pady = 10)
+            if self.usertrain_letters[12:18]:
+                print(self.usertrain_letters[12:18])
+                letter_button.grid(row = 4, column = 1, columnspan = 6, padx = 15, pady = 10)
+            if self.usertrain_letters[18:24]:
+                print(self.usertrain_letters[18:24])                
+                letter_button.grid(row = 5, column = 1, columnspan = 6, padx = 15, pady = 10)
+            
+            
+            self.usertrain_letters.append(letter_button)    
+        self.del_list = self.usertrain_letters
+        '''
+
+        self.buttonA = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[0], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[0]))
+        self.buttonA.grid(row=2, column=1,padx=15, pady=10, sticky="w")
+        self.buttonB = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[1], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[1]))
+        self.buttonB.grid(row=2, column=2, padx=15, pady=10, sticky="w")
+        self.buttonC = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[2], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[2]))
+        self.buttonC.grid(row=2, column=3, padx=15, pady=10, sticky="w")
+        self.buttonD = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[3], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[3]))
+        self.buttonD.grid(row=2, column=4, padx=15, pady=10, sticky="w")
+        self.buttonE = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[4], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[4]))
+        self.buttonE.grid(row=2, column=5, padx=15, pady=10, sticky="w")
+        self.buttonF = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[5], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[5]))
+        self.buttonF.grid(row=2, column=6, padx=15, pady=10, sticky="w")
+        self.buttonG = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[6], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[6]))
+        self.buttonG.grid(row=3, column=1, padx=15, pady=10, sticky="w")
+        self.buttonH = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[7], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[7]))
+        self.buttonH.grid(row=3, column=2, padx=15, pady=10, sticky="w")
+        self.buttonI = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[8], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[8]))
+        self.buttonI.grid(row=3, column=3, padx=15, pady=10, sticky="w")
+        self.buttonJ = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[9], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[9]))
+        self.buttonJ.grid(row=3, column=4, padx=15, pady=10, sticky="w")
+        self.buttonK = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[10], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[10]))
+        self.buttonK.grid(row=3, column=5, padx=15, pady=10, sticky="w")
+        self.buttonL = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[11], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[11]))
+        self.buttonL.grid(row=3, column=6, padx=15, pady=10, sticky="w")
+        self.buttonM = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[12], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[12]))
+        self.buttonM.grid(row=4, column=1, padx=15, pady=10, sticky="w")
+        self.buttonN = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[13], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[13]))
+        self.buttonN.grid(row=4, column=2, padx=15, pady=10, sticky="w")
+        self.buttonO = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[14], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[14]))
+        self.buttonO.grid(row=4, column=3, padx=15, pady=10, sticky="w")
+        self.buttonP = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[15], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[15]))
+        self.buttonP.grid(row=4, column=4, padx=15, pady=10, sticky="w")
+        self.buttonQ = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[16], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[16]))
+        self.buttonQ.grid(row=4, column=5, padx=15, pady=10, sticky="w")
+        self.buttonR = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[17], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[17]))
+        self.buttonR.grid(row=4, column=6, padx=15, pady=10, sticky="w")
+        self.buttonS = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[18], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[18]))
+        self.buttonS.grid(row=5, column=1, padx=15, pady=10, sticky="w")
+        self.buttonT = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[19], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[19]))
+        self.buttonT.grid(row=5, column=2, padx=15, pady=10, sticky="w")
+        self.buttonU = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[20], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[20]))
+        self.buttonU.grid(row=5, column=3, padx=15, pady=10, sticky="w")
+        self.buttonV = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[21], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[21]))
+        self.buttonV.grid(row=5, column=4, padx=15, pady=10, sticky="w")
+        self.buttonW = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[22], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[22]))
+        self.buttonW.grid(row=5, column=5, padx=15, pady=10, sticky="w")
+        self.buttonX = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[23], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[23]))
+        self.buttonX.grid(row=5, column=6, padx=15, pady=10, sticky="w")
+        self.buttonY = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[24], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[24]))
+        self.buttonY.grid(row=6, column=3, padx=15, pady=10, sticky="w")
+        self.buttonZ = customtkinter.CTkButton(master=self.frame_right, text = self.usertrain_letters[25], text_color = THEME_OPP, width = 55, height = 55, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=lambda:self.config_letter(self.usertrain_letters[25]))
+        self.buttonZ.grid(row=6, column=4, padx=15, pady=10, sticky="w")
+
+    def config_letter(self, letter):
+        self.del_list = StateHandler().change_state(WindowState.TRAINING, self.del_list) # Change to TRAINING state
+        # Destroyed old window
+        self.frame_left.destroy()
+        self.frame_right.destroy()
+
+        # Configures grid layout of 2x1
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        # Creates left sub-window
+        # ------------------------------------------------------------------------------------   
+        self.frame_left = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
+        self.frame_left.grid(row=0, column=0, sticky="nswe")
+
+        # configure grid layout (9x1)
+        self.frame_left.grid_rowconfigure(0, minsize=10)    # sets minimum size from top of screen to text
+        self.frame_left.grid_rowconfigure(2, weight=1)      # creates empty row with weight 1
+        self.frame_left.grid_rowconfigure(4, weight=0)      # creates empty row with weight 0
+        self.frame_left.grid_rowconfigure(7, weight=1)      # creates empty row with weight 1
+        self.frame_left.grid_rowconfigure(9, minsize=0)     # sets minimum size from bottom of screen to buttons
+
+        # Creates user training label
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, text="Training \nConfiguration:", font=("Segoe UI", 14))
+        self.label_1.grid(row=1, column=0, padx=1, pady=1, sticky="we")
+
+        # Previous training information for the user
+        self.label_2 = customtkinter.CTkLabel(master=self.frame_left, text='Please click "Begin"\nwhen ready to configure.\nPlease make sure your\n hand is in the frame.\nPlease move your\nhand around at different\nangles and lengths from\nthe camera. The camera\nwill record for a\nfew seconds and after\nyou should be good\n to go.', font=("Segoe UI", 11))
+        self.label_2.grid(row=3, column=0, padx=1, pady=5, sticky="nswe")
+
+        #Images for left side of window
+        self.home_image = self.load_image("/images/home.png", 25, 25)
+        self.home_example_image = self.load_image("/images/HomeExample.png", 700, 635)
+        self.settings_image = self.load_image("/images/settings.png", 25, 25)
+        self.exit_image = self.load_image("/images/exit.png", 25, 25)
+
+        #Button mapping and functionality
+        self.button3 = customtkinter.CTkButton(master=self.frame_left, image = self.home_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
+        self.button3.grid(row=8, column=0, padx=0, pady=0, sticky="sw")
+        self.button4 = customtkinter.CTkButton(master=self.frame_left, image = self.settings_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.settings_button)
+        self.button4.grid(row=8, column=0, padx=0, pady=0, sticky="s")
+        self.button5 = customtkinter.CTkButton(master=self.frame_left, image = self.exit_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.exit_button)
+        self.button5.grid(row=8, column=0, padx=0, pady=0, sticky="se")
+
+        # Creates right sub-window
+        # ------------------------------------------------------------------------------------   
+        self.frame_right = customtkinter.CTkFrame(master=self)
+        self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
+
+        # self.training = UserTrain("DEMO_USER", id, self.frame_right)
+        # for this we need to update to how things are being done now
+        # connect back end, work with chad
+
+        # configure grid layout (5x3)
+        self.frame_right.grid_rowconfigure((0, 1, 3), weight=1)        # sets weights of standard rows
+        self.frame_right.grid_rowconfigure(5, weight=1)                # sets weight of last row
+        self.frame_right.grid_columnconfigure((0, 1), weight=1)        # sets weights of standard columns
+        self.frame_right.grid_columnconfigure(2, minsize=0)            # sets minimum size from right side of screen to cameras
+
+        # Window for the main camera
+        # For now this is just an error message of "No Camera Found"
+        # Once a camera is linked we create the same size window but with the camera output
+        self.config_cam_win1 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", compound = "bottom",)
+        self.config_cam_win1.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
+
+        # Label that describes the main camera above
+        self.label6 = customtkinter.CTkLabel(master=self.frame_right, text = "Main Camera")
+        self.label6.grid(row=1, column=0, sticky="n", padx=10, pady=0)      
+
+        # Creates instruction window for the application to communicate with the user
+        self.label7 = customtkinter.CTkLabel(master=self.frame_right, text = 'Please sign the letter "{}" that you want \nMotion 21 to use as an example!'.format(letter), font=("Segoe UI", 20), width = 450, height = 100, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
+        self.label7.grid(row=3, column=0, columnspan=2, sticky="ns", padx=0, pady=0)
+
+        self.button6 = customtkinter.CTkButton(master=self.frame_left, width = 160, height = 60, border_width = 1, corner_radius = 5, text = "Begin", compound = "bottom",  border_color="#101010")#,command=self.training_begin)
+        self.button6.grid(row=7, column=0, columnspan=3, sticky="wse", padx=10, pady=10)
+
+        # Window for the user hand camera
+        # For now this is just an error message of "No Camera Found"
+        # Once a camera is linked we create the same size window but with the camera output
+        self.config_cam_win2 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", cropped = True, compound = "bottom")
+        self.config_cam_win2.grid(row=0, column=1, sticky="nw", padx=10, pady=10)
+
+        # Label that describes the user hand camera above
+        self.label9 = customtkinter.CTkLabel(master=self.frame_right, text = "Hand Camera")
+        self.label9.grid(row=1, column=1, padx=0, pady=0, sticky="n")
+        
+
+        self.average_list.reinit(letter)
+        self.letter_state.set_letter(letter)
+        self.update()
+        self.the_afterinator()
+        #self.camera_aftinerator()
 
     # Button that recreates window with settings page
     def settings_button(self):
@@ -393,8 +614,8 @@ class App(customtkinter.CTk):
         #self.button5.grid(row=4, column=0, padx=0, pady=0)
         self.button6 = customtkinter.CTkButton(master=self.frame_left, text = "Notifications", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.notif_button)
         self.button6.grid(row=4, column=0, padx=0, pady=0)
-        #self.button7 = customtkinter.CTkButton(master=self.frame_left, text = "Configure Letter", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.configure_button)
-        #self.button7.grid(row=6, column=0, padx=0, pady=0)
+        self.button7 = customtkinter.CTkButton(master=self.frame_left, text = "Configure Letter", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.configure_button)
+        self.button7.grid(row=6, column=0, padx=0, pady=0)
     
         # Creates Return button
         self.button8 = customtkinter.CTkButton(master=self.frame_left, text = "Return", text_color = THEME_OPP, width = 150, height = 60, border_width = 1, corner_radius = 5, fg_color = THEME, border_color=THEME, command=self.return_function)
@@ -422,6 +643,8 @@ class App(customtkinter.CTk):
         self.label_6.grid(row=5, column=0, padx=0, pady=0, sticky="w")
         self.label_7 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Notifications: Change notification options for the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
         self.label_7.grid(row=6, column=0, padx=0, pady=0, sticky="w")
+        self.label_8 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Configure Letter: Lets you train Motion 21 to better suit your needs for letters\n", font=("Segoe UI", 11))
+        self.label_8.grid(row=7, column=0, padx=0, pady=0, sticky="w")
 
     # Button that allows the user to change notification options
     def notif_button(self):
@@ -786,7 +1009,15 @@ class App(customtkinter.CTk):
             else:
                 self.label_cam.cw_update()
                 self.label_cam2.cw_update()
+
+                
+
                 self.after_id = self.after(10, self.the_afterinator)
+        
+        if StateHandler().c_state == WindowState.TRAINING:
+            self.config_cam_win1.cw_update()
+            self.config_cam_win2.cw_update()
+            self.after_id = self.after(10, self.the_afterinator)
 
             return     
 
