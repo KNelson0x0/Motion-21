@@ -6,6 +6,7 @@ import shutil
 import numpy as np
 import matplotlib.pyplot as plot
 from Utils.camera import Camera
+from Utils.states import LetterState
 
 class UserSign(object):
 
@@ -70,48 +71,30 @@ class UserSign(object):
 
     # Creates our base arrays
     def base_arr_function(self, letter):
-        # Nonmovement Alphabet letters
-        # ----------------------------------------------------------------------------------------------------------------------------------------------
-        alpha_dict = {
-            #pre-determined base image array for given letter (A in this case)
-            "A": [(70, 166), (103, 164), (134, 140), (146, 111), (138, 91), (122, 103), (126, 79), (119, 105), (116, 116), (100, 100), (104, 79), (100, 111), 
-            (99, 116), (80, 100), (82, 81), (82, 111), (82, 119), (59, 102), (62, 87), (64, 109), (65, 117)],
-            "B": [(84, 185), (113, 176), (130, 145), (114, 120), (91, 114), (126, 108), (126, 76), (124, 56), (120, 38), (106, 103), (108, 67), (107, 42), 
-            (106, 21), (89, 106), (90, 71), (91, 48), (91, 28), (70, 115), (71, 86), (73, 67), (73, 50)],
-            "C" : [(70, 153), (92, 150), (118, 135), (138, 128), (157, 125), (100, 91), (118, 74), (136, 75), (149, 81), (91, 88), (115, 67), (135, 70), 
-            (149, 80), (85, 90), (109, 68), (131, 71), (147, 79), (82, 97), (105, 81), (123, 79), (137, 81)],
-            "D" : [(75, 168), (103, 163), (125, 153), (125, 130), (104, 116), (130, 103), (136, 72), (140, 51), (140, 33), (110, 97), (116, 68), (111, 95), 
-            (110, 110), (91, 97), (94, 68), (93, 92), (92, 111), (71, 105), (75, 83), (79, 99), (81, 114)],
-            "E" : [(56, 141), (84, 138), (106, 123), (99, 98), (76, 92), (110, 85), (120, 57), (111, 71), (104, 85), (92, 75), (101, 48), (92, 72), (88, 85), 
-            (75, 71), (80, 44), (76, 65), (73, 81), (55, 76), (59, 54), (62, 66), (62, 81)],
-            "F" : [(71, 167), (96, 163), (120, 153), (136, 140), (129, 129), (120, 105), (132, 89), (131, 100), (125, 114), (102, 93), (115, 65), (125, 47), 
-            (133, 29), (82, 90), (83, 58), (85, 36), (88, 17), (61, 96), (52, 68), (46, 51), (43, 35)],
-            "G" : [],
-            "H" : [],
-            "I" : [],
-            "K" : [],
-            "L" : [],
-            "M" : [],
-            "N" : [],
-            "O" : [],
-            "P" : [],
-            "Q" : [],
-            "R" : [],
-            "S" : [],
-            "T" : [],
-            "U" : [],
-            "V" : [],
-            "W" : [],
-            "X" : [],
-            "Y" : [],
-        # Movement Alphabet letters
-        # ---------------------------------------------------------------------------------------------------------------------------------------------
-            "J" : [],
-            "Z" : [],
-        }
-        # pythonic'd this. idk how dict internals work but id assume its the same if not more efficient. - K
-        # Returns the base array for the given letter (only non-movement for now)
-        return alpha_dict[letter]
+
+        filePath = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter + ".txt"
+        #print(filePath)
+        letterArray = []
+
+        # Opens the letter file associated with the base letter that was passed
+        with open(filePath, 'r') as f:
+
+            contents = f.read().strip()
+            arrays = contents.split('\n')
+
+            for line in arrays:
+
+                array = eval(line.strip())
+
+                letterArray.append(array)
+
+            # Debug print functions to show the combined base letter array
+            # ------------------------------------------------------------
+            #print(letterArray)
+            # ------------------------------------------------------------
+
+        # Returns the base array for the given letter
+        return letterArray
 
     # Creates our user array
     def user_arr_function(self):
@@ -212,7 +195,14 @@ class UserSign(object):
         plot.show()
 
     # Runs the comparison function between the user letter sign and the base letters
-    def run_comparison(self):
+    def run_comparison(self, letter):
+
+        #REPLACE LESSON_LETTER WITH FUNCTION PARAMETER AKA GUI STUFF
+        lesson_letter = letter
+        print("LESSON LETTER: " + lesson_letter)
+
+        matched_letter = ""
+        matched = False
 
         #print("it's working")
         # Checks to see if user input is matched with any of our base letters
@@ -223,11 +213,13 @@ class UserSign(object):
         
         #return Camera().rgb_img_crop
 
+        # While loop to check through all our base letters
+        # Might not be needed
         #while not matched:
 
         # Variable declarations
         # Letter only contains non-movement letters for now
-        letter = ["A", "B", "C", "D", "E", "F"]#, "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
+        #letter = ["A", "B", "C", "D", "E", "F"]#, "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
 
         # Grabs user letter input
         user_arr = self.user_arr_function()
@@ -242,61 +234,78 @@ class UserSign(object):
             if None in user_arr:
                 has_none = True
             if has_none == False:
+                # For loop that checks through all our base letters
+                #MIGHT NEED TO ADD THIS BACK, IDK
+                #for num_letters in range(len(letter)):
 
-            # For loop that checks through all our base letters
+                    #chosen_letter = letter[num_letters]
 
-                for i in range(len(letter)):
+                    base_arr_all = self.base_arr_function(lesson_letter) #lesson_letter
 
-                    chosen_letter = letter[i]
+                    base_arr_all = np.array(base_arr_all)
 
-                    base_arr = self.base_arr_function(chosen_letter)
+                    for num_base_letters in range(len(base_arr_all)):
 
-                    base_arr = np.array(base_arr)
+                        base_arr = base_arr_all[num_base_letters]
 
-                    # Finds our Z_star of our base A to compare with user's Z_star
-                    covarianceBase = self.compute_covariance_matrix(base_arr)
-                    pcsBase, LBase = self.find_pcs(covarianceBase)
-                    Z_star_base = self.project_data(base_arr, pcsBase, LBase)
+                        print("User Calculations")
 
-                    # Finds the difference between each point to use for comparison with user letters as the distance between each z star point will be similar
-                    Z_star_base_arr = []
+                        #for i in range(int(np.size(user_arr))):
+                        covariance = self.compute_covariance_matrix(user_arr)
+                        pcs, L = self.find_pcs(covariance)
+                        Z_star = self.project_data(user_arr, pcs, L)
+                        #print(Z_star)
+                        #print(base_arr)
 
-                    for i in range(len(Z_star_base) - 1):
-                        temp = Z_star_base[i] - Z_star_base[i+1]
-                        Z_star_base_arr.append(temp)
+                        # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
+                        Z_star_user_arr = []
 
-                    #for i in range(int(np.size(user_arr))):
-                    covariance = self.compute_covariance_matrix(user_arr)
-                    pcs, L = self.find_pcs(covariance)
-                    Z_star = self.project_data(user_arr, pcs, L)
-                    #print(Z_star)
-                    #print(base_arr)
+                        for i in range(len(Z_star) - 1):
+                            temp = Z_star[i] - Z_star[i + 1]
+                            Z_star_user_arr.append(temp)
 
-                    # Grabs the difference between the user's z star points and saves them to Z_star_user_arr
-                    Z_star_user_arr = []
+                        # Run a relational algorithm and see if user input matches letter A
+                        # (compares Z_star_base_arr with Z_star_user_arr)
+                             
+                        # Declare count here so it resets every base letter  
+                        count = 0
 
-                    for i in range(len(Z_star) - 1):
-                        temp = Z_star[i] - Z_star[i + 1]
-                        Z_star_user_arr.append(temp)
+                        # Debug print function to label the match percentages
+                        print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
 
-                    # Run a relational algorithm and see if user input matches letter A
-                    # (compares Z_star_base_arr with Z_star_user_arr)
-                    count = 0
+                        # Checks if user letter matches base letter
+                        for i in range(len(Z_star_user_arr)):
+                            temp = (Z_star_user_arr[i] / base_arr[i]) * 100
+                            if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values/original was 60, 140
+                                count += 1
+                            #print("[{}]: {}".format(i,count))
 
-                    # Checks if user letter matches base letter
-                    for i in range(len(Z_star_user_arr)):
-                        temp = (Z_star_user_arr[i] / Z_star_base_arr[i]) * 100
-                        #print(temp)
-                        if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= 140)): #change these values/original was 60, 140
-                            count += 1
+                            # Debug print functions to label and print the match percentages per point
+                            # ------------------------------------------------------------------------              
+                            print(temp)
+                            # ------------------------------------------------------------------------ 
 
-                    #STATE 0 = no hand detected, 1 = hand detected but no sign, 2 = hand detected with sign
+                        #STATE 0 = no hand detected, 1 = hand detected but no sign, 2 = hand detected with sign
 
-                    # If all the points are similarly related, then the user has successfully signed the base image that we compared it to
-                    if(count >= 10): #decreased to 15, can increase for similar hand signs
-                        print("You have correctly signed " + chosen_letter + "!")
-                        return chosen_letter
-        return None
+                        # If a set number of points are similarly related, then the user has successfully signed the base image that we compared it to
+                        if(count >= 15): #decreased to 15, can increase for similar hand signs
+                            print("Counts that matched: " + str(count))
+                            print(lesson_letter + " signed correctly")
+                            matched = True
+                            matched_letter = lesson_letter
+                        else:
+                            print("Counts that matched: " + str(count))
+                            print(lesson_letter + " was not a match")
+
+                    # If matched has been flagged, then the user has successfully signed the lesson letter and outputs a message accordingly
+                    if(matched == True and lesson_letter == matched_letter):
+                        print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
+                        return lesson_letter
+                    else:
+                        matched = True
+                        print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
+                        return None
+        
                         #break
                     #else:
                         #print("No sign detected") #Counts that matched: " + str(count))
