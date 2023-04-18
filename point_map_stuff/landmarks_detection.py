@@ -232,8 +232,15 @@ while not matched:
 
             # Debug print functions to label and print the user sign point relationship array (1D 20 number array of relational data between points)
             # ----------------------------------------------------------------------------------------------------
-            #print("User 1D Point Relationship Array")
-            #print(Z_star_user_arr)
+            print("User 1D Point Relationship Array")
+            print(Z_star_user_arr)
+            # ----------------------------------------------------------------------------------------------------
+
+            # Debug print functions to label and print the base letter point relationship array (1D 20 number array of relational data between points)
+            # ----------------------------------------------------------------------------------------------------
+            print("Letter " + chosen_letter + " Calculations")
+            print("Letter " + chosen_letter + " 1D Point Relationship Array")
+            print(base_arr)
             # ----------------------------------------------------------------------------------------------------
 
             # Run a relational algorithm and see if user input matches letter A
