@@ -6,6 +6,7 @@ import shutil
 import numpy as np
 import matplotlib.pyplot as plot
 from Utils.camera import Camera
+from Utils.states import LetterState
 
 class UserSign(object):
 
@@ -194,10 +195,11 @@ class UserSign(object):
         plot.show()
 
     # Runs the comparison function between the user letter sign and the base letters
-    def run_comparison(self):
+    def run_comparison(self, letter):
 
         #REPLACE LESSON_LETTER WITH FUNCTION PARAMETER AKA GUI STUFF
-        lesson_letter = "F"
+        lesson_letter = letter
+        print("LESSON LETTER: " + lesson_letter)
 
         matched_letter = ""
         matched = False
