@@ -84,7 +84,7 @@ class App(customtkinter.CTk):
         self.after_id = ""
         self.cam_after_id = ""
         self.border_change = 0
-        #self.initial_rectframe = Camera().begin
+        self.initial_rectframe = Camera().get_rect_frame
 
 
         # Locks size of window
@@ -107,8 +107,8 @@ class App(customtkinter.CTk):
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
-        if StateHandler().c_state == WindowState.HOME:
-            return
+        #if StateHandler().c_state == WindowState.HOME:
+        #    return
 
         StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
@@ -430,7 +430,7 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
-        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
 
@@ -455,7 +455,10 @@ class App(customtkinter.CTk):
         self.frame_main_right.grid_rowconfigure(9, minsize=0)
 
         # buttons
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Home", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
+
+        #self.button3 = customtkinter.CTkButton(master=self.frame_left, image = self.home_image, text = "", width = 48, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
+        #self.button3.grid(row=8, column=0, padx=0, pady=0, sticky="sw")
+        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, image = self.home_image, text = "", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
         self.lesson_home.grid(row = 10,  column = 0, padx = 0, pady = 0, sticky = "s")
         
 
@@ -480,8 +483,9 @@ class App(customtkinter.CTk):
         
         self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = self.lesson7_letters)
         self.lesson7.grid(row = 3, column = 4, padx = 2, pady = 2)
-        
+
     def lesson1_letters(self):
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -532,6 +536,7 @@ class App(customtkinter.CTk):
         self.buttonD.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "nswe")
 
     def lesson2_letters(self):
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -581,6 +586,7 @@ class App(customtkinter.CTk):
         self.buttonH.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
 
     def lesson3_letters(self):
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -634,6 +640,7 @@ class App(customtkinter.CTk):
         self.buttonM.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
 
     def lesson4_letters(self):
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -683,6 +690,7 @@ class App(customtkinter.CTk):
         self.buttonQ.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
 
     def lesson5_letters(self):
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -732,6 +740,7 @@ class App(customtkinter.CTk):
         self.buttonU.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
 
     def lesson6_letters(self):
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -781,6 +790,7 @@ class App(customtkinter.CTk):
         self.buttonY.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
 
     def lesson7_letters(self):
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -1030,13 +1040,13 @@ class App(customtkinter.CTk):
             return     
 
     def camera_aftinerator(self):
+        print(self.initial_rectframe)
+
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
             self.border_change = 0
             print(self.border_change)
             let = UserSign().run_comparison()
             
-            #initial_frame = self.initial_rectframe
-            #print(initial_frame)
 
             if let == None and self.border_change == 0: 
                 self.cam_after_id = self.after(210, self.camera_aftinerator)
