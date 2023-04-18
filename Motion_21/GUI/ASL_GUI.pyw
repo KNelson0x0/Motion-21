@@ -84,7 +84,14 @@ class App(customtkinter.CTk):
         self.after_id = ""
         self.cam_after_id = ""
         self.border_change = 0
+    
         self.initial_rectframe = Camera().get_rect_frame
+    
+        
+        #seb - try to initialize variable of border color from camera to use in afterinator? this isnt working with this
+        #      whats wrong with my method though
+        #self.initial_rectframe = Camera().begin
+    
 
 
         # Locks size of window
@@ -434,6 +441,9 @@ class App(customtkinter.CTk):
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
 
+        static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
+        movement_letters = ["J", "Z"]
+
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -463,29 +473,29 @@ class App(customtkinter.CTk):
         
 
         # lessons
-        self.lesson1 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 1:\n A, B, C, D", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson1_letters)
+        self.lesson1 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 1:\n A, B, C, D", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[0:4]))
         self.lesson1.grid(row = 0, column = 4, padx = 2, pady = 2)
         
-        self.lesson2 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 2:\n E, F, G, H", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson2_letters)
+        self.lesson2 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 2:\n E, F, G, H", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[4:8]))
         self.lesson2.grid(row = 0, column = 5, padx = 2, pady = 2)
 
-        self.lesson3 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 3:\n I, K, L, M", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson3_letters)
+        self.lesson3 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 3:\n I, K, L, M", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[8:12]))
         self.lesson3.grid(row = 1, column = 4, padx = 2, pady = 2)
         
-        self.lesson4 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 4:\n N, O, P, Q", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson4_letters)
+        self.lesson4 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 4:\n N, O, P, Q", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[12:16]))
         self.lesson4.grid(row = 1, column = 5, padx = 2, pady = 2)
         
-        self.lesson5 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 5:\n R, S, T, U", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson5_letters)
+        self.lesson5 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 5:\n R, S, T, U", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[16:20]))
         self.lesson5.grid(row = 2, column = 4, padx = 2, pady = 2)
 
-        self.lesson6 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 6:\n V, W, X, Y", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = self.lesson6_letters)
+        self.lesson6 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 6:\n V, W, X, Y", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[20:24]))
         self.lesson6.grid(row = 2, column = 5, padx = 2, pady = 2)
         
-        self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = self.lesson7_letters)
+        self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_movement(movement_letters[0:2]))
         self.lesson7.grid(row = 3, column = 4, padx = 2, pady = 2)
 
-    def lesson1_letters(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+        
+    def lesson_letters_static(self, letters):
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -514,133 +524,28 @@ class App(customtkinter.CTk):
         self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
 
         # description label
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = "Lesson 1: \nLetters A, B, C, and D\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
+        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = f"Lesson 1: \nLetters {letters[0]}, {letters[1]}, {letters[2]}, and {letters[3]}\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
         self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
 
 
         # letters A - D letters to select on screen
-        self.A_image = self.load_image("/images/letters/a.JPG", 150, 150) 
-        self.buttonA = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.A_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("A"))
+        self.A_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150) 
+        self.buttonA = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.A_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[0]))
         self.buttonA.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "nswe")
 
-        self.B_image = self.load_image("/images/letters/b.JPG", 150, 150)
-        self.buttonB = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.B_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("B"))
+        self.B_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150)
+        self.buttonB = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.B_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[1]))
         self.buttonB.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "nswe")
 
-        self.C_image = self.load_image("/images/letters/c.JPG", 150, 150)
-        self.buttonC = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.C_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("C"))
+        self.C_image = self.load_image(f"/images/letters/{letters[2].lower()}.JPG", 150, 150)
+        self.buttonC = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.C_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[2]))
         self.buttonC.grid(row = 2, column = 1, padx = 20, pady = 15, sticky = "nswe")
 
-        self.D_image = self.load_image("/images/letters/d.JPG", 150, 150)
-        self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("D"))
+        self.D_image = self.load_image(f"/images/letters/{letters[3].lower()}.JPG", 150, 150)
+        self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[3]))
         self.buttonD.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "nswe")
 
-    def lesson2_letters(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-        self.frame_left.destroy()
-        self.frame_right.destroy()
-
-        # left and right frame for window
-        self.frame_main_left = customtkinter.CTkFrame(master = self, width = 200, height = 20, corner_radius = 0)
-        self.frame_main_left.grid(row = 0, column = 0, sticky = "nswe")
-
-        self.frame_main_left.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_left.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_left.grid_rowconfigure(7, weight=1)      
-        self.frame_main_left.grid_rowconfigure(9, minsize=0)
-
-        self.frame_main_right = customtkinter.CTkFrame(master = self)
-        self.frame_main_right.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "nswe")
-
-        self.frame_main_right.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_right.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_right.grid_rowconfigure(7, weight=1)      
-        self.frame_main_right.grid_rowconfigure(9, minsize=0)
-
-        #buttons
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Home", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
-        self.lesson_home.grid(row = 10,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Back", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
-        self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        # description label
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = "Lesson 2: \nLetters E, F, G, and H\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
-        self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
-
-        # letters E,F,G,H to select on screen
-        self.E_image = self.load_image("/images/letters/e.JPG", 150, 150) 
-        self.buttonE = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.E_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("E"))
-        self.buttonE.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.F_image = self.load_image("/images/letters/f.JPG", 150, 150) 
-        self.buttonF = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.F_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("F"))
-        self.buttonF.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
-
-        self.G_image = self.load_image("/images/letters/g.JPG", 150, 150) 
-        self.buttonG = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.G_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("G"))
-        self.buttonG.grid(row = 2, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.H_image = self.load_image("/images/letters/h.JPG", 150, 150) 
-        self.buttonH = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.H_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("H"))
-        self.buttonH.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
-
-    def lesson3_letters(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-        self.frame_left.destroy()
-        self.frame_right.destroy()
-
-        # left and right frame for window
-        self.frame_main_left = customtkinter.CTkFrame(master = self, width = 200, height = 20, corner_radius = 0)
-        self.frame_main_left.grid(row = 0, column = 0, sticky = "nswe")
-
-        self.frame_main_left.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_left.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_left.grid_rowconfigure(7, weight=1)      
-        self.frame_main_left.grid_rowconfigure(9, minsize=0)
-
-        self.frame_main_right = customtkinter.CTkFrame(master = self)
-        self.frame_main_right.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "nswe")
-
-        self.frame_main_right.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_right.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_right.grid_rowconfigure(7, weight=1)      
-        self.frame_main_right.grid_rowconfigure(9, minsize=0)
-
-        #buttons 
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Home", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
-        self.lesson_home.grid(row = 10,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Back", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
-        self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        # description label
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = "Lesson 3: \nLetters I, K, L, and M\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
-        self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
-
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = "\n\nLater on, the\n letter 'J' will\n be shown, since\n it is more\n complicated.", text_color = THEME_OPP, font = ("Segoue UI", 12))
-        self.lesson_description.grid(row=2, column=0, padx=1, pady=1, sticky="we")
-
-        # letters I, K, L, M to select on screen
-        # skip J here and later Z because of movement
-        self.I_image = self.load_image("/images/letters/i.JPG", 150, 150) 
-        self.buttonI = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.I_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("I"))
-        self.buttonI.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.K_image = self.load_image("/images/letters/k.JPG", 150, 150) 
-        self.buttonK = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.K_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("K"))
-        self.buttonK.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
-
-        self.L_image = self.load_image("/images/letters/l.JPG", 150, 150) 
-        self.buttonL = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.L_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("L"))
-        self.buttonL.grid(row = 2, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.M_image = self.load_image("/images/letters/m.JPG", 150, 150) 
-        self.buttonM = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.M_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("M"))
-        self.buttonM.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
-
-    def lesson4_letters(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+    def lesson_letters_movement(self, letters):
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -669,168 +574,18 @@ class App(customtkinter.CTk):
         self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
 
         # description labels
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = "Lesson 4: \nLetters N, O, P, and Q\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
-        self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
-
-        # letters N,O,P,Q to select on screen
-        self.N_image = self.load_image("/images/letters/n.JPG", 150, 150) 
-        self.buttonN = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.N_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("N"))
-        self.buttonN.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.O_image = self.load_image("/images/letters/o.JPG", 150, 150) 
-        self.buttonO = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.O_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("O"))
-        self.buttonO.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
-
-        self.P_image = self.load_image("/images/letters/p.JPG", 150, 150) 
-        self.buttonP = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.P_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("P"))
-        self.buttonP.grid(row = 2, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.Q_image = self.load_image("/images/letters/q.JPG", 150, 150) 
-        self.buttonQ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Q_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Q"))
-        self.buttonQ.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
-
-    def lesson5_letters(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-        self.frame_left.destroy()
-        self.frame_right.destroy()
-
-        # left and right frame for window
-        self.frame_main_left = customtkinter.CTkFrame(master = self, width = 200, height = 20, corner_radius = 0)
-        self.frame_main_left.grid(row = 0, column = 0, sticky = "nswe")
-
-        self.frame_main_left.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_left.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_left.grid_rowconfigure(7, weight=1)      
-        self.frame_main_left.grid_rowconfigure(9, minsize=0)
-
-        self.frame_main_right = customtkinter.CTkFrame(master = self)
-        self.frame_main_right.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "nswe")
-
-        self.frame_main_right.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_right.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_right.grid_rowconfigure(7, weight=1)      
-        self.frame_main_right.grid_rowconfigure(9, minsize=0)
-
-        #buttons 
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Home", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
-        self.lesson_home.grid(row = 10,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Back", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
-        self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        # description labels
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = "Lesson 5: \nLetters R, S, T, and U\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
-        self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
-
-        # Letters R,S,T,U to show on screen
-        self.R_image = self.load_image("/images/letters/r.JPG", 150, 150) 
-        self.buttonR = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.R_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("R"))
-        self.buttonR.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.S_image = self.load_image("/images/letters/s.JPG", 150, 150) 
-        self.buttonS = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.S_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("S"))
-        self.buttonS.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
-
-        self.T_image = self.load_image("/images/letters/t.JPG", 150, 150) 
-        self.buttonT = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.T_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("T"))
-        self.buttonT.grid(row = 2, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.U_image = self.load_image("/images/letters/u.JPG", 150, 150) 
-        self.buttonU = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.U_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("U"))
-        self.buttonU.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
-
-    def lesson6_letters(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-        self.frame_left.destroy()
-        self.frame_right.destroy()
-
-        # left and right frame for window
-        self.frame_main_left = customtkinter.CTkFrame(master = self, width = 200, height = 20, corner_radius = 0)
-        self.frame_main_left.grid(row = 0, column = 0, sticky = "nswe")
-
-        self.frame_main_left.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_left.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_left.grid_rowconfigure(7, weight=1)      
-        self.frame_main_left.grid_rowconfigure(9, minsize=0)
-
-        self.frame_main_right = customtkinter.CTkFrame(master = self)
-        self.frame_main_right.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "nswe")
-
-        self.frame_main_right.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_right.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_right.grid_rowconfigure(7, weight=1)      
-        self.frame_main_right.grid_rowconfigure(9, minsize=0)
-
-        #buttons 
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Home", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
-        self.lesson_home.grid(row = 10,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Back", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
-        self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        # description labels
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = "Lesson 6: \nLetters V, W, X, and Y\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
-        self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
-
-        # letters V, W, X, Y to show on screen
-        self.V_image = self.load_image("/images/letters/v.JPG", 150, 150) 
-        self.buttonV = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.V_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("V"))
-        self.buttonV.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.W_image = self.load_image("/images/letters/w.JPG", 150, 150) 
-        self.buttonW = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.W_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("W"))
-        self.buttonW.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
-
-        self.X_image = self.load_image("/images/letters/x.JPG", 150, 150) 
-        self.buttonX = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.X_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("X"))
-        self.buttonX.grid(row = 2, column = 1, padx = 20, pady = 15, sticky = "we")
-
-        self.Y_image = self.load_image("/images/letters/y.JPG", 150, 150) 
-        self.buttonY = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Y_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Y"))
-        self.buttonY.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "we")
-
-    def lesson7_letters(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-        self.frame_left.destroy()
-        self.frame_right.destroy()
-
-        # left and right frame for window
-        self.frame_main_left = customtkinter.CTkFrame(master = self, width = 200, height = 20, corner_radius = 0)
-        self.frame_main_left.grid(row = 0, column = 0, sticky = "nswe")
-
-        self.frame_main_left.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_left.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_left.grid_rowconfigure(7, weight=1)      
-        self.frame_main_left.grid_rowconfigure(9, minsize=0)
-
-        self.frame_main_right = customtkinter.CTkFrame(master = self)
-        self.frame_main_right.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "nswe")
-
-        self.frame_main_right.grid_rowconfigure(0, minsize=10)   
-        self.frame_main_right.grid_rowconfigure(4, minsize=100)   
-        self.frame_main_right.grid_rowconfigure(7, weight=1)      
-        self.frame_main_right.grid_rowconfigure(9, minsize=0)
-
-        #buttons 
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Home", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
-        self.lesson_home.grid(row = 10,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Back", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
-        self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
-
-        # description labels
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = "Lesson 7: \nLetters J and Z\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language\n\n Begin learning the\n idea of hand\n movement", text_color = THEME_OPP, font = ("Segoue UI", 12))
+        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = f"Lesson 7: \nLetters {letters[0]} and {letters[1]}\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language\n\n Begin learning the\n idea of hand\n movement", text_color = THEME_OPP, font = ("Segoue UI", 12))
         self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
         
         # letters J and Z, which require a special case of teaching
-        self.J_image = self.load_image("/images/letters/j.JPG", 150, 150) 
+        self.J_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150) 
         self.buttonJ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.J_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("J"))
         self.buttonJ.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
 
-        self.Z_image = self.load_image("/images/letters/z.JPG", 150, 150) 
+        self.Z_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150) 
         self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z"))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
-
+    
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
     def letter_lessons(self, letter):
@@ -1029,6 +784,7 @@ class App(customtkinter.CTk):
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
             if self.border_change == 1:
+                # only reaches here when the letter is recognized, but isnt continuing the main camera?
                 print(self.border_change)
                 self.label_cam.cw_update()
                 self.after_id = self.after(10, self.the_afterinator)
@@ -1043,11 +799,22 @@ class App(customtkinter.CTk):
         print(self.initial_rectframe)
 
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
+            # initializing this state again here makes sure the camera is still usable after
+            # now the camera afterinator will take the letter again afterward
             self.border_change = 0
             print(self.border_change)
+            
             let = UserSign().run_comparison()
             
 
+            # ====== getting the border color to change ======= #
+            # trying to move the rectangle frames from other file?
+            # then take init color and change when the hand is correct/recognized
+            
+            #initial_frame = self.initial_rectframe
+            #print(initial_frame)
+
+            # ensure the bool border_change is not catching a desired letter yet and run cam afterinator
             if let == None and self.border_change == 0: 
                 self.cam_after_id = self.after(210, self.camera_aftinerator)
                 return
@@ -1056,13 +823,25 @@ class App(customtkinter.CTk):
                 self.border_change = 1
                 self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
                 
+                
                 print("FOUND!!!!!!!")
+                
+                # weird error - sometimes when re-activating lesson, and getting the letter right AGAIN, this wont display the 2nd time
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 self.label8.update()
 
                 #self.after_cancel(self.after_id)
                 self.after_cancel(self.cam_after_id)
 
+                # after cancels need to actually cancel just the main camera
+                # right now canceling both
+                #   i think this is in cam_after_id? all of it is demolishing
+                
+                # ANOTHER METHOD
+                # these should reactivate when the camera found the letter, but this breaks it
+                #self.label_cam.cw_update()
+                #self.after_id = self.after(10, self.the_afterinator)
+                
                 let = None
                 return
 
@@ -1081,10 +860,13 @@ class App(customtkinter.CTk):
             except Exception as e: 
                 print(e)
            
+            # ANOTHER METHOD
+            # testing shows this is never reached, but why?
+            # the camera is never resetting the afterinator unless the lesson is exited and re-entered
+            #print(got here!)
+            
             self.after_id = self.after(10, self.the_afterinator)
             self.cam_after_id = self.after(200, self.camera_aftinerator)
-            self.border_change = 0
-
 
 
 
