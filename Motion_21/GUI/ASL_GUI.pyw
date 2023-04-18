@@ -487,8 +487,10 @@ class App(customtkinter.CTk):
         
         self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_movement(movement_letters[0:2]))
         self.lesson7.grid(row = 3, column = 4, padx = 2, pady = 2)
+    
         
-    def lesson1_letters(self):
+
+    def lesson_letters_static(self, letters):
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -538,6 +540,8 @@ class App(customtkinter.CTk):
         self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[3]))
         self.buttonD.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "nswe")
 
+
+
     def lesson_letters_movement(self, letters):
         self.frame_left.destroy()
         self.frame_right.destroy()
@@ -579,6 +583,8 @@ class App(customtkinter.CTk):
         self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z"))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
 
+
+
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
     def letter_lessons(self, letter):
@@ -603,10 +609,7 @@ class App(customtkinter.CTk):
         self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(5, 0), sticky="nsew")
         self.tabview.add("Debug")
 
-        '''
-        we can change these into lessons and call to lesssons "A-D" functions and etc and just call the function here
-        add next and retry functionalities
-        '''
+        
         # This opens up the camera view for every sinlge letter, as the user chooses it
     
         self.label6 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 420, height = 320, corner_radius = 8, compound = "bottom", fg_color=("white", "gray38"))
@@ -669,7 +672,7 @@ class App(customtkinter.CTk):
         self.update()
         self.the_afterinator()
         self.camera_aftinerator()
-
+    
     def back_button_lessons(self):
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
         self.lesson_select()
@@ -789,7 +792,7 @@ class App(customtkinter.CTk):
             return     
 
     def camera_aftinerator(self):
-        print(self.initial_rectframe)
+        #print(self.initial_rectframe)
 
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
             # initializing this state again here makes sure the camera is still usable after
@@ -820,6 +823,14 @@ class App(customtkinter.CTk):
 
                 #self.after_cancel(self.after_id)
                 self.after_cancel(self.cam_after_id)
+
+                if self.border_change == 1:
+                    print("here")
+                    # OMG FINALLY THANK YOU
+                    self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
+                    #self.label_cam.cw_update()
+                    self.after_id = self.after(10, self.the_afterinator)
+
 
                 # after cancels need to actually cancel just the main camera
                 # right now canceling both
