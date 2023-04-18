@@ -1006,8 +1006,8 @@ class App(customtkinter.CTk):
         self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: {}%".format(self.curr_accuracy), text_color = THEME_OPP, font=("Segoe UI", 14))
         self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
-        #self.average_list.reinit(letter)
-        #self.letter_state.set_letter(letter)
+        self.average_list.reinit(letter)
+        self.letter_state.set_letter(letter)
         self.update()
         self.the_afterinator()
         self.camera_aftinerator()
