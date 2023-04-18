@@ -345,4 +345,4 @@ class Config(object): # singleton me later
         self.settings = Archive().get_json(key)
 
     def delete(self):
-        self.settings = {}
+        self.settings = {} 

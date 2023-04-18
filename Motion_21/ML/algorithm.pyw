@@ -197,7 +197,7 @@ class UserSign(object):
     def run_comparison(self):
 
         #REPLACE LESSON_LETTER WITH FUNCTION PARAMETER AKA GUI STUFF
-        #lesson_letter = "F"
+        lesson_letter = "A"
 
         matched_letter = ""
         matched = False
@@ -217,7 +217,7 @@ class UserSign(object):
 
         # Variable declarations
         # Letter only contains non-movement letters for now
-        letter = ["A", "B", "C", "D", "E", "F"]#, "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
+        #letter = ["A", "B", "C", "D", "E", "F"]#, "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
 
         # Grabs user letter input
         user_arr = self.user_arr_function()
@@ -238,7 +238,7 @@ class UserSign(object):
 
                     #chosen_letter = letter[num_letters]
 
-                    base_arr_all = self.base_arr_function(letter) #lesson_letter
+                    base_arr_all = self.base_arr_function(lesson_letter) #lesson_letter
 
                     base_arr_all = np.array(base_arr_all)
 
@@ -269,7 +269,7 @@ class UserSign(object):
                         count = 0
 
                         # Debug print function to label the match percentages
-                        print("Complete Match Percentage for base letter " + letter + " No. " + str(num_base_letters + 1))
+                        print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
 
                         # Checks if user letter matches base letter
                         for i in range(len(Z_star_user_arr)):
@@ -297,11 +297,11 @@ class UserSign(object):
 
                     # If matched has been flagged, then the user has successfully signed the lesson letter and outputs a message accordingly
                     if(matched == True and lesson_letter == matched_letter):
-                        print("Congratulations, you signed the letter " + letter + " correctly!")
+                        print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
                         return lesson_letter
                     else:
                         matched = True
-                        print("Sorry, you did not correctly sign the letter " + letter + ", please try again!")
+                        print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
                         return None
         
                         #break
