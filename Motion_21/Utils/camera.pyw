@@ -3,10 +3,13 @@ import threading
 import mediapipe
 import numpy as np
 
+import Utils.utils as utils
+import Utils.states as states
+
 from time import sleep
 from queue import Queue
-from Utils.utils import *
-from Utils.constants import *
+
+from Utils.constants import DEBUG, USE_CAMERA
 
 class Camera(object): # singleton because every time the camera is initialized there is at least a five second freeze and I'd prefer not to hard global too much.
     stream             = cv2.VideoCapture(0)
@@ -42,14 +45,14 @@ class Camera(object): # singleton because every time the camera is initialized t
         try:
             return self.frame
         except:
-            debug_log("[You really need to be using thread locks.]")
+            utils.debug_log("[You really need to be using thread locks.]")
             return self.old_frame
 
     def get_rect_frame(self): # ground work. will use proper mutexs and things in the future.
         try:
             return self.rect_frame
         except:
-            debug_log("[You really need to be using thread locks.]")
+            utils.debug_log("[You really need to be using thread locks.]")
             return self.old_frame
 
     def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
@@ -102,10 +105,7 @@ class Camera(object): # singleton because every time the camera is initialized t
                 try:
                     offsets = self.q.get(timeout=.01)
                     self.previous_offsets = offsets
-                    if offsets[2] != None:
-                        cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (1, 2,255), 3)
-                    else:
-                        cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (255, 122,1), 3)
+                    cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (255, 122,1) if offsets[2] == None else utils.make_color(offsets[2]), 3)
                 except:
                     offsets = self.previous_offsets
                     cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (255, 122,1), 3)
@@ -118,6 +118,6 @@ class Camera(object): # singleton because every time the camera is initialized t
 
                 self.cropped_frame = roi # still an image
             except Exception as e:
-                debug_log("Something Happened! [");
-                debug_log(str(e))
-                debug_log("]")
+                utils.debug_log("Something Happened! [");
+                utils.debug_log(str(e))
+                utils.debug_log("]")

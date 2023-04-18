@@ -1,12 +1,14 @@
 import os
+import threading
 import customtkinter
 from queue           import Queue
+
 from PIL             import Image, ImageTk
 from config          import *
-from Utils.utils     import *
-from Utils.constants import *
-from Utils.camera    import *
-from Utils.states    import *
+from Utils.utils     import debug_log, end_brace_index, get_header, get_json_size
+from Utils.constants import DEBUG, USE_CAMERA
+from Utils.camera    import Camera
+from Utils.states    import BorderColor, CameraState, WindowState, LetterState, EventHandler, StateHandler
 from ML.algorithm    import UserSign
 from ML.usertrain    import UserTrain
 from .camera_window  import CameraWindow
@@ -22,8 +24,6 @@ if not os.path.exists(dir_path):
 #Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
-
-
 class AverageList:
     def __init__(self, letter = None):
         self.letter        = letter
@@ -65,7 +65,14 @@ class AverageList:
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+        #Size of window and title
+        self.geometry("740x520")
+        self.title("ASL Learning App")
 
+        # states and events
+        state_init        = StateHandler()
+        self.letter_state = LetterState('_')
+        
         if USE_CAMERA: 
             self.event_handler = EventHandler() # init eventhandler
             self.bind('<Left>',  EventHandler().arrow_key_left)
@@ -73,16 +80,14 @@ class App(customtkinter.CTk):
             self.bind('<Up>',    EventHandler().arrow_key_up)
             self.bind('<Down>',  EventHandler().arrow_key_down)
 
-        #Size of window and title
-        self.geometry("740x520")
-        state_init = StateHandler()
-        self.del_list = []
-        self.letter_state = LetterState('_')
-        self.title("ASL Learning App")
-        self.average_list = AverageList()
-        self.curr_accuracy = 100
-        self.after_id = ""
-        self.cam_after_id = ""
+        # helper attributes
+        self.del_list            = []
+        self.average_list        = AverageList()
+        self.curr_accuracy       = 100
+        self.after_id            = ""
+        self.cam_after_id        = ""
+        self.motion_after_id     = ""
+        self.motion_timer_count  = 0
 
         # Locks size of window
         self.resizable(False, False)
@@ -564,17 +569,17 @@ class App(customtkinter.CTk):
         self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
         
         # letters J and Z, which require a special case of teaching
-        self.J_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150) 
-        self.buttonJ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.J_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("J"))
+        self.J_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150)
+        self.buttonJ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.J_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("J", True))
         self.buttonJ.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
 
         self.Z_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150) 
-        self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z"))
+        self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z", True))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
 
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
-    def letter_lessons(self, letter):
+    def letter_lessons(self, letter, btns: bool = False):
         self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         self.frame_main_right.destroy()
 
@@ -619,17 +624,13 @@ class App(customtkinter.CTk):
         self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = f"Please sign the letter \"{letter}\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
         self.label8.grid(row=3, column=0, sticky="ns", padx=10, pady=0)
 
-        # Window for the example camera
-        # For now this is just an error message of "No Camera Found"
-        # Once a camera is linked we create the same size window but with the camera output
-                
-        #self.label9 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-        #self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
-
         # Load the image from the /image/letters folder to use for this part and position it in the correct place
         # Place Imaage of example sign for user to use when signing in the main lesson window 
         self.A_image = self.load_image(f"/images/letters/{letter.lower()}.JPG", 150, 150)
-        self.A_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150)
+        if not btns:
+            self.A_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150)
+        else:
+            self.A_labelimage = customtkinter.CTkButton(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150, command=lambda x=0 : print("YEAH!"))
         self.A_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
 
         # Label that describes the example camera above
@@ -639,13 +640,6 @@ class App(customtkinter.CTk):
         # Window for the user hand camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-                
-        #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-        #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-
-        # Label that describes the user hand camera above
-        #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-        #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
 
         if USE_CAMERA:
             self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
@@ -806,6 +800,14 @@ class App(customtkinter.CTk):
                 print(e)
 
             self.cam_after_id = self.after(200, self.camera_aftinerator)
+
+    def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
+        if (self.motion_timer_count >=3):
+            self.motion_timer_count += 1
+            self.after(1000, self.motion_afterinator())
+        else:
+
+            pass
 
 
 

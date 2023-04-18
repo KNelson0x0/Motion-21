@@ -27,6 +27,7 @@ from GUI.ASL_GUI import App
 from Utils.constants import *
 from Utils.camera import Camera
 
+
 # -- del
 import json, base64, hashlib
 from   cryptography.fernet import Fernet
@@ -60,3 +61,5 @@ if __name__ == "__main__":
         print("=================================================")
 
     app.start()
+
+

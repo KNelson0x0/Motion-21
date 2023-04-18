@@ -14,7 +14,6 @@ def make_key(passcode: str) -> bytes:
     del passcode
     return base64.urlsafe_b64encode(md5_obj.hexdigest().encode('utf-8'))
 
-
 class MemKey(): # because we arent storing any of this on a server, the least we can do is make sure the key isn't just floating around in memory somewhere
     """
        [NEVER USE THE ASSIGNMENT OPERATOR WITH THIS CLASS!]
