@@ -781,8 +781,6 @@ class App(customtkinter.CTk):
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
             if self.border_change == 1:
-                # only reaches here when the letter is recognized, but isnt continuing the main camera?
-                print(self.border_change)
                 self.label_cam.cw_update()
                 self.after_id = self.after(10, self.the_afterinator)
             else:
@@ -798,9 +796,8 @@ class App(customtkinter.CTk):
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
             # initializing this state again here makes sure the camera is still usable after
             # now the camera afterinator will take the letter again afterward
-            self.border_change = 0
-            print(self.border_change)         
-            let = UserSign().run_comparison()
+            self.border_change = 0         
+            let = UserSign().run_comparison(self.letter_state.DESIRED_LETTER[0])
 
             # ensure the bool border_change is not catching a desired letter yet and run cam afterinator
             if let == None and self.border_change == 0: 
