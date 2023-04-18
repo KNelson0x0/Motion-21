@@ -84,12 +84,6 @@ class App(customtkinter.CTk):
         self.after_id = ""
         self.cam_after_id = ""
         self.border_change = 0
-    
-        self.initial_rectframe = Camera().get_rect_frame
-    
-        
-        #seb - try to initialize variable of border color from camera to use in afterinator? this isnt working with this
-        #      whats wrong with my method though
         #self.initial_rectframe = Camera().begin
     
 
@@ -493,9 +487,8 @@ class App(customtkinter.CTk):
         
         self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_movement(movement_letters[0:2]))
         self.lesson7.grid(row = 3, column = 4, padx = 2, pady = 2)
-
         
-    def lesson_letters_static(self, letters):
+    def lesson1_letters(self):
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -585,7 +578,7 @@ class App(customtkinter.CTk):
         self.Z_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150) 
         self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z"))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
-    
+
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
     def letter_lessons(self, letter):
@@ -805,11 +798,6 @@ class App(customtkinter.CTk):
             print(self.border_change)
             
             let = UserSign().run_comparison()
-            
-
-            # ====== getting the border color to change ======= #
-            # trying to move the rectangle frames from other file?
-            # then take init color and change when the hand is correct/recognized
             
             #initial_frame = self.initial_rectframe
             #print(initial_frame)
