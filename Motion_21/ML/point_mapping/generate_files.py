@@ -53,7 +53,7 @@ def project_data(Z, pcs, L):
     return Z_star
 
 ##################### CHANGE THIS FOR DIFFERENT LETTERS #########################
-control_letter = 'Y'
+control_letter = 'Z_1'
 
 letter = control_letter
 letter_pca = letter + '_relation'
