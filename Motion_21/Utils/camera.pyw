@@ -24,6 +24,7 @@ class Camera(object): # singleton because every time the camera is initialized t
     stop               = False
     drawingModule      = mediapipe.solutions.drawing_utils
     handsModule        = mediapipe.solutions.hands
+    previous_rgb       = [0, 0, 0] # this is in BGR cause i think thats is what its start with -seb
 
     def __new__(self):
         if not USE_CAMERA: return
@@ -102,6 +103,7 @@ class Camera(object): # singleton because every time the camera is initialized t
                 try:
                     offsets = self.q.get(timeout=.01)
                     self.previous_offsets = offsets
+
                     if offsets[2] != None:
                         cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (255,255,255), 3)
                     else:
@@ -110,6 +112,19 @@ class Camera(object): # singleton because every time the camera is initialized t
                     offsets = self.previous_offsets
                     cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (1,1,255), 3)
                 
+                '''
+                # i think this is the right methodology, but idk if i put it all in correctly
+                try:
+                    rgb_values = self.q.get(timeout=0.1)
+                    self.previous_rgb = rgb_values
+
+                    if rgb_values[3] != None:
+                        cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (1 + rgb_values[0], 1 + rgb_values[1], 255 + rgb_values[2]), 3)
+                    else:
+                        cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), (1 + rgb_values[0], 255 + rgb_values[1], 1 + rgb_values[2]), 3)
+                except:
+                    return
+                '''
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
                 self.rgb_img_crop = cv2.cvtColor(self.rect_frame[52 + offsets[1] : 252 + offsets[1], 52 + offsets[0] : 252 + offsets[0]], cv2.COLOR_BGR2RGB)
                 self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 

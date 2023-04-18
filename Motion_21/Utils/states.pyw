@@ -29,6 +29,9 @@ class LetterState():
 class EventHandler(object):
     x = 0
     y = 0
+    R = 0
+    G = 0
+    B = 0
   
     def __new__(self):
         if not USE_CAMERA: return 
@@ -73,6 +76,13 @@ class EventHandler(object):
         self.x += 5
         debug_log("arrow left: {}".format(self.x))
         Camera().q.put([self.x, self.y, None])
+
+    def frame_color(self, _):
+        if not self.letter_state.DESIRED_LETTER[0]:
+            Camera().q.put([self.R, self.G, self.B], 1)
+        Camera().q.put([self.R, self.G, self.B, None])
+
+
 
 class StateHandler(object):
     def __new__(self):

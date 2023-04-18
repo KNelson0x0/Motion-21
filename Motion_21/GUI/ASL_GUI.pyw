@@ -72,6 +72,7 @@ class App(customtkinter.CTk):
             self.bind('<Right>', EventHandler().arrow_key_right)
             self.bind('<Up>',    EventHandler().arrow_key_up)
             self.bind('<Down>',  EventHandler().arrow_key_down)
+            self.frame_control = EventHandler().frame_color
 
         #Size of window and title
         self.geometry("740x520")
@@ -798,12 +799,8 @@ class App(customtkinter.CTk):
             # initializing this state again here makes sure the camera is still usable after
             # now the camera afterinator will take the letter again afterward
             self.border_change = 0
-            print(self.border_change)
-            
+            print(self.border_change)         
             let = UserSign().run_comparison()
-            
-            #initial_frame = self.initial_rectframe
-            #print(initial_frame)
 
             # ensure the bool border_change is not catching a desired letter yet and run cam afterinator
             if let == None and self.border_change == 0: 
@@ -813,10 +810,8 @@ class App(customtkinter.CTk):
             if let == self.letter_state.DESIRED_LETTER[0]:
                 self.border_change = 1
                 self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-                
-                
                 print("FOUND!!!!!!!")
-                
+
                 # weird error - sometimes when re-activating lesson, and getting the letter right AGAIN, this wont display the 2nd time
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 self.label8.update()
