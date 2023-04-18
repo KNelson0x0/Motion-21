@@ -84,6 +84,9 @@ class App(customtkinter.CTk):
         self.after_id = ""
         self.cam_after_id = ""
         self.border_change = 0
+        
+        #seb - try to initialize variable of border color from camera to use in afterinator? this isnt working with this
+        #      whats wrong with my method though
         #self.initial_rectframe = Camera().begin
 
 
@@ -1019,6 +1022,7 @@ class App(customtkinter.CTk):
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
             if self.border_change == 1:
+                # only reaches here when the letter is recognized, but isnt continuing the main camera?
                 print(self.border_change)
                 self.label_cam.cw_update()
                 self.after_id = self.after(10, self.the_afterinator)
@@ -1031,13 +1035,21 @@ class App(customtkinter.CTk):
 
     def camera_aftinerator(self):
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
+            # initializing this state again here makes sure the camera is still usable after
+            # now the camera afterinator will take the letter again afterward
             self.border_change = 0
             print(self.border_change)
+            
             let = UserSign().run_comparison()
+            
+            # ====== getting the border color to change ======= #
+            # trying to move the rectangle frames from other file?
+            # then take init color and change when the hand is correct/recognized
             
             #initial_frame = self.initial_rectframe
             #print(initial_frame)
 
+            # ensure the bool border_change is not catching a desired letter yet and run cam afterinator
             if let == None and self.border_change == 0: 
                 self.cam_after_id = self.after(210, self.camera_aftinerator)
                 return
@@ -1046,13 +1058,25 @@ class App(customtkinter.CTk):
                 self.border_change = 1
                 self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
                 
+                
                 print("FOUND!!!!!!!")
+                
+                # weird error - sometimes when re-activating lesson, and getting the letter right AGAIN, this wont display the 2nd time
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 self.label8.update()
 
                 #self.after_cancel(self.after_id)
                 self.after_cancel(self.cam_after_id)
 
+                # after cancels need to actually cancel just the main camera
+                # right now canceling both
+                #   i think this is in cam_after_id? all of it is demolishing
+                
+                # ANOTHER METHOD
+                # these should reactivate when the camera found the letter, but this breaks it
+                #self.label_cam.cw_update()
+                #self.after_id = self.after(10, self.the_afterinator)
+                
                 let = None
                 return
 
@@ -1071,10 +1095,13 @@ class App(customtkinter.CTk):
             except Exception as e: 
                 print(e)
            
+            # ANOTHER METHOD
+            # testing shows this is never reached, but why?
+            # the camera is never resetting the afterinator unless the lesson is exited and re-entered
+            #print(got here!)
+            
             self.after_id = self.after(10, self.the_afterinator)
             self.cam_after_id = self.after(200, self.camera_aftinerator)
-            self.border_change = 0
-
 
 
 
