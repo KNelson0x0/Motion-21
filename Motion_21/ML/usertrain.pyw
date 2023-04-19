@@ -21,6 +21,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 class UserTrain:
     def __init__(self, username, symbol, main_window = None):
+        #self.user_path = "./UserData/{}/"
         self.user_name = username
         self.symbol = symbol
         self.main_window = main_window
@@ -29,7 +30,7 @@ class UserTrain:
 
         if self.main_window == None: return;
 
-        self.main_path = os.path.abspath(os.path.join(file, os.pardir))
+        self.main_path = os.path.abspath(os.path.join(self.user_name, os.pardir))
         self.higher_p = os.path.abspath(os.path.join(self.main_path, os.pardir))
         self.main_train = self.higher_p + r"\UserData"
 

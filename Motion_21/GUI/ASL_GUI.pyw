@@ -537,9 +537,7 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
 
-        # self.training = UserTrain("DEMO_USER", id, self.frame_right)
-        # for this we need to update to how things are being done now
-        # connect back end, work with chad
+        self.training = UserTrain("DEMO_USER", letter, self.frame_right)
 
         # configure grid layout (5x3)
         self.frame_right.grid_rowconfigure((0, 1, 3), weight=1)        # sets weights of standard rows
@@ -561,7 +559,7 @@ class App(customtkinter.CTk):
         self.label7 = customtkinter.CTkLabel(master=self.frame_right, text = 'Please sign the letter "{}" that you want \nMotion 21 to use as an example!'.format(letter), font=("Segoe UI", 20), width = 450, height = 100, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
         self.label7.grid(row=3, column=0, columnspan=2, sticky="ns", padx=0, pady=0)
 
-        self.button6 = customtkinter.CTkButton(master=self.frame_left, width = 160, height = 60, border_width = 1, corner_radius = 5, text = "Begin", compound = "bottom",  border_color="#101010")#,command=self.training_begin)
+        self.button6 = customtkinter.CTkButton(master=self.frame_left, width = 160, height = 60, border_width = 1, corner_radius = 5, text = "Begin", compound = "bottom",  border_color="#101010", command=self.training_begin)
         self.button6.grid(row=7, column=0, columnspan=3, sticky="wse", padx=10, pady=10)
 
         # Window for the user hand camera
@@ -580,6 +578,9 @@ class App(customtkinter.CTk):
         self.update()
         self.the_afterinator()
         #self.camera_aftinerator()
+    
+    def training_begin(self):
+        self.training.on_begin()
 
     # Button that recreates window with settings page
     def settings_button(self):
