@@ -3,12 +3,10 @@ import threading
 import customtkinter
 from queue           import Queue
 
+from Utils.imports import *
+
 from PIL             import Image, ImageTk
 from config          import *
-from Utils.utils     import debug_log, end_brace_index, get_header, get_json_size
-from Utils.constants import DEBUG, USE_CAMERA
-from Utils.camera    import Camera
-from Utils.states    import BorderColor, CameraState, WindowState, LetterState, EventHandler, StateHandler
 from ML.algorithm    import UserSign
 from ML.usertrain    import UserTrain
 from .camera_window  import CameraWindow
@@ -88,6 +86,13 @@ class App(customtkinter.CTk):
         self.cam_after_id        = ""
         self.motion_after_id     = ""
         self.motion_timer_count  = 0
+        self.use_motion_afterinator  = False
+        self.color_dict = { 0 : BorderColor.WHITE,
+                           1 :  BorderColor.RED,
+                           2 :  BorderColor.BLUE,
+                           3 :  BorderColor.GREEN,
+                           4 :  BorderColor.YELLOW,
+                           5 :  BorderColor.BLACK }
 
         # Locks size of window
         self.resizable(False, False)
@@ -483,7 +488,7 @@ class App(customtkinter.CTk):
         self.lesson6 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 6:\n V, W, X, Y", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[20:24]))
         self.lesson6.grid(row = 2, column = 5, padx = 2, pady = 2)
         
-        self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_movement(movement_letters[0:2]))
+        self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_motion(movement_letters[0:2]))
         self.lesson7.grid(row = 3, column = 4, padx = 2, pady = 2)
         
     def lesson_letters_static(self, letters):
@@ -535,8 +540,9 @@ class App(customtkinter.CTk):
         self.D_image = self.load_image(f"/images/letters/{letters[3].lower()}.JPG", 150, 150)
         self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[3]))
         self.buttonD.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "nswe")
+        self.use_motion_afterinator = False
 
-    def lesson_letters_movement(self, letters):
+    def lesson_letters_motion(self, letters):
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -576,6 +582,7 @@ class App(customtkinter.CTk):
         self.Z_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150) 
         self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z", True))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
+        self.use_motion_afterinator = True
 
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
@@ -627,10 +634,10 @@ class App(customtkinter.CTk):
         # Load the image from the /image/letters folder to use for this part and position it in the correct place
         # Place Imaage of example sign for user to use when signing in the main lesson window 
         self.A_image = self.load_image(f"/images/letters/{letter.lower()}.JPG", 150, 150)
-        if not btns:
-            self.A_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150)
-        else:
-            self.A_labelimage = customtkinter.CTkButton(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150, command=lambda x=0 : print("YEAH!"))
+        #if not btns:
+        self.A_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150)
+        #else:
+            #self.A_labelimage = customtkinter.CTkButton(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150, command=lambda x=0 : print("YEAH!"))
         self.A_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
 
         # Label that describes the example camera above
@@ -650,12 +657,14 @@ class App(customtkinter.CTk):
         # Label that describes the user's accuracy
         self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: {}%".format(self.curr_accuracy), text_color = THEME_OPP, font=("Segoe UI", 14))
         self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+        self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
         self.average_list.reinit(letter)
         self.letter_state.set_letter(letter)
         self.update()
+        if not self.use_motion_afterinator: self.camera_aftinerator()
+        else: self.motion_afterinator()
         self.the_afterinator()
-        self.camera_aftinerator()
 
     def back_button_lessons(self):
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
@@ -780,7 +789,7 @@ class App(customtkinter.CTk):
                 print("FOUND!!!!!!!")
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 self.label8.update()
-                self.after_cancel(self.after_id)
+                #self.after_cancel(self.after_id)
                 self.after_cancel(self.cam_after_id)
                 return
 
@@ -802,15 +811,15 @@ class App(customtkinter.CTk):
             self.cam_after_id = self.after(200, self.camera_aftinerator)
 
     def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
-        if (self.motion_timer_count >=3):
+        if (self.motion_timer_count <=3):
             self.motion_timer_count += 1
-            self.after(1000, self.motion_afterinator())
         else:
+            self.motion_timer_count = 0
 
-            pass
+        print("================================ Based! ================================")
 
-
-
+        Camera().border_q.put(make_color(self.color_dict[self.motion_timer_count]))
+        self.motion_after_id = self.after(1000, self.motion_afterinator)
 
 if __name__ == "__main__":
     app = App()

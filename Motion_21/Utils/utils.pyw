@@ -1,22 +1,18 @@
 import time
 import json
 import tkinter
-from   .states    import BorderColor
-from   .constants import DEBUG
+
+from Utils.imports import *
 
 def make_color(color : BorderColor): # BGR
-    print("make_color")
     return {
+            BorderColor.WHITE  : (255,255,255),
             BorderColor.RED    : (1,1,255),
             BorderColor.BLUE   : (255,122,1),
             BorderColor.GREEN  : (1,255,1) ,
             BorderColor.YELLOW : (1,255,255),
             BorderColor.BLACK  : (1,1,1),
         }[color]
-
-def debug_log(x):
-    if DEBUG:
-        print(x)
 
 def find_element(root: tkinter.Frame, name: str, type=None): # okay the type doesnt really work
     lst = root.winfo_children()
@@ -54,17 +50,6 @@ def get_header(config_str : str):
 
 def get_json_size(self, j):
     return( len(str(j).replace('\n','').strip()) )
-
-def make_color(color : BorderColor): # BGR
-    print("make_color")
-    return {
-            BorderColor.RED    : (1,1,255),
-            BorderColor.BLUE   : (255,122,1),
-            BorderColor.GREEN  : (1,255,1) ,
-            BorderColor.YELLOW : (1,255,255),
-            BorderColor.BLACK  : (1,1,1),
-        }[color]
-
 
 class Counter:
     def __init__(self, start = 0, increment = 1, ):
