@@ -114,6 +114,10 @@ class App(customtkinter.CTk):
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
+        if self.after_id:     self.after_cancel(self.after_id)
+        if self.cam_after_id: self.after_cancel(self.cam_after_id)
+        self.use_motion_afterinator = False
+
         if StateHandler().c_state == WindowState.HOME:
             return
 
@@ -122,6 +126,8 @@ class App(customtkinter.CTk):
         self.frame_right.destroy()
 
         self.home_window()
+
+
 
     # Button that allows user to change home page preferences
     def home_settings_button(self):
@@ -437,9 +443,9 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
-        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
+        self.use_motion_afterinator = False
 
         static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
         movement_letters = ["J", "Z"]
@@ -492,6 +498,11 @@ class App(customtkinter.CTk):
         self.lesson7.grid(row = 3, column = 4, padx = 2, pady = 2)
         
     def lesson_letters_static(self, letters):
+        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
+        if self.after_id:     self.after_cancel(self.after_id)
+        if self.cam_after_id: self.after_cancel(self.cam_after_id)
+        self.use_motion_afterinator = False
+
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -543,6 +554,7 @@ class App(customtkinter.CTk):
         self.use_motion_afterinator = False
 
     def lesson_letters_motion(self, letters):
+        self.del_list = StateHandler().change_state(WindowState.MOTION, self.del_list)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -582,12 +594,12 @@ class App(customtkinter.CTk):
         self.Z_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150) 
         self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z", True))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
+
         self.use_motion_afterinator = True
 
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
     def letter_lessons(self, letter, btns: bool = False):
-        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         self.frame_main_right.destroy()
 
         self.back_to_lesson = customtkinter.CTkButton(master=self.frame_main_left, text = "Lesson Select", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
@@ -661,10 +673,12 @@ class App(customtkinter.CTk):
 
         self.average_list.reinit(letter)
         self.letter_state.set_letter(letter)
-        self.update()
+        
         if not self.use_motion_afterinator: self.camera_aftinerator()
         else: self.motion_afterinator()
         self.the_afterinator()
+
+        self.update()
 
     def back_button_lessons(self):
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
@@ -771,7 +785,7 @@ class App(customtkinter.CTk):
     
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
+        if (StateHandler().c_state.value[1] == CameraState.CAM_CONTINOUS or StateHandler().c_state.value[1] == CameraState.CAM_REQUIRED) and USE_CAMERA == 1: # find a better method of doing this later
             self.label_cam.cw_update();
             self.label_cam2.cw_update();
             self.after_id = self.after(10, self.the_afterinator)
@@ -800,8 +814,6 @@ class App(customtkinter.CTk):
                     self.average_list.add(let, 5)
 
                 self.curr_accuracy = int(self.average_list.l_average())
-                #print(self.average_list.let_list)
-                #print("Curr Accurancy[{}]: {} - {}".format(let, self.curr_accuracy, int(self.average_list.l_average())))
 
                 self.label12.configure(text = "Total Accuracy: {}%".format(self.curr_accuracy))
                 self.label12.update()
@@ -811,15 +823,18 @@ class App(customtkinter.CTk):
             self.cam_after_id = self.after(200, self.camera_aftinerator)
 
     def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
-        if (self.motion_timer_count <=3):
-            self.motion_timer_count += 1
-        else:
-            self.motion_timer_count = 0
+        if StateHandler().c_state == WindowState.MOTION and USE_CAMERA == 1:
+            if (self.motion_timer_count <=3):
+                self.motion_timer_count += 1
+            else:
+                self.motion_timer_count = 0
 
-        print("================================ Based! ================================")
+            print("================================ Based! ================================")
 
-        Camera().border_q.put(make_color(self.color_dict[self.motion_timer_count]))
-        self.motion_after_id = self.after(1000, self.motion_afterinator)
+            color_made = make_color(self.color_dict[self.motion_timer_count])
+            Camera().border_q.put(color_made)
+            #self.motion_after_id = self.after(1000, self.motion_afterinator)
+            self.after_id = self.after(1000, self.motion_afterinator)
 
 if __name__ == "__main__":
     app = App()

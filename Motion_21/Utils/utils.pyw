@@ -4,16 +4,6 @@ import tkinter
 
 from Utils.imports import *
 
-def make_color(color : BorderColor): # BGR
-    return {
-            BorderColor.WHITE  : (255,255,255),
-            BorderColor.RED    : (1,1,255),
-            BorderColor.BLUE   : (255,122,1),
-            BorderColor.GREEN  : (1,255,1) ,
-            BorderColor.YELLOW : (1,255,255),
-            BorderColor.BLACK  : (1,1,1),
-        }[color]
-
 def find_element(root: tkinter.Frame, name: str, type=None): # okay the type doesnt really work
     lst = root.winfo_children()
 

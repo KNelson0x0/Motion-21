@@ -10,6 +10,15 @@ from queue import Queue
 
 from Utils.imports import *
 
+def make_color(color : BorderColor): # BGR
+    return {
+            BorderColor.WHITE  : (255,255,255),
+            BorderColor.RED    : (1,1,255),
+            BorderColor.BLUE   : (255,122,1),
+            BorderColor.GREEN  : (1,255,1) ,
+            BorderColor.YELLOW : (1,255,255),
+            BorderColor.BLACK  : (1,1,1),
+        }[color]
 
 class EventHandler(object):
     x = 0
@@ -69,12 +78,13 @@ class Camera(object): # singleton because every time the camera is initialized t
     cropped_frame      = None
     rect_frame         = None
     thread             = None
-    previous_offsets   = [0,0]
+    previous_offsets   = [0,0,None]
     q                  = Queue()
     frame_q            = Queue()
     border_q           = Queue()
     stop               = False
-    border_color       = BorderColor.BLUE
+    last_border_color  = make_color(BorderColor.BLUE)
+    border_color       = last_border_color
     drawingModule      = mediapipe.solutions.drawing_utils
     handsModule        = mediapipe.solutions.hands
 
@@ -162,23 +172,23 @@ class Camera(object): # singleton because every time the camera is initialized t
 
                 try:
                     self.border_color = self.border_q.get(timeout=.01)
+                    self.last_border_color = self.border_color
                 except:
-                    pass
-
-                #print("Got it: {}".format(self.border_color))
+                    self.border_color = self.last_border_color
 
                 try:
                     offsets = self.q.get(timeout=.01)
                     self.previous_offsets = offsets
-                    cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), make_color(self.border_color) if offsets[2] == None else make_color(offsets[2]), 3)
-                except :
-                    try:
-                        offsets = self.previous_offsets
-                        cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), make_color(self.border_color), 3)
-                    except Exception as e:
-                        print(e)
-                        print("What da heck!")
-                
+                except:
+                    offsets = self.previous_offsets
+
+                if offsets[2] == None:
+                   color = self.border_color
+                else:
+                   color = make_color(offsets[2])
+
+                cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), color, 3)
+
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
                 self.rgb_img_crop = cv2.cvtColor(self.rect_frame[52 + offsets[1] : 252 + offsets[1], 52 + offsets[0] : 252 + offsets[0]], cv2.COLOR_BGR2RGB)
                 self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
