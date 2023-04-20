@@ -212,7 +212,8 @@ class UserSign(object):
 
 
             #image = Camera().rgb_img_crop
-            image = Camera().get_cropped_frame()
+            #image = Camera().get_cropped_frame()
+            image = Camera().get_frame()
 
 
             #cv2.imshow("img", image)
@@ -326,11 +327,11 @@ class UserSign(object):
         # Variable declarations
         # Letter only contains non-movement letters for now
         static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
-        count_dict = {"A": 16, "B": 18, "C": 15, "D": 18, "E": 18, "F": 18, "G": 15, "H": 15, "I": 15, "K": 15, "L": 15, "M": 15, "N": 15, "O": 15, "P": 15, "Q": 15, "R": 15, 
-                      "S": 15, "T": 15, "U": 15, "V": 15, "W": 15, "X": 15, "Y": 15}
+        count_dict = {"A": 16, "B": 18, "C": 16, "D": 16, "E": 16, "F": 16, "G": 15, "H": 15, "I": 15, "K": 15, "L": 15, "M": 15, "N": 15, "O": 15, "P": 15, "Q": 15, "R": 18, 
+                      "S": 15, "T": 15, "U": 18, "V": 18, "W": 15, "X": 15, "Y": 15}
         three_stage = ["J"]
         four_stage = ["Z"]
-        count_dict2 = {"J_1": 15, "J_2": 15, "J_3": 15, "Z": 15}
+        count_dict2 = {"J_1": 16, "J_2": 16, "J_3": 16, "Z": 15}
 
         if lesson_letter in static_letters:
             # Grabs user letter input

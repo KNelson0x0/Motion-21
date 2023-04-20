@@ -2,7 +2,7 @@ import cv2
 import os
 from os import listdir
 
-dir_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J_1", "J_2", "J_3", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+dir_list = ["Z"]#["A", "B", "C", "D", "E", "F", "G", "H", "I", "J_1", "J_2", "J_3", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 dir = os.path.dirname(__file__)
 
 for i in range(len(dir_list)):

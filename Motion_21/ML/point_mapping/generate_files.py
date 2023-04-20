@@ -55,7 +55,7 @@ def project_data(Z, pcs, L):
 ##################### CHANGE THIS FOR DIFFERENT LETTERS #########################
 #control_letter = 'J_3'
 
-letter_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J_1", "J_2", "J_3", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+letter_list = ["Z"]#["A", "B", "C", "D", "E", "F", "G", "H", "I", "J_1", "J_2", "J_3", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 dir = os.path.dirname(__file__)
 
 for letter in letter_list:
