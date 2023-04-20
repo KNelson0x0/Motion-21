@@ -88,11 +88,11 @@ class App(customtkinter.CTk):
         self.motion_timer_count  = 0
         self.use_motion_afterinator  = False
         self.color_dict = { 0 : BorderColor.WHITE,
-                           1 :  BorderColor.RED,
-                           2 :  BorderColor.BLUE,
-                           3 :  BorderColor.GREEN,
-                           4 :  BorderColor.YELLOW,
-                           5 :  BorderColor.BLACK }
+                            1 :  BorderColor.RED,
+                            2 :  BorderColor.BLUE,
+                            3 :  BorderColor.GREEN,
+                            4 :  BorderColor.YELLOW,
+                            5 :  BorderColor.BLACK }
 
         # Locks size of window
         self.resizable(False, False)
@@ -597,6 +597,9 @@ class App(customtkinter.CTk):
 
         self.use_motion_afterinator = True
 
+
+    def callback_test(self):
+        print("Dripp!")
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
     def letter_lessons(self, letter, btns: bool = False):
@@ -616,9 +619,9 @@ class App(customtkinter.CTk):
         self.frame_main_right.grid_rowconfigure(7, weight=1)      
         self.frame_main_right.grid_rowconfigure(9, minsize=0)
         
-        self.tabview = CustomTabview(master=self.frame_main_left, width=25)
+        self.tabview = CustomTabview(master=self.frame_main_left, width=25, command = self.options_button)
         self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(5, 0), sticky="nsew")
-        self.tabview.add("Debug")
+        self.tabview.add("Options")
 
         '''
         we can change these into lessons and call to lesssons "A-D" functions and etc and just call the function here
@@ -674,11 +677,17 @@ class App(customtkinter.CTk):
         self.average_list.reinit(letter)
         self.letter_state.set_letter(letter)
         
+        self.update()
+
         if not self.use_motion_afterinator: self.camera_aftinerator()
         else: self.motion_afterinator()
         self.the_afterinator()
 
-        self.update()
+    def options_button(self):
+        self.options_frame = customtkinter.CTkFrame(master=self.frame_main_right, width = 100, height = 100)
+        #self.test_label = customtkinter.CTkLabel(master=self.frame_main_right, text = "Test", text_color = THEME_OPP, font=("Segoe UI", 14))
+        self.options_frame.place(relx=.5, rely = .5, anchor="center")
+
 
     def back_button_lessons(self):
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)

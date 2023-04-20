@@ -1,7 +1,5 @@
 import cv2
 import threading
-import cv2
-import threading
 import mediapipe
 import numpy as np
 
