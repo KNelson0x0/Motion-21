@@ -53,104 +53,110 @@ def project_data(Z, pcs, L):
     return Z_star
 
 ##################### CHANGE THIS FOR DIFFERENT LETTERS #########################
-control_letter = 'J_3'
+#control_letter = 'J_3'
 
-letter = control_letter
-letter_pca = letter + '_relation'
-
+letter_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J_1", "J_2", "J_3", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 dir = os.path.dirname(__file__)
-directory = dir + '\hand_images_' + letter
-#directory2 = r"C:\Users\pccin\source\repos\point_map_stuff\point_map_stuff\hand_edits" #change path to user's directory
-#filePath1 = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter + ".txt"
-#filePath2 = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter_pca + ".txt"
-filePath2 = r"C:\Users\pccin\OneDrive\Documents\Motion_21_Github\Motion_21\ML\base_letters\\" + letter + ".txt"
+
+for letter in letter_list:
+
+    #letter = control_letter
+    letter_pca = letter + '_relation'
+
+    directory = dir + '\hand_images_' + letter
+    #directory2 = r"C:\Users\pccin\source\repos\point_map_stuff\point_map_stuff\hand_edits" #change path to user's directory
+    #filePath1 = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter + ".txt"
+    #filePath2 = os.path.dirname(os.path.abspath(__file__)) + "\\base_letters\\" + letter_pca + ".txt"
+    filePath2 = r"C:\Users\pccin\OneDrive\Documents\Motion_21_Github\Motion_21\ML\base_letters\\" + letter + ".txt"
  
-drawingModule = mediapipe.solutions.drawing_utils
-handsModule = mediapipe.solutions.hands
+    drawingModule = mediapipe.solutions.drawing_utils
+    handsModule = mediapipe.solutions.hands
 
-counter = 0
-full_arr = []
+    counter = 0
+    full_arr = []
 
-#erases current contents
-f = open(filePath2, 'w')
-f.close()
+    #erases current contents
+    f = open(filePath2, 'w')
+    f.close()
 
-for images in os.listdir(directory):
+    for images in os.listdir(directory):
 
-        coordinates_arr = [] #array to store x,y coordinates
-        #print(coordinates_arr)
-
-        if (images.endswith(".jpg")):
-            #print("\n"+ images + "\n")
-            path = os.path.join(directory, images)
-
-        with handsModule.Hands(static_image_mode=True) as hands:
-        
-            #finds initial landmarks to detect just image of hand
-            image = cv2.imread(path)
-            #cv2.imshow("img", image)
-            #cv2.waitKey(0)
-            results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-            imageHeight, imageWidth, _ = image.shape
-
-            #cv2.imshow("img", image)
-    
-            if results.multi_hand_landmarks != None:
-                for handLandmarks in results.multi_hand_landmarks:
-                    for point in handsModule.HandLandmark:
-    
-                        drawingModule.draw_landmarks(image, handLandmarks, handsModule.HAND_CONNECTIONS)
-
-                        normalizedLandmark = handLandmarks.landmark[point]
-                        pixelCoordinatesLandmark = drawingModule._normalized_to_pixel_coordinates(normalizedLandmark.x, normalizedLandmark.y, imageWidth, imageHeight)
-    
-                        #print(point) #name of landmark
-
-                        #note: name of landmarks is in the same order as mediapipe framework
-
-                        #print(str(pixelCoordinatesLandmark)) #coordinates of landmark
-                        #for i in range(21):
-                            #coordinates_arr[i] = pixelCoordinatesLandmark
-                        coordinates_arr.append(pixelCoordinatesLandmark)
-
-                        
-                        full_arr.append(pixelCoordinatesLandmark)
-                        #print(normalizedLandmark)
-
-                        base_arr = np.array(coordinates_arr)
-            
-            #need to find which function generates/stores points
-            #keep in order for later reference (avoid false flagging with similar hand signs)
-
-            #WRITES TO HAND EDITS FOLDER, might not be needed
-            #path2 = os.path.join(directory2, images)
-            #cv2.imwrite(path2, image)
-
-            #cv2.imshow("img", image)
-
-            #cv2.waitKey(0)
-
+            coordinates_arr = [] #array to store x,y coordinates
             #print(coordinates_arr)
 
-            #writes in 2D coordinate arrays (might not be needed)
-            #with open(filePath1, 'a') as f1:
-            #    f1.write(str(coordinates_arr)+"\n")
-            #f1.close()
+            if (images.endswith(".jpg")):
+                #print("\n"+ images + "\n")
+                path = os.path.join(directory, images)
 
-            covarianceBase = compute_covariance_matrix(base_arr)
-            pcsBase, LBase = find_pcs(covarianceBase)
-            Z_star_base = project_data(base_arr, pcsBase, LBase)
+            with handsModule.Hands(static_image_mode=True) as hands:
+        
+                #finds initial landmarks to detect just image of hand
+                image = cv2.imread(path)
+                #cv2.imshow("img", image)
+                #cv2.waitKey(0)
+                results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+                imageHeight, imageWidth, _ = image.shape
 
-            Z_star_base_arr = []
+                #cv2.imshow("img", image)
+    
+                if results.multi_hand_landmarks != None:
+                    for handLandmarks in results.multi_hand_landmarks:
+                        for point in handsModule.HandLandmark:
+    
+                            drawingModule.draw_landmarks(image, handLandmarks, handsModule.HAND_CONNECTIONS)
 
-            for i in range(len(Z_star_base) - 1):
-                temp = Z_star_base[i] - Z_star_base[i+1]
-                Z_star_base_arr.append(temp)
+                            normalizedLandmark = handLandmarks.landmark[point]
+                            pixelCoordinatesLandmark = drawingModule._normalized_to_pixel_coordinates(normalizedLandmark.x, normalizedLandmark.y, imageWidth, imageHeight)
+    
+                            #print(point) #name of landmark
 
-            #writes in 1D arrays
-            with open(filePath2, 'a') as f2:
-                f2.write(str(Z_star_base_arr)+"\n")
-            f2.close()
+                            #note: name of landmarks is in the same order as mediapipe framework
+
+                            #print(str(pixelCoordinatesLandmark)) #coordinates of landmark
+                            #for i in range(21):
+                                #coordinates_arr[i] = pixelCoordinatesLandmark
+                            coordinates_arr.append(pixelCoordinatesLandmark)
+
+                        
+                            full_arr.append(pixelCoordinatesLandmark)
+                            #print(normalizedLandmark)
+
+                            base_arr = np.array(coordinates_arr)
+            
+                #need to find which function generates/stores points
+                #keep in order for later reference (avoid false flagging with similar hand signs)
+
+                #WRITES TO HAND EDITS FOLDER, might not be needed
+                #path2 = os.path.join(directory2, images)
+                #cv2.imwrite(path2, image)
+
+                #cv2.imshow("img", image)
+
+                #cv2.waitKey(0)
+
+                #print(coordinates_arr)
+
+                #writes in 2D coordinate arrays (might not be needed)
+                #with open(filePath1, 'a') as f1:
+                #    f1.write(str(coordinates_arr)+"\n")
+                #f1.close()
+
+                covarianceBase = compute_covariance_matrix(base_arr)
+                pcsBase, LBase = find_pcs(covarianceBase)
+                Z_star_base = project_data(base_arr, pcsBase, LBase)
+
+                Z_star_base_arr = []
+
+                for i in range(len(Z_star_base) - 1):
+                    temp = Z_star_base[i] - Z_star_base[i+1]
+                    Z_star_base_arr.append(temp)
+
+                #writes in 1D arrays
+                with open(filePath2, 'a') as f2:
+                    f2.write(str(Z_star_base_arr)+"\n")
+                f2.close()
+
+print("Success!")
 
             ###### FOR TESTING STUFF ######
             #letterArray = []
