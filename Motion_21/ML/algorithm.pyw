@@ -22,6 +22,9 @@ class UserSign(object):
 
         return self.instance
 
+    def reset_stage(self):
+        UserSign().stage = 1
+
     #eigenvalues/eigenvector stuff
 
     # Function that calculates the covariance matrix
