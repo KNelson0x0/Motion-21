@@ -78,7 +78,6 @@ class Camera(object): # singleton because every time the camera is initialized t
     thread             = None
     previous_offsets   = [0,0,None]
     q                  = Queue()
-    frame_q            = Queue()
     border_q           = Queue()
     stop               = False
     last_border_color  = make_color(BorderColor.BLUE)
@@ -115,19 +114,9 @@ class Camera(object): # singleton because every time the camera is initialized t
             return self.old_frame
 
     def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
-         try:  
-            if type(self.cropped_frame) != None:
-                frame = self.frame_q.get(timeout=.01)
-                if frame != None:
-                    return frame
-               
-                return self.cropped_frame
-         except Exception as e:
-            #print(e)
-            if type(self.cropped_frame) != None:
-                return self.cropped_frame
-            return self.get_frame()
-         
+        if type(self.cropped_frame) != None:
+            return self.cropped_frame
+        return self.get_frame()
 
     def warmup(self): # camera seems to need a bit to warmup. not joking.
         try:

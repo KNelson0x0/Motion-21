@@ -120,6 +120,7 @@ class App(customtkinter.CTk):
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
         self.use_motion_afterinator = False
+        self.options_menu_open      = True
 
         if StateHandler().c_state == WindowState.HOME:
             return
@@ -448,6 +449,7 @@ class App(customtkinter.CTk):
     def lesson_select(self):
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
+        self.options_menu_open      = True
         self.use_motion_afterinator = False
 
         static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
