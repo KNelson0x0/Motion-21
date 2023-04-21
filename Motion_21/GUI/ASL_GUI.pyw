@@ -1,3 +1,4 @@
+from cgitb import text
 import os
 import threading
 import customtkinter
@@ -81,7 +82,9 @@ class App(customtkinter.CTk):
         # helper attributes
         self.del_list            = []
         self.average_list        = AverageList()
+        self.options_menu_open   = True
         self.curr_accuracy       = 100
+        self.roi_size            = 52
         self.after_id            = ""
         self.cam_after_id        = ""
         self.motion_after_id     = ""
@@ -622,7 +625,15 @@ class App(customtkinter.CTk):
         self.tabview = CustomTabview(master=self.frame_main_left, width=25, command = self.options_button)
         self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(5, 0), sticky="nsew")
         self.tabview.add("Options")
+        self.options_frame = customtkinter.CTkFrame(master=self.frame_main_right, width = 10, height = 10) # remove warning
+        
+        self.options_camera_x    = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="Cam X: {}".format(EventHandler().x))
+        self.options_camera_y    = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="Cam Y: {}".format(EventHandler().y))
+        self.options_border_size = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="B Size: {}".format(EventHandler().x))
 
+        self.options_camera_x.grid(row=0, padx=(5,5), pady=(5,5), sticky="nsew")
+        self.options_camera_y.grid(row=1, padx=(5,5), pady=(5,5), sticky="nsew")
+        self.options_border_size.grid(row=2, padx=(5,5), pady=(5,5), sticky="nsew")
         '''
         we can change these into lessons and call to lesssons "A-D" functions and etc and just call the function here
         add next and retry functionalities
@@ -677,16 +688,46 @@ class App(customtkinter.CTk):
         self.average_list.reinit(letter)
         self.letter_state.set_letter(letter)
         
+        self.tabview._segmented_button_callback("Options")
         self.update()
 
         if not self.use_motion_afterinator: self.camera_aftinerator()
         else: self.motion_afterinator()
         self.the_afterinator()
 
+    def options_submit(self):
+        try:
+            self.roi_size = int(self.opts_roi_box.get())
+        except:
+            pass # for now, maybe change the box to red
+
+        try:
+            self.options_frame.destroy()
+        except:
+            pass
+
     def options_button(self):
-        self.options_frame = customtkinter.CTkFrame(master=self.frame_main_right, width = 100, height = 100)
-        #self.test_label = customtkinter.CTkLabel(master=self.frame_main_right, text = "Test", text_color = THEME_OPP, font=("Segoe UI", 14))
-        self.options_frame.place(relx=.5, rely = .5, anchor="center")
+        if self.options_menu_open == True:
+            self.options_menu_open = False # not proper state usage but im not adding a third clause for a bool rn
+
+            try:
+                self.options_frame.destroy() 
+            except:
+                pass
+
+        else:
+            self.options_frame = customtkinter.CTkFrame(master=self.frame_main_right, width = 180, height = 180)
+            self.options_frame.place(relx=.5, rely = .5, anchor="center")
+
+            self.opts_roi_label = customtkinter.CTkLabel(master=self.options_frame, text = "Rectange Size: ", text_color = THEME_OPP, font=("Segoe UI", 14))
+            self.opts_roi_label.grid(row=0, column=0, padx=(20, 20), pady=(20, 20), sticky="ew")
+
+            self.opts_roi_box = customtkinter.CTkEntry(master=self.options_frame, width=50, height=20, placeholder_text=self.roi_size)
+            self.opts_roi_box.grid(row=0, column=1, padx=(20, 20), pady=(20, 20), sticky="ew")
+
+            self.opts_submit = customtkinter.CTkButton(master=self.options_frame, text = "Ok!", text_color = THEME_OPP, height = 42, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.options_submit)
+            self.opts_submit.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), columnspan = 2)
+            self.options_menu_open = True
 
 
     def back_button_lessons(self):

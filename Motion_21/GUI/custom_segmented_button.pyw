@@ -33,7 +33,6 @@ class CustomSegmentedButton(CTkSegmentedButton): # just needed to edit set so th
         super().__init__(master, width, height, corner_radius, border_width, bg_color, fg_color, selected_color, selected_hover_color,
                          unselected_color, unselected_hover_color, text_color, text_color_disabled, background_corner_colors,
                          font, values, variable, dynamic_resizing, command, state, **kwargs)
-
         
     def set(self, value: str, from_variable_callback: bool = False, from_button_callback: bool = False):
         if value in self._buttons_dict:
@@ -56,3 +55,26 @@ class CustomSegmentedButton(CTkSegmentedButton): # just needed to edit set so th
         if from_button_callback:
             if self._command is not None:
                 self._command(self._current_value)
+
+    def insert(self, index: int, value: str):
+        if value not in self._buttons_dict:
+            if value != "":
+                self._value_list.insert(index, value)
+                self._buttons_dict[value] = self._create_button(index, value)
+
+                self._configure_button_corners_for_index(index)
+                if index > 0:
+                    self._configure_button_corners_for_index(index - 1)
+                if index < len(self._buttons_dict) - 1:
+                    self._configure_button_corners_for_index(index + 1)
+
+                self._create_button_grid()
+
+                if value == self._current_value:
+                    self._select_button_by_value(self._current_value)
+
+                self._buttons_dict[value].configure(fg_color=self._sb_selected_color, hover_color=self._sb_selected_hover_color) # activate color
+            else:
+                raise ValueError(f"CTkSegmentedButton can not insert value ''")
+        else:
+            raise ValueError(f"CTkSegmentedButton can not insert value '{value}', already part of the values")
