@@ -55,7 +55,7 @@ def project_data(Z, pcs, L):
 ##################### CHANGE THIS FOR DIFFERENT LETTERS #########################
 #control_letter = 'J_3'
 
-letter_list = ["Z"]#["A", "B", "C", "D", "E", "F", "G", "H", "I", "J_1", "J_2", "J_3", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+letter_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J_1", "J_2", "J_3", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 dir = os.path.dirname(__file__)
 
 for letter in letter_list:
@@ -141,20 +141,28 @@ for letter in letter_list:
                 #    f1.write(str(coordinates_arr)+"\n")
                 #f1.close()
 
-                covarianceBase = compute_covariance_matrix(base_arr)
-                pcsBase, LBase = find_pcs(covarianceBase)
-                Z_star_base = project_data(base_arr, pcsBase, LBase)
+                #Ensures that the base_arr doesn't contain "None"
+                has_none = False
 
-                Z_star_base_arr = []
+                if None in base_arr:
+                    has_none = True
 
-                for i in range(len(Z_star_base) - 1):
-                    temp = Z_star_base[i] - Z_star_base[i+1]
-                    Z_star_base_arr.append(temp)
+                if has_none == False:
 
-                #writes in 1D arrays
-                with open(filePath2, 'a') as f2:
-                    f2.write(str(Z_star_base_arr)+"\n")
-                f2.close()
+                    covarianceBase = compute_covariance_matrix(base_arr)
+                    pcsBase, LBase = find_pcs(covarianceBase)
+                    Z_star_base = project_data(base_arr, pcsBase, LBase)
+
+                    Z_star_base_arr = []
+
+                    for i in range(len(Z_star_base) - 1):
+                        temp = Z_star_base[i] - Z_star_base[i+1]
+                        Z_star_base_arr.append(temp)
+
+                    #writes in 1D arrays
+                    with open(filePath2, 'a') as f2:
+                        f2.write(str(Z_star_base_arr)+"\n")
+                    f2.close()
 
 print("Success!")
 

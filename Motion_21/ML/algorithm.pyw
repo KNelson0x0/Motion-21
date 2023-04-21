@@ -256,7 +256,7 @@ class UserSign(object):
 
                 Camera().frame_q.put(image)
                 image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                cv2.imshow("img", image_rgb)
+                #cv2.imshow("img", image_rgb)
                 #Camera().rgb_img_crop = image
 
                 #cv2.waitKey(0)
@@ -327,11 +327,11 @@ class UserSign(object):
         # Variable declarations
         # Letter only contains non-movement letters for now
         static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
-        count_dict = {"A": 16, "B": 18, "C": 16, "D": 16, "E": 16, "F": 16, "G": 15, "H": 15, "I": 15, "K": 15, "L": 15, "M": 15, "N": 15, "O": 15, "P": 15, "Q": 15, "R": 18, 
+        count_dict = {"A": 16, "B": 19, "C": 16, "D": 16, "E": 16, "F": 16, "G": 15, "H": 15, "I": 15, "K": 15, "L": 15, "M": 15, "N": 15, "O": 15, "P": 15, "Q": 15, "R": 18, 
                       "S": 15, "T": 15, "U": 18, "V": 18, "W": 15, "X": 15, "Y": 15}
         three_stage = ["J"]
         four_stage = ["Z"]
-        count_dict2 = {"J_1": 16, "J_2": 16, "J_3": 16, "Z": 15}
+        count_dict2 = {"J_1": 18, "J_2": 17, "J_3": 19, "Z": 16}
 
         if lesson_letter in static_letters:
             # Grabs user letter input
@@ -408,18 +408,20 @@ class UserSign(object):
                                 print(lesson_letter + " signed correctly")
                                 matched = True
                                 matched_letter = lesson_letter
+                                print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
+                                return lesson_letter
                             else:
                                 print("Counts that matched: " + str(count))
                                 print(lesson_letter + " was not a match")
 
                     # If matched has been flagged, then the user has successfully signed the lesson letter and outputs a message accordingly
-                    if(matched == True and lesson_letter == matched_letter):
-                        print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
-                        return lesson_letter
-                    else:
-                        matched = True
-                        print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
-                        return None
+                    #if(matched == True and lesson_letter == matched_letter):
+                        #print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
+                        #return lesson_letter
+                    #else:
+                        #matched = True
+                        #print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
+                        #return None
                         #break
                     #else:
                         #print("No sign detected") #Counts that matched: " + str(count))
@@ -468,7 +470,7 @@ class UserSign(object):
 
                             base_arr = base_arr_all[num_base_letters]
 
-                            print("User Calculations")
+                            #print("User Calculations")
 
                             #for i in range(int(np.size(user_arr))):
                             covariance = self.compute_covariance_matrix(user_arr)
@@ -491,7 +493,7 @@ class UserSign(object):
                             count = 0
 
                             # Debug print function to label the match percentages
-                            print("Complete Match Percentage for base letter " + lesson_letter1 + " No. " + str(num_base_letters + 1))
+                            #print("Complete Match Percentage for base letter " + lesson_letter1 + " No. " + str(num_base_letters + 1))
 
                             # Checks if user letter matches base letter
                             for i in range(len(Z_star_user_arr)):
@@ -511,14 +513,14 @@ class UserSign(object):
 
                                 # If a set number of points are similarly related, then the user has successfully signed the base image that we compared it to
                                 if(count >= count_dict2[lesson_letter1]): #decreased to 15, can increase for similar hand signs
-                                    print("Counts that matched: " + str(count))
+                                    #print("Counts that matched: " + str(count))
                                     print(lesson_letter + " signed correctly")
                                     #matched = True
                                     #matched_letter = lesson_letter
                                     UserSign().stage = 2
-                                else:
-                                    print("Counts that matched: " + str(count))
-                                    print(lesson_letter + " was not a match")
+                                #else:
+                                    #print("Counts that matched: " + str(count))
+                                    #print(lesson_letter + " was not a match")
 
                     if UserSign().stage == 2:
                         print("stage 2")
@@ -532,7 +534,7 @@ class UserSign(object):
 
                             base_arr = base_arr_all[num_base_letters]
 
-                            print("User Calculations")
+                            #print("User Calculations")
 
                             #for i in range(int(np.size(user_arr))):
                             covariance = self.compute_covariance_matrix(user_arr)
@@ -555,7 +557,7 @@ class UserSign(object):
                             count = 0
 
                             # Debug print function to label the match percentages
-                            print("Complete Match Percentage for base letter " + lesson_letter2 + " No. " + str(num_base_letters + 1))
+                            #print("Complete Match Percentage for base letter " + lesson_letter2 + " No. " + str(num_base_letters + 1))
 
                             # Checks if user letter matches base letter
                             for i in range(len(Z_star_user_arr)):
@@ -575,14 +577,14 @@ class UserSign(object):
 
                                 # If a set number of points are similarly related, then the user has successfully signed the base image that we compared it to
                                 if(count >= count_dict2[lesson_letter2]): #decreased to 15, can increase for similar hand signs
-                                    print("Counts that matched: " + str(count))
+                                    #print("Counts that matched: " + str(count))
                                     print(lesson_letter + " signed correctly")
                                     #matched = True
                                     #matched_letter = lesson_letter
                                     UserSign().stage = 3
-                                else:
-                                    print("Counts that matched: " + str(count))
-                                    print(lesson_letter + " was not a match")
+                                #else:
+                                    #print("Counts that matched: " + str(count))
+                                    #print(lesson_letter + " was not a match")
                         
 
                     if UserSign().stage == 3:
@@ -620,7 +622,7 @@ class UserSign(object):
                             count = 0
 
                             # Debug print function to label the match percentages
-                            print("Complete Match Percentage for base letter " + lesson_letter3 + " No. " + str(num_base_letters + 1))
+                            #print("Complete Match Percentage for base letter " + lesson_letter3 + " No. " + str(num_base_letters + 1))
 
                             # Checks if user letter matches base letter
                             for i in range(len(Z_star_user_arr)):
@@ -640,24 +642,26 @@ class UserSign(object):
 
                                 # If a set number of points are similarly related, then the user has successfully signed the base image that we compared it to
                                 if(count >= count_dict2[lesson_letter3]): #decreased to 15, can increase for similar hand signs
-                                    print("Counts that matched: " + str(count))
+                                    #print("Counts that matched: " + str(count))
                                     print(lesson_letter + " signed correctly")
                                     matched = True
                                     matched_letter = lesson_letter_base
-                                    UserSign().stage = 3
-                                else:
-                                    print("Counts that matched: " + str(count))
-                                    print(lesson_letter + " was not a match")
+                                    print("Congratulations, you signed the letter " + lesson_letter_base + " correctly!")
+                                    UserSign().stage = 1
+                                    return lesson_letter_base
+                                #else:
+                                    #print("Counts that matched: " + str(count))
+                                    #print(lesson_letter + " was not a match")
 
                         # If matched has been flagged, then the user has successfully signed the lesson letter and outputs a message accordingly
-                        if(matched == True and lesson_letter == matched_letter):
-                            print("Congratulations, you signed the letter " + lesson_letter_base + " correctly!")
-                            UserSign().stage = 1
-                            return lesson_letter_base
-                        else:
-                            matched = True
-                            print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
-                            return None
+                        #if(matched == True and lesson_letter == matched_letter):
+                            #print("Congratulations, you signed the letter " + lesson_letter_base + " correctly!")
+                            #UserSign().stage = 1
+                            #return lesson_letter_base
+                        #else:
+                            #matched = True
+                            #print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
+                            #return None
         
         #for Z                
         if lesson_letter in four_stage:
@@ -717,7 +721,7 @@ class UserSign(object):
                             count = 0
 
                             # Debug print function to label the match percentages
-                            print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
+                            #print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
 
                             # Checks if user letter matches base letter
                             for i in range(len(Z_star_user_arr)):
@@ -745,9 +749,9 @@ class UserSign(object):
                                     #matched_letter = lesson_letter
                                     UserSign.base_xy_arr1 = xy_arr
                                     UserSign().stage = 2
-                                else:
-                                    print("Counts that matched: " + str(count))
-                                    print(lesson_letter + " was not a match")
+                                #else:
+                                    #print("Counts that matched: " + str(count))
+                                    #print(lesson_letter + " was not a match")
 
                     if UserSign().stage == 2:
                         print("stage 2")
@@ -784,7 +788,7 @@ class UserSign(object):
                             count = 0
 
                             # Debug print function to label the match percentages
-                            print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
+                            #print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
 
                             # Checks if user letter matches base letter
                             for i in range(len(Z_star_user_arr)):
@@ -792,14 +796,14 @@ class UserSign(object):
                                 temp = (Z_star_user_arr[i] / base_arr[i]) * 100
                                 if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values/original was 60, 140
                                     for i in range(len(xy_arr)):
-                                        print(UserSign().base_xy_arr1)
-                                        print(xy_arr)
+                                        #print(UserSign().base_xy_arr1)
+                                        #print(xy_arr)
                                         if (xy_arr[i][1] >= (UserSign().base_xy_arr1[i][1] - 40)) and (xy_arr[i][1] <= (UserSign().base_xy_arr1[i][1] + 40)): #possibly change these values for x/y coordinates
                                             #print("BOOM")
                                             if(xy_arr[i][0] < (UserSign().base_xy_arr1[i][0] - 40)): #might need to change this value too
                                                 #print("BOOM")
                                                 temp_count += 1
-                                print(temp_count)
+                                #print(temp_count)
                                 if temp_count == 4:
                                     count += 1
                                 #print("[{}]: {}".format(i,count))
@@ -814,16 +818,16 @@ class UserSign(object):
                             if lesson_letter in count_dict2:
 
                                 # If a set number of points are similarly related, then the user has successfully signed the base image that we compared it to
-                                if(count >= count_dict2[lesson_letter]): #decreased to 15, can increase for similar hand signs
+                                if(count >= 10): #decreased to 15, can increase for similar hand signs
                                     print("Counts that matched: " + str(count))
                                     print(lesson_letter + " signed correctly")
                                     #matched = True
                                     #matched_letter = lesson_letter
                                     UserSign().base_xy_arr2 = xy_arr
                                     UserSign().stage = 3
-                                else:
-                                    print("Counts that matched: " + str(count))
-                                    print(lesson_letter + " was not a match")
+                                #else:
+                                    #print("Counts that matched: " + str(count))
+                                    #print(lesson_letter + " was not a match")
                         
 
                     if UserSign().stage == 3:
@@ -861,7 +865,7 @@ class UserSign(object):
                             count = 0
 
                             # Debug print function to label the match percentages
-                            print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
+                            #print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
 
                             # Checks if user letter matches base letter
                             for i in range(len(Z_star_user_arr)):
@@ -886,16 +890,16 @@ class UserSign(object):
                             if lesson_letter in count_dict2:
 
                                 # If a set number of points are similarly related, then the user has successfully signed the base image that we compared it to
-                                if(count >= 5): #decreased to 15, can increase for similar hand signs
+                                if(count >= 10): #decreased to 15, can increase for similar hand signs
                                     print("Counts that matched: " + str(count))
                                     print(lesson_letter + " signed correctly")
                                     #matched = True
                                     #matched_letter = lesson_letter_base
                                     UserSign().base_xy_arr3 = xy_arr
                                     UserSign().stage = 4
-                                else:
-                                    print("Counts that matched: " + str(count))
-                                    print(lesson_letter + " was not a match")
+                                #else:
+                                    #print("Counts that matched: " + str(count))
+                                    #print(lesson_letter + " was not a match")
 
                     if UserSign().stage == 4:
                         print("stage 4")
@@ -932,7 +936,7 @@ class UserSign(object):
                             count = 0
 
                             # Debug print function to label the match percentages
-                            print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
+                            #print("Complete Match Percentage for base letter " + lesson_letter + " No. " + str(num_base_letters + 1))
 
                             # Checks if user letter matches base letter
                             for i in range(len(Z_star_user_arr)):
@@ -957,25 +961,27 @@ class UserSign(object):
                             if lesson_letter in count_dict2:
 
                                 # If a set number of points are similarly related, then the user has successfully signed the base image that we compared it to
-                                if(count >= 5): #decreased to 15, can increase for similar hand signs
+                                if(count >= 10): #decreased to 15, can increase for similar hand signs
                                     print("Counts that matched: " + str(count))
                                     print(lesson_letter + " signed correctly")
                                     matched = True
                                     matched_letter = lesson_letter
-                                    UserSign().stage = 3
-                                else:
-                                    print("Counts that matched: " + str(count))
-                                    print(lesson_letter + " was not a match")
+                                    print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
+                                    UserSign().stage = 1
+                                    return lesson_letter
+                                #else:
+                                    #print("Counts that matched: " + str(count))
+                                    #print(lesson_letter + " was not a match")
 
 
                         # If matched has been flagged, then the user has successfully signed the lesson letter and outputs a message accordingly
-                        if(matched == True and lesson_letter == matched_letter):
-                            print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
-                            UserSign().stage = 1
-                            return lesson_letter
-                        else:
-                            matched = True
-                            print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
-                            return None
+                        #if(matched == True and lesson_letter == matched_letter):
+                            #print("Congratulations, you signed the letter " + lesson_letter + " correctly!")
+                            #UserSign().stage = 1
+                            #return lesson_letter
+                        #else:
+                            #matched = True
+                            #print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
+                            #return None
 
     #EOF
