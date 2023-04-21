@@ -18,6 +18,7 @@ class Camera(object): # singleton because every time the camera is initialized t
     old_frame          = None
     frame              = None
     cropped_frame      = None
+    cropped_frame_points      = None
     rect_frame         = None
     thread             = None
     previous_offsets   = [0,0]
@@ -54,20 +55,38 @@ class Camera(object): # singleton because every time the camera is initialized t
             debug_log("[You really need to be using thread locks.]")
             return self.old_frame
 
-    def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
-         try:  
-            if type(self.cropped_frame) != None:
-                frame = self.frame_q.get(timeout=.01)
-                if frame != None:
-                    return frame
-               
-                return self.cropped_frame
-         except Exception as e:
-            print(e)
-            if type(self.cropped_frame) != None:
-                return self.cropped_frame
-            return self.get_frame()
-         
+    def get_cropped_frame(self):
+        if type(self.cropped_frame) != type(None):
+            return self.cropped_frame
+        return self.get_frame()
+
+    def get_cropped_frame_points(self): # ground work. will use proper mutexs and things in the future.
+        if type(self.cropped_frame_points) != type(None):
+            return self.cropped_frame_points
+        return self.get_cropped_frame()
+
+    def draw_points(self, image):
+
+        drawingModule = mediapipe.solutions.drawing_utils
+        handsModule = mediapipe.solutions.hands
+
+        with handsModule.Hands(static_image_mode=True) as hands: #True/False
+
+            results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+            
+            try:
+                if results.multi_hand_landmarks != None:
+                    for handLandmarks in results.multi_hand_landmarks:
+                        for point in handsModule.HandLandmark:
+        
+                            drawingModule.draw_landmarks(image, handLandmarks, handsModule.HAND_CONNECTIONS)
+                            #self.frame_q.put(image)
+
+                #Camera().frame_q.put(image)
+
+                return image
+            except:
+                print("No hand detected")
 
     def warmup(self): # camera seems to need a bit to warmup. not joking.
 
@@ -79,7 +98,7 @@ class Camera(object): # singleton because every time the camera is initialized t
             roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
             roi = cv2.resize(roi, (28, 28), interpolation = cv2.INTER_AREA)
 
-            self.cropped_frame = roi
+            self.cropped_frame_points = roi
         except:
             sleep(10)
 
@@ -103,7 +122,7 @@ class Camera(object): # singleton because every time the camera is initialized t
                 self.rect_frame = self.frame.copy()
 
                 try:
-                    offsets = self.q.get(timeout=.1)
+                    offsets = self.q.get(timeout=.01)
                     self.previous_offsets = offsets
                     if offsets[2] != None:
                         #cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (350 + offsets[0], 350 + offsets[1]), (1, 2,255), 3)
@@ -122,9 +141,12 @@ class Camera(object): # singleton because every time the camera is initialized t
                 
                 #roi = self.rect_frame[50 + offsets[1] : 350 + offsets[1], 50 + offsets[0] : 350 + offsets[0]]
                 roi = self.rect_frame[52 + offsets[1] : 252 + offsets[1], 52 + offsets[0] : 252 + offsets[0]]
-                #roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+                roi_points = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+                roi_points = self.draw_points(self, roi_points)
+                #roi_points = cv2.cvtColor(roi_points, cv2.COLOR_BGR2GRAY)
 
-                self.cropped_frame = roi # still an image
+                self.cropped_frame = roi
+                self.cropped_frame_points = roi_points # still an image
 
 
             except Exception as e:

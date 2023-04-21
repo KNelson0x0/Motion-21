@@ -166,9 +166,9 @@ class UserSign(object):
                 #need to find which function generates/stores points
                 #keep in order for later reference (avoid false flagging with similar hand signs)
 
-                Camera().frame_q.put(image)
-                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                cv2.imshow("img", image_rgb)
+                #Camera().frame_q.put(image)
+                #image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                #cv2.imshow("img", image_rgb)
                 #Camera().rgb_img_crop = image
 
                 #cv2.waitKey(0)
@@ -254,8 +254,8 @@ class UserSign(object):
                 #need to find which function generates/stores points
                 #keep in order for later reference (avoid false flagging with similar hand signs)
 
-                Camera().frame_q.put(image)
-                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                #Camera().frame_q.put(image)
+                #image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 #cv2.imshow("img", image_rgb)
                 #Camera().rgb_img_crop = image
 
@@ -331,7 +331,7 @@ class UserSign(object):
                       "S": 15, "T": 15, "U": 18, "V": 18, "W": 15, "X": 15, "Y": 15}
         three_stage = ["J"]
         four_stage = ["Z"]
-        count_dict2 = {"J_1": 18, "J_2": 17, "J_3": 19, "Z": 16}
+        count_dict2 = {"J_1": 18, "J_2": 17, "J_3": 18, "Z": 15}
 
         if lesson_letter in static_letters:
             # Grabs user letter input
