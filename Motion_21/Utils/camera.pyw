@@ -21,7 +21,7 @@ def make_color(color : BorderColor): # BGR
 class EventHandler(object):
     x = 0
     y = 0
-  
+    boundary_range = 0
     def __new__(self):
         if not hasattr(self, 'instance'):
             self.instance = super(EventHandler, self).__new__(self)
@@ -33,16 +33,22 @@ class EventHandler(object):
     # bottom right 385, 225
     # bottom left -50, 225
 
+    def set_boundary_range(self, new_range):
+        try:
+            self.boundary_range = new_range
+        except:
+            debug_log("[EventHandler]::set_boundary_range> HOW?")
+
     def arrow_key_up(self, _):
-        if (self.y == -50): 
-           Camera().q.put([self.x, self.y, BorderColor.YELLOW])
+        if (self.y == -50 - self.boundary_range): 
+           Camera().q.put([self.x, self.y, BorderColor.RED])
            return
         self.y -= 5
         debug_log("arrow up: {}".format(self.y))
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_down(self, _):
-        if (self.y == 225): 
+        if (self.y == 230 + self.boundary_range): 
            Camera().q.put([self.x, self.y, BorderColor.RED])
            return
         self.y += 5
@@ -50,7 +56,7 @@ class EventHandler(object):
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_left(self, _):
-        if (self.x == -50):
+        if (self.x == -50 - self.boundary_range):
             Camera().q.put([self.x, self.y, BorderColor.RED])
             return
         self.x -= 5
@@ -58,7 +64,7 @@ class EventHandler(object):
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_right(self, _):
-        if (self.x == 385):
+        if (self.x == 385 + self.boundary_range):
             Camera().q.put([self.x, self.y, BorderColor.RED])
             return
         self.x += 5
@@ -79,7 +85,10 @@ class Camera(object): # singleton because every time the camera is initialized t
     previous_offsets   = [0,0,None]
     q                  = Queue()
     border_q           = Queue()
+    box_size_q         = Queue()
     stop               = False
+    box_size           = 50
+    last_box_size      = 0
     last_border_color  = make_color(BorderColor.BLUE)
     border_color       = last_border_color
     drawingModule      = mediapipe.solutions.drawing_utils
@@ -131,13 +140,6 @@ class Camera(object): # singleton because every time the camera is initialized t
         except:
             sleep(10)
 
-    def change_border_color(self):
-        debug_log("make sure you put something in the q!")
-        try:
-            self.border_color = make_color(self.border_q.get(timeout=1))
-        except:
-            debug_log("you didn't put something in the q.")
-
     def begin(self):
         i = 0
         self.border_color
@@ -169,18 +171,25 @@ class Camera(object): # singleton because every time the camera is initialized t
                 except:
                     offsets = self.previous_offsets
 
+                try:
+                    self.box_size = self.box_size_q.get(timeout=0.01)
+                    self.last_box_size = self.box_size
+                except:
+                    self.box_size = self.last_box_size
+
                 if offsets[2] == None:
                    color = self.border_color
                 else:
                    color = make_color(offsets[2])
 
-                cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), color, 3)
+                #cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), color, 3)
+                cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (250 + offsets[0], 250 + offsets[1]), color, 3)
 
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
-                self.rgb_img_crop = cv2.cvtColor(self.rect_frame[52 + offsets[1] : 252 + offsets[1], 52 + offsets[0] : 252 + offsets[0]], cv2.COLOR_BGR2RGB)
+                self.rgb_img_crop = cv2.cvtColor(self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], self.box_size + offsets[0] : 250 + offsets[0]], cv2.COLOR_BGR2RGB)
                 self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
 
-                roi = self.rect_frame[52 + offsets[1] : 252 + offsets[1], 52 + offsets[0] : 252 + offsets[0]]
+                roi = self.rect_frame[50 + offsets[1] : 250 + offsets[1], 50 + offsets[0] : 250 + offsets[0]]
 
                 self.cropped_frame = roi # still an image
             except Exception as e:

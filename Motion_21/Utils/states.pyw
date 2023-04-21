@@ -10,13 +10,14 @@ class CameraState(Enum):
     CAM_CONTINOUS    = 4
 
 class WindowState(Enum):
-    UNKNOWN  = [0, CameraState.CAM_NOT_REQUIRED] # for unstated windows, really only for debugging
-    HOME     = [1, CameraState.CAM_NOT_REQUIRED]
-    LESSONS  = [2, CameraState.CAM_REQUIRED]
-    SETTINGS = [3, CameraState.CAM_NOT_REQUIRED]
-    THEMES   = [4, CameraState.CAM_NOT_REQUIRED]
-    CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
-    MOTION   = [6, CameraState.CAM_CONTINOUS]
+    UNKNOWN   = [0, CameraState.CAM_NOT_REQUIRED] # for unstated windows, really only for debugging
+    HOME      = [1, CameraState.CAM_NOT_REQUIRED]
+    LESSONS   = [2, CameraState.CAM_NOT_REQUIRED]
+    IN_LESSON = [2, CameraState.CAM_REQUIRED]
+    SETTINGS  = [3, CameraState.CAM_NOT_REQUIRED]
+    THEMES    = [4, CameraState.CAM_NOT_REQUIRED]
+    CONFIG    = [5, CameraState.CAM_NOT_REQUIRED]
+    MOTION    = [6, CameraState.CAM_CONTINOUS]
 
 class LetterState():
     DESIRED_LETTER = ["_", CameraState.CAM_REQUIRED]

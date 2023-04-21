@@ -1,6 +1,7 @@
-from cgitb import text
+
 import os
 import threading
+from tkinter.tix import COLUMN
 import customtkinter
 from queue           import Queue
 
@@ -74,28 +75,28 @@ class App(customtkinter.CTk):
         
         if USE_CAMERA: 
             self.event_handler = EventHandler() # init eventhandler
-            self.bind('<Left>',  EventHandler().arrow_key_left)
-            self.bind('<Right>', EventHandler().arrow_key_right)
-            self.bind('<Up>',    EventHandler().arrow_key_up)
-            self.bind('<Down>',  EventHandler().arrow_key_down)
+            self.bind('<Left>',  self.arrow_left)
+            self.bind('<Right>', self.arrow_right)
+            self.bind('<Up>',    self.arrow_up)
+            self.bind('<Down>',  self.arrow_down)
 
         # helper attributes
         self.del_list            = []
         self.average_list        = AverageList()
         self.options_menu_open   = True
         self.curr_accuracy       = 100
-        self.roi_size            = 52
+        self.roi_size            = 50
         self.after_id            = ""
         self.cam_after_id        = ""
         self.motion_after_id     = ""
         self.motion_timer_count  = 0
         self.use_motion_afterinator  = False
         self.color_dict = { 0 : BorderColor.WHITE,
-                            1 :  BorderColor.RED,
-                            2 :  BorderColor.BLUE,
-                            3 :  BorderColor.GREEN,
-                            4 :  BorderColor.YELLOW,
-                            5 :  BorderColor.BLACK }
+                            1 : BorderColor.RED,
+                            2 : BorderColor.BLUE,
+                            3 : BorderColor.GREEN,
+                            4 : BorderColor.YELLOW,
+                            5 : BorderColor.BLACK }
 
         # Locks size of window
         self.resizable(False, False)
@@ -104,6 +105,28 @@ class App(customtkinter.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.home_window()
+
+    # Event Handler Stuff, was going to just pass a self instance to eventhandler but thats more messy than this is
+    def arrow_left(self, _):
+        if StateHandler().c_state == WindowState.IN_LESSON:
+            EventHandler().arrow_key_left(None)
+            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+50))
+
+    
+    def arrow_right(self, _):
+        if StateHandler().c_state == WindowState.IN_LESSON:
+            EventHandler().arrow_key_right(None)
+            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+50))
+
+    def arrow_up(self, _):
+        if StateHandler().c_state == WindowState.IN_LESSON:
+            EventHandler().arrow_key_up(None)
+            self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y+50))
+
+    def arrow_down(self, _):
+        if StateHandler().c_state == WindowState.IN_LESSON:
+            EventHandler().arrow_key_down(None)
+            self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y+50))
 
     #Image processing function declarations
     # ------------------------------------------------------------------------------------    
@@ -114,24 +137,26 @@ class App(customtkinter.CTk):
     # Button function declarations
     # ------------------------------------------------------------------------------------    
     
+    def change_state(self, new_state : WindowState, dellist : list, motion_afterinator : bool = True, opts_menu : bool = True):
+        if self.after_id:     self.after_cancel(self.after_id)
+        if self.cam_after_id: self.after_cancel(self.cam_after_id)
+        self.use_motion_afterinator = motion_afterinator
+        self.options_menu_open      = opts_menu
+        self.del_list = StateHandler().change_state(new_state, dellist)
+
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
-        if self.after_id:     self.after_cancel(self.after_id)
-        if self.cam_after_id: self.after_cancel(self.cam_after_id)
-        self.use_motion_afterinator = False
-        self.options_menu_open      = True
 
         if StateHandler().c_state == WindowState.HOME:
             return
 
-        StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.change_state(WindowState.HOME, self.del_list)
+
         self.frame_left.destroy()
         self.frame_right.destroy()
 
         self.home_window()
-
-
 
     # Button that allows user to change home page preferences
     def home_settings_button(self):
@@ -447,10 +472,7 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
-        if self.after_id:     self.after_cancel(self.after_id)
-        if self.cam_after_id: self.after_cancel(self.cam_after_id)
-        self.options_menu_open      = True
-        self.use_motion_afterinator = False
+        self.change_state(WindowState.LESSONS, self.del_list)
 
         static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
         movement_letters = ["J", "Z"]
@@ -503,10 +525,7 @@ class App(customtkinter.CTk):
         self.lesson7.grid(row = 3, column = 4, padx = 2, pady = 2)
         
     def lesson_letters_static(self, letters):
-        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
-        if self.after_id:     self.after_cancel(self.after_id)
-        if self.cam_after_id: self.after_cancel(self.cam_after_id)
-        self.use_motion_afterinator = False
+        self.change_state(WindowState.LESSONS, self.del_list, False, True)
 
         self.frame_left.destroy()
         self.frame_right.destroy()
@@ -528,7 +547,7 @@ class App(customtkinter.CTk):
         self.frame_main_right.grid_rowconfigure(7, weight=1)      
         self.frame_main_right.grid_rowconfigure(9, minsize=0)
 
-        #buttons
+        # buttons *
         self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Home", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
         self.lesson_home.grid(row = 10,  column = 0, padx = 0, pady = 0, sticky = "s")
 
@@ -536,7 +555,7 @@ class App(customtkinter.CTk):
         self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
 
         # description label
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = f"Lesson 1: \nLetters {letters[0]}, {letters[1]}, {letters[2]}, and {letters[3]}\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
+        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = f"Lesson 1: \nLetters {letters[0]}, {letters[1]}, {letters[2]}, and {letters[3]}\n\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
         self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
 
 
@@ -559,7 +578,7 @@ class App(customtkinter.CTk):
         self.use_motion_afterinator = False
 
     def lesson_letters_motion(self, letters):
-        self.del_list = StateHandler().change_state(WindowState.MOTION, self.del_list)
+        self.change_state(WindowState.MOTION, self.del_list, True, True)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -602,7 +621,6 @@ class App(customtkinter.CTk):
 
         self.use_motion_afterinator = True
 
-
     def callback_test(self):
         print("Dripp!")
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
@@ -624,18 +642,21 @@ class App(customtkinter.CTk):
         self.frame_main_right.grid_rowconfigure(7, weight=1)      
         self.frame_main_right.grid_rowconfigure(9, minsize=0)
         
-        self.tabview = CustomTabview(master=self.frame_main_left, width=25, command = self.options_button)
-        self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(5, 0), sticky="nsew")
+        self.tabview = CustomTabview(master=self.frame_main_left, width=25, height=100, command = self.options_button)
+        self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(50, 0), sticky="nsew")
         self.tabview.add("Options")
         self.options_frame = customtkinter.CTkFrame(master=self.frame_main_right, width = 10, height = 10) # remove warning
         
         self.options_camera_x    = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="Cam X: {}".format(EventHandler().x))
         self.options_camera_y    = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="Cam Y: {}".format(EventHandler().y))
-        self.options_border_size = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="B Size: {}".format(EventHandler().x))
+        self.options_border_size = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="Box Size: {}".format(self.roi_size))
 
-        self.options_camera_x.grid(row=0, padx=(5,5), pady=(5,5), sticky="nsew")
-        self.options_camera_y.grid(row=1, padx=(5,5), pady=(5,5), sticky="nsew")
-        self.options_border_size.grid(row=2, padx=(5,5), pady=(5,5), sticky="nsew")
+        self.options_camera_x.grid   (row=0, padx=(10,5), pady=(3,5), sticky="nsew")
+
+        self.options_camera_y.grid   (row=1, padx=(10,5), pady=(5,5), sticky="nsew")
+
+        self.options_border_size.grid(row=2, padx=(10,5), pady=(5,5), sticky="nsew")
+
         '''
         we can change these into lessons and call to lesssons "A-D" functions and etc and just call the function here
         add next and retry functionalities
@@ -687,6 +708,7 @@ class App(customtkinter.CTk):
         self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
         self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+        self.change_state(WindowState.IN_LESSON, self.del_list)
         self.average_list.reinit(letter)
         self.letter_state.set_letter(letter)
         
@@ -698,8 +720,10 @@ class App(customtkinter.CTk):
         self.the_afterinator()
 
     def options_submit(self):
+        self.options_menu_open      = False
         try:
             self.roi_size = int(self.opts_roi_box.get())
+            self.options_border_size.configure(text = "Box Size: {}".format(self.roi_size))
         except:
             pass # for now, maybe change the box to red
 
@@ -719,7 +743,7 @@ class App(customtkinter.CTk):
 
         else:
             self.options_frame = customtkinter.CTkFrame(master=self.frame_main_right, width = 180, height = 180)
-            self.options_frame.place(relx=.5, rely = .5, anchor="center")
+            self.options_frame.place(relx=.5, rely=.5, anchor="center")
 
             self.opts_roi_label = customtkinter.CTkLabel(master=self.options_frame, text = "Rectange Size: ", text_color = THEME_OPP, font=("Segoe UI", 14))
             self.opts_roi_label.grid(row=0, column=0, padx=(20, 20), pady=(20, 20), sticky="ew")
@@ -730,7 +754,6 @@ class App(customtkinter.CTk):
             self.opts_submit = customtkinter.CTkButton(master=self.options_frame, text = "Ok!", text_color = THEME_OPP, height = 42, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.options_submit)
             self.opts_submit.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), columnspan = 2)
             self.options_menu_open = True
-
 
     def back_button_lessons(self):
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
@@ -764,7 +787,6 @@ class App(customtkinter.CTk):
             print("Light")
         self.themes_button()
         
-
     # Defines user accounts
     def defaultUser(self):
         customtkinter.set_appearance_mode("Dark")
@@ -780,7 +802,7 @@ class App(customtkinter.CTk):
     # Creates the home window
     def home_window(self):
         # Configures grid layout of 2x1
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.change_state(WindowState.HOME, self.del_list)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -843,7 +865,7 @@ class App(customtkinter.CTk):
             self.after_id = self.after(10, self.the_afterinator)
 
     def camera_aftinerator(self):
-        if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
+        if StateHandler().c_state == WindowState.IN_LESSON and USE_CAMERA == 1:
             let = UserSign().run_comparison(self.letter_state.DESIRED_LETTER[0])
 
             if let == None: 
@@ -851,8 +873,8 @@ class App(customtkinter.CTk):
                 return
 
             if let == self.letter_state.DESIRED_LETTER[0]:
-                self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-                print("FOUND!!!!!!!")
+                self.change_state(WindowState.HOME, self.del_list, False)
+
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 self.label8.update()
                 #self.after_cancel(self.after_id)
@@ -876,7 +898,7 @@ class App(customtkinter.CTk):
 
     def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
         if StateHandler().c_state == WindowState.MOTION and USE_CAMERA == 1:
-            if (self.motion_timer_count <=3):
+            if (self.motion_timer_count <= 3):
                 self.motion_timer_count += 1
             else:
                 self.motion_timer_count = 0

@@ -26,9 +26,7 @@ class CustomTabview(CT.CTkTabview): # minor modifications allow for callbacks wh
 
                 command: Union[Callable, None] = None,
                 state: str = "normal",
-                button: bool = True,
                 **kwargs):
-        self.button = button
         super().__init__(master, width, height, corner_radius, border_width, bg_color, fg_color, border_color, segmented_button_fg_color, segmented_button_selected_color,
                    segmented_button_selected_hover_color, segmented_button_unselected_color, segmented_button_unselected_hover_color, text_color, text_color_disabled,
                    command, state, **kwargs)
