@@ -334,7 +334,7 @@ class UserSign(object):
                       "S": 15, "T": 15, "U": 18, "V": 18, "W": 15, "X": 15, "Y": 15}
         three_stage = ["J"]
         four_stage = ["Z"]
-        count_dict2 = {"J_1": 18, "J_2": 16, "J_3": 18, "Z": 15}
+        count_dict2 = {"J_1": 18, "J_2": 17, "J_3": 18, "Z": 15}
 
         if lesson_letter in static_letters:
             # Grabs user letter input
@@ -986,4 +986,5 @@ class UserSign(object):
                             #matched = True
                             #print("Sorry, you did not correctly sign the letter " + lesson_letter + ", please try again!")
                             #return None
+
     #EOF

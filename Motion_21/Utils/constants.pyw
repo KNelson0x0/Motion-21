@@ -12,7 +12,6 @@ THEME     = "#101010"
 THEME_OPP = "#FFFFFF"
 FONT      = "#101010"
 
-
 def debug_log(x): # moved here as it resolves lots of circular conflicts
     if DEBUG:
         print(x)

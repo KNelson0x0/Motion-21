@@ -26,7 +26,6 @@
 from GUI.ASL_GUI import App
 from Utils.imports import *
 
-
 # -- del
 import json, base64, hashlib
 from   cryptography.fernet import Fernet
