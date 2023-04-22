@@ -55,7 +55,7 @@ class AverageList:
             self.average      = ( letters )
             self.last_average = self.average
 
-            print("Counted[{}]: {}".format(letters, self.average))
+            #print("Counted[{}]: {}".format(letters, self.average))
             return (letters)
         
         except Exection as e:
@@ -90,6 +90,7 @@ class App(customtkinter.CTk):
         self.cam_after_id        = ""
         self.motion_after_id     = ""
         self.motion_timer_count  = 0
+        self.border_change       = 0 
         self.use_motion_afterinator  = False
         self.color_dict = { 0 : BorderColor.WHITE,
                             1 : BorderColor.RED,
@@ -716,6 +717,7 @@ class App(customtkinter.CTk):
         self.tabview._segmented_button_callback("Options")
         self.update()
 
+        self.border_change = 0
         if not motion: self.camera_aftinerator()
         else: self.motion_afterinator()
         self.the_afterinator()
@@ -734,7 +736,6 @@ class App(customtkinter.CTk):
             #for i in range(10): 
             Camera().box_size_q.put(self.roi_size) # I really wanna make sure it gets it since its called only once
 
-            print("Submitted")
         except:
             pass # for now, maybe change the box to red
 
@@ -871,12 +872,18 @@ class App(customtkinter.CTk):
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
         if (StateHandler().c_state.value[1] == CameraState.CAM_CONTINOUS or StateHandler().c_state.value[1] == CameraState.CAM_REQUIRED) and USE_CAMERA == 1: # find a better method of doing this later
-            self.label_cam.cw_update();
-            self.label_cam2.cw_update();
-            self.after_id = self.after(10, self.the_afterinator)
+            if self.border_change == 1: # seb and keith pair programming line
+                self.label_cam.cw_update()
+                self.after_id = self.after(10, self.the_afterinator)
+            else:
+                self.label_cam.cw_update();
+                self.label_cam2.cw_update();
+                self.after_id = self.after(10, self.the_afterinator)
 
     def camera_aftinerator(self):
         if StateHandler().c_state == WindowState.IN_LESSON and USE_CAMERA == 1:
+
+
             let = UserSign().run_comparison(self.letter_state.DESIRED_LETTER[0])
 
             if let == None: 
@@ -884,12 +891,13 @@ class App(customtkinter.CTk):
                 return
 
             if let == self.letter_state.DESIRED_LETTER[0]:
-                self.change_state(WindowState.HOME, self.del_list, False)
+                #self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
+                self.border_change = 1
 
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 #self.label8.update()
                 #self.after_cancel(self.after_id)
-                self.after_cancel(self.cam_after_id)
+                #self.after_cancel(self.cam_after_id)
                 return
 
             try:
@@ -916,7 +924,7 @@ class App(customtkinter.CTk):
             else:
                 self.motion_timer_count = 0
 
-            print("================================ Based! ================================")
+            #print("================================ Based! ================================")
 
             color_made = make_color(self.color_dict[self.motion_timer_count])
             Camera().border_q.put(color_made)

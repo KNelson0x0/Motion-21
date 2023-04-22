@@ -74,26 +74,27 @@ class EventHandler(object):
 
 
 class Camera(object): # singleton because every time the camera is initialized there is at least a five second freeze and I'd prefer not to hard global too much.
-    stream             = cv2.VideoCapture(0)
-    rgb_img            = np.zeros((5,5), np.float32) # honestly shouldnt be a problem anymore but just in case
-    rgb_img_rect       = np.zeros((5,5), np.float32)
-    rgb_img_crop       = np.zeros((5,5), np.float32)
-    old_frame          = None
-    frame              = None
-    cropped_frame      = None
-    rect_frame         = None
-    thread             = None
-    previous_offsets   = [0,0,None]
-    q                  = Queue()
-    border_q           = Queue()
-    box_size_q         = Queue()
-    stop               = False
-    box_size           = 50
-    last_box_size      = 50
-    last_border_color  = make_color(BorderColor.BLUE)
-    border_color       = last_border_color
-    drawingModule      = mediapipe.solutions.drawing_utils
-    handsModule        = mediapipe.solutions.hands
+    stream               = cv2.VideoCapture(0)
+    rgb_img              = np.zeros((5,5), np.float32) # honestly shouldnt be a problem anymore but just in case
+    rgb_img_rect         = np.zeros((5,5), np.float32)
+    rgb_img_crop         = np.zeros((5,5), np.float32)
+    old_frame            = None
+    frame                = None
+    cropped_frame        = None
+    cropped_frame_points = None
+    rect_frame           = None
+    thread               = None
+    previous_offsets     = [0,0,None]
+    q                    = Queue()
+    border_q             = Queue()
+    box_size_q           = Queue()
+    stop                 = False
+    box_size             = 50
+    last_box_size        = 50
+    last_border_color    = make_color(BorderColor.BLUE)
+    border_color         = last_border_color
+    drawingModule        = mediapipe.solutions.drawing_utils
+    handsModule          = mediapipe.solutions.hands
 
     def __new__(self):
         if not USE_CAMERA: return
@@ -124,9 +125,36 @@ class Camera(object): # singleton because every time the camera is initialized t
             return self.old_frame
 
     def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
-        if type(self.cropped_frame) != None:
+        if type(self.cropped_frame) != type(None):
             return self.cropped_frame
         return self.get_frame()
+
+    def get_cropped_frame_points(self): # ground work. will use proper mutexs and things in the future.
+        if type(self.cropped_frame_points) != type(None):
+            return self.cropped_frame_points
+        return self.get_cropped_frame()
+
+    def draw_points(self, image): # From Chad
+        drawingModule = mediapipe.solutions.drawing_utils
+        handsModule = mediapipe.solutions.hands
+
+        with handsModule.Hands(static_image_mode=True) as hands: 
+
+            results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+            
+            try:
+                if results.multi_hand_landmarks != None:
+                    for handLandmarks in results.multi_hand_landmarks:
+                        for point in handsModule.HandLandmark:
+        
+                            drawingModule.draw_landmarks(image, handLandmarks, handsModule.HAND_CONNECTIONS)
+
+                print("Returning pointed image")
+                return image
+            except:
+                print("No hand detected")
+
+
 
     def warmup(self): # camera seems to need a bit to warmup. not joking.
         try:
@@ -175,7 +203,6 @@ class Camera(object): # singleton because every time the camera is initialized t
                 try:
                     self.box_size = self.box_size_q.get(timeout=0.01)
                     self.last_box_size = self.box_size
-                    print("Got it!")
                 except:
                     self.box_size = self.last_box_size
 
@@ -192,8 +219,11 @@ class Camera(object): # singleton because every time the camera is initialized t
                 self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
 
                 roi = self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], 50 + offsets[0] : 200 + self.box_size + offsets[0]]
+                roi_points = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+                roi_points = self.draw_points(self, roi_points)
 
                 self.cropped_frame = roi # still an image
+                self.cropped_frame_points = roi_points # still an image
             except Exception as e:
                 debug_log("Something Happened! [");
                 debug_log(str(e))
