@@ -143,7 +143,8 @@ class App(customtkinter.CTk):
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
         self.use_motion_afterinator = motion_afterinator
         self.options_menu_open      = opts_menu
-        self.del_list = StateHandler().change_state(new_state, dellist)
+        self.del_list               = StateHandler().change_state(new_state, dellist)
+        UserSign().reset_stage()
 
     # Button that recreates window with home page
     def home_button(self):
