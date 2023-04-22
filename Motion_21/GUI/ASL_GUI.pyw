@@ -883,7 +883,7 @@ class App(customtkinter.CTk):
                 self.after_id = self.after(10, self.the_afterinator)
 
     def camera_aftinerator(self):
-        if StateHandler().c_state == WindowState.IN_LESSON and USE_CAMERA == 1:
+        if (StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state == WindowState.IN_MOTION_LESSON) and USE_CAMERA == 1:
 
 
             let = UserSign().run_comparison(self.letter_state.DESIRED_LETTER[0])

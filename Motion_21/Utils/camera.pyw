@@ -148,8 +148,6 @@ class Camera(object): # singleton because every time the camera is initialized t
                         for point in handsModule.HandLandmark:
         
                             drawingModule.draw_landmarks(image, handLandmarks, handsModule.HAND_CONNECTIONS)
-
-                print("Returning pointed image")
                 return image
             except:
                 print("No hand detected")
