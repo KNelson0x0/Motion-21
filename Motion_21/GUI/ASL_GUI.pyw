@@ -1,5 +1,6 @@
 import os
 import threading
+import tkinter
 import customtkinter
 from queue           import Queue
 
@@ -465,12 +466,40 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
+        if StateHandler().c_state == WindowState.HOME: 
+            self.frame_middle.destroy()
+            self.frame_left.destroy()
+            self.frame_right.destroy()
+
+            print("Boom.")
+
         self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
 
-        static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
+        static_letters   = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
         movement_letters = ["J", "Z"]
+
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        self.frame_left = customtkinter.CTkFrame(master=self, width=180, corner_radius=0)
+        self.frame_left.grid(row=0, column=0, sticky="nswe")
+
+        # configure grid layout (9x1)
+        self.frame_left.grid_rowconfigure(0, minsize=10)    # sets minimum size from top of screen to text
+        self.frame_left.grid_rowconfigure(4, minsize=100)   # empty row with minsize as spacing
+        self.frame_left.grid_rowconfigure(7, weight=1)      # empty row as spacing
+        self.frame_left.grid_rowconfigure(9, minsize=0)     # sets minimum size from bottom of screen to buttons
+
+        self.frame_right = customtkinter.CTkFrame(master = self)
+        self.frame_right.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "nswe")
+
+        self.frame_right.grid_rowconfigure(0, minsize=10)   
+        self.frame_right.grid_rowconfigure(4, minsize=100)   
+        self.frame_right.grid_rowconfigure(7, weight=1)      
+        self.frame_right.grid_rowconfigure(9, minsize=0)
+
 
         self.frame_left.destroy()
         self.frame_right.destroy()
@@ -722,7 +751,6 @@ class App(customtkinter.CTk):
             print("Light")
         self.themes_button()
         
-
     # Defines user accounts
     def defaultUser(self):
         customtkinter.set_appearance_mode("Dark")
@@ -740,16 +768,33 @@ class App(customtkinter.CTk):
         today = date.today()
         dateTime = today.strftime("%m/%d/%y")
 
+        try:
+            self.frame_left.destroy()
+            self.frame_right.destroy()
+            self.frame_main_right.destroy()
+            self.frame_main_left.destroy()
+        except Exception as e:
+           print(e)
+
+        self.grid_rowconfigure (0, weight=0)
+        self.grid_rowconfigure (1, weight=0)
+        self.grid_columnconfigure (0, weight=0)
+        self.grid_columnconfigure (1, weight=0)
+
         self.frame_middle = customtkinter.CTkFrame(master = self, border_width= 3)
-        self.frame_left = customtkinter.CTkFrame(master = self, height = 40, border_width= 3)
-        self.frame_right = customtkinter.CTkFrame(master = self, height = 40, border_width= 3)
+        self.frame_left   = customtkinter.CTkFrame(master = self, width=100, height = 40,  border_width = 3)
+        self.frame_right  = customtkinter.CTkFrame(master = self, width=100, height = 120, border_width = 3)
 
-        self.frame_middle.grid(row = 1, column = 0, padx = 30, pady = 60)
-        self.frame_left.place(relx = 0.08, rely = .85)
-        self.frame_right.grid(row = 1, column = 1, padx = 30, pady = 60)
-
-
-
+        #self.frame_left.place(relx = 0.08, rely = .85)
+       
+        self.frame_left.pack(side="bottom", expand=False)
+        self.frame_middle.pack(side="left", expand=False, padx = 15)
+        self.frame_right.pack(side="left",  expand=True)
+        
+        #self.frame_middle.grid(row = 0, column = 0)
+        #self.frame_right.grid(row = 0, column = 1)
+        #self.frame_left.grid(row = 1, column = 0, columnspan = 2, sticky = "s")
+        #self.frame_right.place(relx = 0.55, rely = .55)
 
         self.motion21_title = customtkinter.CTkLabel(master=self.frame_middle, text = "MOTION 21", corner_radius = 10, width = 20, height = 20, font = ("Segoe UI", 70, "bold"))
         self.motion21_title.grid(row=0, column=0, padx=5, pady=5, sticky = "n")
@@ -758,25 +803,27 @@ class App(customtkinter.CTk):
         self.button1.grid(row=1, column=0, padx=0, pady=10, sticky = "n")
 
         self.button2 = customtkinter.CTkButton(master=self.frame_left, text = "Settings", font = ("Seoue UI", 12, "bold"), width = 200, height = 50, border_width = 3, corner_radius = 10, border_color="#000000", command = self.home_settings_button)
-        self.button2.grid(row=0, column=0, padx=2, pady=5, sticky = "n")
+        self.button2.grid(row=0, column=0, padx=2, pady=5, sticky = "s")
 
         self.button3 = customtkinter.CTkButton(master=self.frame_left, text = "Logout", font = ("Seoue UI", 12, "bold"), width = 200, height = 50, border_width = 3, corner_radius = 10, border_color="#000000")
-        self.button3.grid(row=0, column=1, padx=2, pady=5, sticky = "n")
+        self.button3.grid(row=0, column=1, padx=2, pady=5, sticky = "s")
 
         self.button4 = customtkinter.CTkButton(master=self.frame_left, text = "Exit", font = ("Seoue UI", 12, "bold"), width = 200, height = 50, border_width = 3, corner_radius = 10, border_color="#000000", command = self.exit_button)
-        self.button4.grid(row=0, column=2, padx=2, pady=5, sticky = "n")
+        self.button4.grid(row=0, column=2, padx=2, pady=5, sticky = "s")
+        
 
-        self.label = customtkinter.CTkLabel(master = self.frame_right, text = "\nWelcome back", corner_radius = 10, width = 20, height = 20, font = ("Segoe UI", 15, "bold"))
+        self.label = customtkinter.CTkLabel(master = self.frame_right, text = "\nWelcome back,", corner_radius = 10, width = 20, height = 20, font = ("Segoe UI", 22, "bold"))
         self.label.grid(row = 0, column = 0, padx =0, pady = 5)
 
-        self.label1 = customtkinter.CTkLabel(master = self.frame_right, text = "Jason!", corner_radius = 10, width = 20, height = 20, font = ("Segoe UI", 22, "bold"))
-        self.label1.grid(row = 1, column = 0, padx =5)
+        self.label1 = customtkinter.CTkLabel(master = self.frame_right, text = "Jason!", corner_radius = 10, width = 20, height = 20, font = ("Segoe UI", 29, "bold"))
+        self.label1.grid(row = 1, column = 0, padx = 5, pady = (0,30))
 
-        self.label2 = customtkinter.CTkLabel(master = self.frame_right, text = f"\nDate: {dateTime}\n", corner_radius = 10, width = 20, height = 20, font = ("Segoe UI", 15, "bold"))
-        self.label2.grid(row = 2, column = 0, padx =5, pady = 5)
+        self.label2 = customtkinter.CTkLabel(master = self.frame_right, text = f"\nDate: {dateTime}\n", corner_radius = 10, width = 20, height = 20,  font = ("Segoe UI", 22, "bold"))
+        self.label2.grid(row = 2, column = 0, padx = 5, pady = (0,20))
 
-        self.label3 = customtkinter.CTkLabel(master = self.frame_right, text = "Fun Fact: ASL is considered\n as a foreign language!\n\n", corner_radius = 10, width = 20, height = 20, font = ("Segoe UI", 12, "bold"))
-        self.label3.grid(row = 3, column = 0, padx =5, pady = 5)
+        self.label3 = customtkinter.CTkLabel(master = self.frame_right, text = "Fun Fact: ASL is considered as a \nforeign language!\n\n", corner_radius = 10, width = 20, height = 20, font = ("Segoe UI", 15, "bold"))
+        self.label3.grid(row = 3, column = 0, padx = 5, pady = (20,20))
+        
 
     def home_settings_button(self):
         self.frame_middle.destroy()
