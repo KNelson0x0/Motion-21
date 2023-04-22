@@ -720,10 +720,20 @@ class App(customtkinter.CTk):
         self.the_afterinator()
 
     def options_submit(self):
-        self.options_menu_open      = False
+        self.options_menu_open = False
         try:
             self.roi_size = int(self.opts_roi_box.get())
+
+            if self.roi_size > 330: self.roi_size = 330
+            if self.roi_size < 50:   self.roi_rize = 50
+
             self.options_border_size.configure(text = "Box Size: {}".format(self.roi_size))
+            EventHandler().set_boundary_range(self.roi_size)
+
+            #for i in range(10): 
+            Camera().box_size_q.put(self.roi_size) # I really wanna make sure it gets it since its called only once
+
+            print("Submitted")
         except:
             pass # for now, maybe change the box to red
 
@@ -756,7 +766,7 @@ class App(customtkinter.CTk):
             self.options_menu_open = True
 
     def back_button_lessons(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.change_state(WindowState.HOME, self.del_list)
         self.lesson_select()
 
     # Button that opens lesson select page
