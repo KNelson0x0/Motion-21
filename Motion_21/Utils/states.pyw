@@ -1,12 +1,25 @@
-from .camera         import *
-from .utils          import *
-from enum            import Enum
+import Utils.utils as utils
+import Utils.utils as utils
+
+from enum    import Enum
+from .camera    import *
+from .constants import DEBUG
+
+
+
+class BorderColor(Enum):
+    RED    = 1
+    BLUE   = 2
+    GREEN  = 3
+    YELLOW = 4
+    BLACK  = 5
 
 class CameraState(Enum):
-    CAM_OFF = 0
-    CAM_ON = 1
-    CAM_REQUIRED = 2
+    CAM_OFF          = 0
+    CAM_ON           = 1
+    CAM_REQUIRED     = 2
     CAM_NOT_REQUIRED = 3
+    CAM_CONTINOUS    = 4
 
 class WindowState(Enum):
     UNKNOWN  = [0, CameraState.CAM_NOT_REQUIRED] # for unstated windows, really only for debugging
@@ -15,7 +28,7 @@ class WindowState(Enum):
     SETTINGS = [3, CameraState.CAM_NOT_REQUIRED]
     THEMES   = [4, CameraState.CAM_NOT_REQUIRED]
     CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
-    TRAINING = [6, CameraState.CAM_REQUIRED]
+    MOTION   = [6, CameraState.CAM_REQUIRED]
 
 class LetterState():
     DESIRED_LETTER = ["_", CameraState.CAM_REQUIRED]
@@ -44,34 +57,34 @@ class EventHandler(object):
 
     def arrow_key_up(self, _):
         if (self.y == -50): 
-           Camera().q.put([self.x, self.y, 1])
+           Camera().q.put([self.x, self.y, BorderColor.RED])
            return
         self.y -= 5
-        debug_log("arrow up: {}".format(self.y))
+        utils.debug_log("arrow up: {}".format(self.y))
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_down(self, _):
         if (self.y == 225): 
-           Camera().q.put([self.x, self.y, 1])
+           Camera().q.put([self.x, self.y, BorderColor.RED])
            return
         self.y += 5
-        debug_log("arrow down: {}".format(self.y))
+        utils.debug_log("arrow down: {}".format(self.y))
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_left(self, _):
         if (self.x == -50):
-            Camera().q.put([self.x, self.y, 1])
+            Camera().q.put([self.x, self.y, BorderColor.RED])
             return
         self.x -= 5
-        debug_log("arrow left: {}".format(self.x))
+        utils.debug_log("arrow left: {}".format(self.x))
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_right(self, _):
         if (self.x == 385):
-            Camera().q.put([self.x, self.y, 1])
+            Camera().q.put([self.x, self.y, BorderColor.RED])
             return
         self.x += 5
-        debug_log("arrow left: {}".format(self.x))
+        utils.debug_log("arrow left: {}".format(self.x))
         Camera().q.put([self.x, self.y, None])
 
 class StateHandler(object):
@@ -89,3 +102,5 @@ class StateHandler(object):
         del_list = []
       
         return []
+
+
