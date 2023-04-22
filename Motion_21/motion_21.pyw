@@ -41,12 +41,12 @@ if __name__ == "__main__":
     print("================= Config Read! ==================")
     try:
         ()
-        #Config("Stupendous", "Amazing")
+        Config("Stupendous", "Amazing")
         #Config("Beemer", "swag2")
         #print(Config().c_cfg)
         #print(Config()["c"])
         #Archive().save_config("Beemer")
-        #Config().add_user("Stupendous", "Amazing")
+        Config().add_user("Stupendous", "Amazing")
         #print("Stop")
 
         #to_enc = {"M21ConfigName":"Beemer","c":2}
