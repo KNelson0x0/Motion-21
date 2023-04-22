@@ -241,8 +241,8 @@ class Config(object): # singleton me later
 
             if user_name:
                 c_cfg = Archive().get_json(user_name, key) # password is swag.
-            else:
-                c_cfg = Archive().get_json(username = key)
+            #else:
+            #    c_cfg = Archive().get_json(user_name = key)
 
             if c_cfg == False: 
                 self.user_name = ""

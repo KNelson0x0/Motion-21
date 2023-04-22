@@ -108,23 +108,23 @@ class App(customtkinter.CTk):
 
     # Event Handler Stuff, was going to just pass a self instance to eventhandler but thats more messy than this is
     def arrow_left(self, _):
-        if StateHandler().c_state == WindowState.IN_LESSON:
+        if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_left(None)
             self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+50))
 
     
     def arrow_right(self, _):
-        if StateHandler().c_state == WindowState.IN_LESSON:
+        if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_right(None)
             self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+50))
 
     def arrow_up(self, _):
-        if StateHandler().c_state == WindowState.IN_LESSON:
+        if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_up(None)
             self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y+50))
 
     def arrow_down(self, _):
-        if StateHandler().c_state == WindowState.IN_LESSON:
+        if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_down(None)
             self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y+50))
 
@@ -625,7 +625,7 @@ class App(customtkinter.CTk):
         print("Dripp!")
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
-    def letter_lessons(self, letter, btns: bool = False):
+    def letter_lessons(self, letter, motion: bool = False):
         self.frame_main_right.destroy()
 
         self.back_to_lesson = customtkinter.CTkButton(master=self.frame_main_left, text = "Lesson Select", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
@@ -708,14 +708,15 @@ class App(customtkinter.CTk):
         self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
         self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
-        self.change_state(WindowState.IN_LESSON, self.del_list)
+        if not motion: self.change_state(WindowState.IN_LESSON, self.del_list)
+        else:          self.change_state(WindowState.IN_MOTION_LESSON, self.del_list)
         self.average_list.reinit(letter)
         self.letter_state.set_letter(letter)
         
         self.tabview._segmented_button_callback("Options")
         self.update()
 
-        if not self.use_motion_afterinator: self.camera_aftinerator()
+        if not motion: self.camera_aftinerator()
         else: self.motion_afterinator()
         self.the_afterinator()
 
@@ -886,7 +887,7 @@ class App(customtkinter.CTk):
                 self.change_state(WindowState.HOME, self.del_list, False)
 
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
-                self.label8.update()
+                #self.label8.update()
                 #self.after_cancel(self.after_id)
                 self.after_cancel(self.cam_after_id)
                 return
@@ -900,14 +901,16 @@ class App(customtkinter.CTk):
                 self.curr_accuracy = int(self.average_list.l_average())
 
                 self.label12.configure(text = "Total Accuracy: {}%".format(self.curr_accuracy))
-                self.label12.update()
+                #self.label12.update()
             except Exception as e: 
                 print(e)
 
             self.cam_after_id = self.after(200, self.camera_aftinerator)
 
     def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
-        if StateHandler().c_state == WindowState.MOTION and USE_CAMERA == 1:
+        if StateHandler().c_state == WindowState.IN_MOTION_LESSON and USE_CAMERA == 1:
+
+
             if (self.motion_timer_count <= 3):
                 self.motion_timer_count += 1
             else:
