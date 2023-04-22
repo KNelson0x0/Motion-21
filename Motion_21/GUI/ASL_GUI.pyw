@@ -141,6 +141,7 @@ class App(customtkinter.CTk):
     def change_state(self, new_state : WindowState, dellist : list, motion_afterinator : bool = True, opts_menu : bool = True):
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
+        if self.motion_after_id: self.after_cancel(self.motion_after_id)
         self.use_motion_afterinator = motion_afterinator
         self.options_menu_open      = opts_menu
         self.del_list               = StateHandler().change_state(new_state, dellist)
@@ -719,8 +720,8 @@ class App(customtkinter.CTk):
         self.update()
 
         self.border_change = 0
-        if not motion: self.camera_aftinerator()
-        else: self.motion_afterinator()
+        if motion: self.motion_afterinator()
+        self.camera_aftinerator()
         self.the_afterinator()
 
     def options_submit(self):
@@ -919,7 +920,6 @@ class App(customtkinter.CTk):
     def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
         if StateHandler().c_state == WindowState.IN_MOTION_LESSON and USE_CAMERA == 1:
 
-
             if (self.motion_timer_count <= 3):
                 self.motion_timer_count += 1
             else:
@@ -930,7 +930,7 @@ class App(customtkinter.CTk):
             color_made = make_color(self.color_dict[self.motion_timer_count])
             Camera().border_q.put(color_made)
             #self.motion_after_id = self.after(1000, self.motion_afterinator)
-            self.after_id = self.after(1000, self.motion_afterinator)
+            self.motion_after_id = self.after(1000, self.motion_afterinator)
 
 if __name__ == "__main__":
     app = App()
