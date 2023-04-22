@@ -466,12 +466,13 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
-        if StateHandler().c_state == WindowState.HOME: 
-            self.frame_middle.destroy()
+        try:
             self.frame_left.destroy()
             self.frame_right.destroy()
-
-            print("Boom.")
+            self.frame_main_right.destroy()
+            self.frame_main_left.destroy()
+        except Exception as e:
+           print(e)
 
         self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
         if self.after_id:     self.after_cancel(self.after_id)
@@ -777,7 +778,7 @@ class App(customtkinter.CTk):
            print(e)
 
         self.grid_rowconfigure (0, weight=0)
-        self.grid_rowconfigure (1, weight=0)
+        self.grid_rowconfigure (1, weight=1)
         self.grid_columnconfigure (0, weight=0)
         self.grid_columnconfigure (1, weight=0)
 
@@ -786,10 +787,10 @@ class App(customtkinter.CTk):
         self.frame_right  = customtkinter.CTkFrame(master = self, width=100, height = 120, border_width = 3)
 
         #self.frame_left.place(relx = 0.08, rely = .85)
-       
-        self.frame_left.pack(side="bottom", expand=False)
-        self.frame_middle.pack(side="left", expand=False, padx = 15)
-        self.frame_right.pack(side="left",  expand=True)
+
+        self.frame_middle.grid(row=0, column=0, padx=15, pady=(140,0), sticky="n")
+        self.frame_right.grid(row=0, column=1, pady=(50,0), sticky="w")
+        self.frame_left.grid(row=1, column=0, columnspan=2, sticky="s")
         
         #self.frame_middle.grid(row = 0, column = 0)
         #self.frame_right.grid(row = 0, column = 1)
