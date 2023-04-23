@@ -94,10 +94,10 @@ class StateHandler(object):
             self.c_state   = WindowState.HOME
         return self.instance
 
-    def change_state(self, state : WindowState, del_list : list = []):
+    def change_state(self, state : WindowState, del_list : list = [], delete : bool = True):
         self.c_state = state
 
-        if del_list == [] or del_list == None: return []
+        if delete and (del_list == [] or del_list == None): return [] # because tk or ctk (haven't figured out whos the culprit) can't , I have to
         for i in del_list:
             try:
                 i.destroy()
