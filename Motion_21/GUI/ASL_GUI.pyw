@@ -424,47 +424,45 @@ class App(customtkinter.CTk):
         # Creates labels for the left window
         # ------------------------------------------------------------------------------------        
         #Button mapping and functionality
-        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Home", text_color = THEME_OPP,  width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=self.home_button)
-        self.button1.grid(row=0, column=0, padx=0, pady=0)
-        self.button2 = customtkinter.CTkButton(master=self.frame_left, text = "Home Settings", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.home_settings_button)
-        self.button2.grid(row=1, column=0, padx=0, pady=0)        
-        self.button3 = customtkinter.CTkButton(master=self.frame_left, text = "Users", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.users_button)
-        self.button3.grid(row=2, column=0, padx=0, pady=0)
-        self.button4 = customtkinter.CTkButton(master=self.frame_left, text = "Themes", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.themes_button)
-        self.button4.grid(row=3, column=0, padx=0, pady=0)
-        #self.button5 = customtkinter.CTkButton(master=self.frame_left, text = "Volume", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.volume_button)
-        #self.button5.grid(row=4, column=0, padx=0, pady=0)
-        self.button6 = customtkinter.CTkButton(master=self.frame_left, text = "Notifications", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.notif_button)
-        self.button6.grid(row=4, column=0, padx=0, pady=0)
+        #self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Home", text_color = THEME_OPP,  width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=self.home_button)
+        #self.button1.grid(row=0, column=0, padx=0, pady=0)
+        #self.button2 = customtkinter.CTkButton(master=self.frame_left, text = "Home Settings", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.home_settings_button)
+        #self.button2.grid(row=1, column=0, padx=0, pady=0)        
+        self.button3 = customtkinter.CTkButton(master=self.frame_left, text = "Users", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", border_color=THEME, command=self.users_button)
+        self.button3.grid(row=0, column=0, padx=0, pady=0)
+        self.button4 = customtkinter.CTkButton(master=self.frame_left, text = "Themes", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", border_color=THEME, command=self.themes_button)
+        self.button4.grid(row=1, column=0, padx=0, pady=0)
+        #self.button6 = customtkinter.CTkButton(master=self.frame_left, text = "Notifications", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.notif_button)
+        #self.button6.grid(row=3, column=0, padx=0, pady=0)
         #self.button7 = customtkinter.CTkButton(master=self.frame_left, text = "Configure Letter", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.configure_button)
         #self.button7.grid(row=6, column=0, padx=0, pady=0)
     
         # Creates Return button
-        self.button8 = customtkinter.CTkButton(master=self.frame_left, text = "Return", text_color = THEME_OPP, width = 150, height = 60, border_width = 1, corner_radius = 5, fg_color = THEME, border_color=THEME, command=self.return_function)
-        self.button8.grid(row=8, column=0, padx=0, pady=10, sticky="we")
+        self.button8 = customtkinter.CTkButton(master=self.frame_left, text = "Return", text_color = THEME_OPP, width = 150, height = 60, border_width = 1, corner_radius = 5, border_color=THEME, command=self.return_function)
+        self.button8.grid(row=8, column=0, padx=0, pady=0, sticky="we")
 
         # Creates right sub-window
         # ------------------------------------------------------------------------------------   
-        self.frame_right = customtkinter.CTkFrame(master=self)
+        self.frame_right = customtkinter.CTkFrame(master=self, border_width= 3)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
 
         # Creates label with the text "Settings Page:"
         self.label_1 = customtkinter.CTkLabel(master=self.frame_right, text="Settings Page:", text_color = THEME_OPP, font=("Segoe UI", 20))
-        self.label_1.grid(row=0, column=0, padx=0, pady=0, sticky="w")
+        self.label_1.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
         # Creates label with the text describing button functionality
-        self.label_2 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Home: Takes you back to the home page\n", text_color = THEME_OPP, font=("Segoe UI", 12))
-        self.label_2.grid(row=1, column=0, padx=0, pady=0, sticky="w")
-        self.label_3 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Home Settings: Customize your home page\n", text_color = THEME_OPP, font=("Segoe UI", 12))
-        self.label_3.grid(row=2, column=0, padx=0, pady=0, sticky="w")
+        #self.label_2 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Home: Takes you back to the home page\n", text_color = THEME_OPP, font=("Segoe UI", 12))
+        #self.label_2.grid(row=1, column=0, padx=0, pady=0, sticky="w")
+        #self.label_3 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Home Settings: Customize your home page\n", text_color = THEME_OPP, font=("Segoe UI", 12))
+        #self.label_3.grid(row=2, column=0, padx=0, pady=0, sticky="w")
         self.label_4 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Users: Login to save your settings changes as well as lesson progression\n", text_color = THEME_OPP, font=("Segoe UI", 12))
-        self.label_4.grid(row=3, column=0, padx=0, pady=0, sticky="w")
+        self.label_4.grid(row=3, column=0, padx=5, pady=5, sticky="w")
         self.label_5 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Themes: Change the theme and look of the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
-        self.label_5.grid(row=4, column=0, padx=0, pady=0, sticky="w")
-        self.label_6 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Volume: Change the audio volume of the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
-        self.label_6.grid(row=5, column=0, padx=0, pady=0, sticky="w")
-        self.label_7 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Notifications: Change notification options for the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
-        self.label_7.grid(row=6, column=0, padx=0, pady=0, sticky="w")
+        self.label_5.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+        #self.label_6 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Volume: Change the audio volume of the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
+        #self.label_6.grid(row=5, column=0, padx=0, pady=0, sticky="w")
+        #self.label_7 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Notifications: Change notification options for the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
+        #self.label_7.grid(row=6, column=0, padx=0, pady=0, sticky="w")
 
     # Button that allows the user to change notification options
     def notif_button(self):
