@@ -432,6 +432,8 @@ class App(customtkinter.CTk):
         self.button3.grid(row=0, column=0, padx=0, pady=0)
         self.button4 = customtkinter.CTkButton(master=self.frame_left, text = "Themes", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", border_color=THEME, command=self.themes_button)
         self.button4.grid(row=1, column=0, padx=0, pady=0)
+        self.button_logout = customtkinter.CTkButton(master=self.frame_left, text = "Logout", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", border_color=THEME, command=self.themes_button)
+        self.button_logout.grid(row=2, column=0, padx=0, pady=0)
         #self.button6 = customtkinter.CTkButton(master=self.frame_left, text = "Notifications", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.notif_button)
         #self.button6.grid(row=3, column=0, padx=0, pady=0)
         #self.button7 = customtkinter.CTkButton(master=self.frame_left, text = "Configure Letter", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.configure_button)
@@ -459,6 +461,8 @@ class App(customtkinter.CTk):
         self.label_4.grid(row=3, column=0, padx=5, pady=5, sticky="w")
         self.label_5 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Themes: Change the theme and look of the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
         self.label_5.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+        self.label_logout = customtkinter.CTkLabel(master=self.frame_right, text="\n   Logout: Logout to leave current account or switch users\n", text_color = THEME_OPP, font=("Segoe UI", 12))
+        self.label_logout.grid(row=5, column=0, padx=5, pady=5, sticky="w")
         #self.label_6 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Volume: Change the audio volume of the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
         #self.label_6.grid(row=5, column=0, padx=0, pady=0, sticky="w")
         #self.label_7 = customtkinter.CTkLabel(master=self.frame_right, text="\n   Notifications: Change notification options for the application\n", text_color = THEME_OPP, font=("Segoe UI", 12))
@@ -467,6 +471,9 @@ class App(customtkinter.CTk):
     # Button that allows the user to change notification options
     def notif_button(self):
         print("testing notification button")
+
+    def logout_button(self):
+        print("Logout button")
 
     # Button that destroys window and exits program
     def exit_button(self):
