@@ -532,6 +532,7 @@ class App(customtkinter.CTk):
 
         self.frame_left.destroy()
         self.frame_right.destroy()
+        print(letters)
 
         # left and right frame for window
         self.frame_main_left = customtkinter.CTkFrame(master = self, width = 200, height = 20, corner_radius = 0)
@@ -564,19 +565,19 @@ class App(customtkinter.CTk):
 
         # letters A - D letters to select on screen
         self.A_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150) 
-        self.buttonA = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.A_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[0]))
+        self.buttonA = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.A_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 0))
         self.buttonA.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "nswe")
 
         self.B_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150)
-        self.buttonB = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.B_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[1]))
+        self.buttonB = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.B_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 1))
         self.buttonB.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "nswe")
 
         self.C_image = self.load_image(f"/images/letters/{letters[2].lower()}.JPG", 150, 150)
-        self.buttonC = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.C_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[2]))
+        self.buttonC = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.C_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 2))
         self.buttonC.grid(row = 2, column = 1, padx = 20, pady = 15, sticky = "nswe")
 
         self.D_image = self.load_image(f"/images/letters/{letters[3].lower()}.JPG", 150, 150)
-        self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[3]))
+        self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 3))
         self.buttonD.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "nswe")
         self.use_motion_afterinator = False
 
@@ -615,11 +616,11 @@ class App(customtkinter.CTk):
         
         # letters J and Z, which require a special case of teaching
         self.J_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150)
-        self.buttonJ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.J_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("J", True))
+        self.buttonJ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.J_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 0, True))
         self.buttonJ.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
 
         self.Z_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150) 
-        self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z", True))
+        self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 1, True))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
 
         self.use_motion_afterinator = True
@@ -628,8 +629,17 @@ class App(customtkinter.CTk):
         print("Dripp!")
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
-    def letter_lessons(self, letter, motion: bool = False):
+    def letter_lessons(self, letter, index, motion: bool = False):
         self.frame_main_right.destroy()
+        self.frame_main_left.destroy()
+
+        self.frame_main_left = customtkinter.CTkFrame(master = self, width = 200, height = 20, corner_radius = 0)
+        self.frame_main_left.grid(row = 0, column = 0, sticky = "nswe")
+
+        self.frame_main_left.grid_rowconfigure(0, minsize=10)   
+        self.frame_main_left.grid_rowconfigure(4, minsize=100)   
+        self.frame_main_left.grid_rowconfigure(7, weight=1)      
+        self.frame_main_left.grid_rowconfigure(9, minsize=0)
 
         self.back_to_lesson = customtkinter.CTkButton(master=self.frame_main_left, text = "Lesson Select", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
         self.back_to_lesson.grid(row = 9, column = 0, padx = 0, pady = 0, sticky = "s")
@@ -680,12 +690,12 @@ class App(customtkinter.CTk):
         self.label7.grid(row=1, column=0, sticky="n", padx=10, pady=0)        
 
         # Creates instruction window for the application to communicate with the user
-        self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = f"Please sign the letter \"{letter}\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
+        self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = f"Please sign the letter \"{letter[index]}\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
         self.label8.grid(row=3, column=0, sticky="ns", padx=10, pady=0)
 
         # Load the image from the /image/letters folder to use for this part and position it in the correct place
         # Place Imaage of example sign for user to use when signing in the main lesson window 
-        self.A_image = self.load_image(f"/images/letters/{letter.lower()}.JPG", 150, 150)
+        self.A_image = self.load_image(f"/images/letters/{letter[index].lower()}.JPG", 150, 150)
         #if not btns:
         self.A_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150)
         #else:
@@ -706,15 +716,32 @@ class App(customtkinter.CTk):
             self.label_cam2 = customtkinter.CTkLabel(master=self.frame_main_right, text = "[Debug] camera off", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
         self.label_cam2.grid(row=0, column=1, sticky="s", padx=0, pady=10)
 
-        # Label that describes the user's accuracy
+        # Label that describes the user's accuracy (Keep for now but move later)
         self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: {}%".format(self.curr_accuracy), text_color = THEME_OPP, font=("Segoe UI", 14))
-        self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
-        self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+        #self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+
+
+        #Lesson next and previous (fix combining if statements later)
+        if index < 3 and motion == False:
+            self.next_button = customtkinter.CTkButton(master=self.frame_main_right, text = "Next lesson", command = lambda : self.letter_lessons(letter, index+1, False))
+            self.next_button.grid(row=3, column = 1, sticky="n", padx=5, pady=10)
+
+        if index < 1 and motion == True:
+            self.next_button = customtkinter.CTkButton(master=self.frame_main_right, text = "Next lesson", command = lambda : self.letter_lessons(letter, index+1, True))
+            self.next_button.grid(row=3, column = 1, sticky="n", padx=5, pady=10)
+
+        if index > 0 and motion == False:
+            self.previous_button = customtkinter.CTkButton(master=self.frame_main_right, text = "Previous lesson", command = lambda : self.letter_lessons(letter, index-1, False))
+            self.previous_button.grid(row=3, column = 1, sticky="s", padx=0, pady=10)
+
+        if index > 0 and motion == True:
+            self.previous_button = customtkinter.CTkButton(master=self.frame_main_right, text = "Previous lesson", command = lambda : self.letter_lessons(letter, index-1, True))
+            self.previous_button.grid(row=3, column = 1, sticky="s", padx=0, pady=10)
 
         if not motion: self.change_state(WindowState.IN_LESSON, self.del_list)
         else:          self.change_state(WindowState.IN_MOTION_LESSON, self.del_list)
-        self.average_list.reinit(letter)
-        self.letter_state.set_letter(letter)
+        self.average_list.reinit(letter[index])
+        self.letter_state.set_letter(letter[index])
         
         self.tabview._segmented_button_callback("Options")
         self.update()
