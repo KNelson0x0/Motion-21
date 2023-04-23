@@ -160,9 +160,9 @@ class UserSign(object):
                 #need to find which function generates/stores points
                 #keep in order for later reference (avoid false flagging with similar hand signs)
 
-                Camera().frame_q.put(image)
-                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                cv2.imshow("img", image_rgb)
+                #Camera().frame_q.put(image)
+                #image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                #cv2.imshow("img", image_rgb)
                 #Camera().rgb_img_crop = image
 
                 #cv2.waitKey(0)

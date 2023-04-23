@@ -66,6 +66,10 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
+        # states and events
+        state_init        = StateHandler()
+        self.letter_state = LetterState('_')
+
         if USE_CAMERA: 
             self.event_handler = EventHandler() # init eventhandler
             self.bind('<Left>',  EventHandler().arrow_key_left)
@@ -1054,6 +1058,10 @@ class App(customtkinter.CTk):
                 self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
                 print("FOUND!!!!!!!")
 
+                # border color change
+                border_color_change = make_color(self.color_dict[3])
+                Camera().border_q.put(border_color_change)
+
                 # weird error - sometimes when re-activating lesson, and getting the letter right AGAIN, this wont display the 2nd time
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 self.label8.update()
@@ -1062,21 +1070,9 @@ class App(customtkinter.CTk):
                 self.after_cancel(self.cam_after_id)
 
                 if self.border_change == 1:
-                    print("here")
-                    # OMG FINALLY THANK YOU
                     self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
                     #self.label_cam.cw_update()
                     self.after_id = self.after(10, self.the_afterinator)
-
-
-                # after cancels need to actually cancel just the main camera
-                # right now canceling both
-                #   i think this is in cam_after_id? all of it is demolishing
-                
-                # ANOTHER METHOD
-                # these should reactivate when the camera found the letter, but this breaks it
-                #self.label_cam.cw_update()
-                #self.after_id = self.after(10, self.the_afterinator)
                 
                 let = None
                 return
@@ -1095,11 +1091,6 @@ class App(customtkinter.CTk):
                 self.label12.update()
             except Exception as e: 
                 print(e)
-           
-            # ANOTHER METHOD
-            # testing shows this is never reached, but why?
-            # the camera is never resetting the afterinator unless the lesson is exited and re-entered
-            #print(got here!)
             
             self.after_id = self.after(10, self.the_afterinator)
             self.cam_after_id = self.after(200, self.camera_aftinerator)

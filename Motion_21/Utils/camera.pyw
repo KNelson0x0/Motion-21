@@ -22,6 +22,7 @@ def make_color(color : BorderColor): # BGR
 class EventHandler(object):
     x = 0
     y = 0
+    boundary_range = 0
   
     def __new__(self):
         if not USE_CAMERA: return 
@@ -92,7 +93,7 @@ class Camera(object): # singleton because every time the camera is initialized t
     stop                 = False
     box_size             = 50
     last_box_size        = 50
-    last_border_color    = make_color(BorderColor.BLUE)
+    last_border_color    = make_color(BorderColor.RED)
     border_color         = last_border_color
     drawingModule        = mediapipe.solutions.drawing_utils
     handsModule          = mediapipe.solutions.hands
@@ -125,6 +126,7 @@ class Camera(object): # singleton because every time the camera is initialized t
             debug_log("[You really need to be using thread locks.]")
             return self.old_frame
 
+        '''
     def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
          try:  
             if type(self.cropped_frame) != None:
@@ -138,6 +140,12 @@ class Camera(object): # singleton because every time the camera is initialized t
             if type(self.cropped_frame) != None:
                 return self.cropped_frame
             return self.get_frame()
+        '''
+
+    def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
+        if type(self.cropped_frame) != type(None):
+            return self.cropped_frame
+        return self.get_frame()
          
 
     def get_cropped_frame_points(self): # ground work. will use proper mutexs and things in the future.
