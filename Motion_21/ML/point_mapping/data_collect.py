@@ -4,8 +4,9 @@ import os
 import uuid
 
 ################################# CHANGE THIS BASED ON WHICH LETTER YOU ARE DOING ####################################
-letter = 'Z_2'
 
+letter = "A"
+letter_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J_1", "J_2", "J_3", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH,640)

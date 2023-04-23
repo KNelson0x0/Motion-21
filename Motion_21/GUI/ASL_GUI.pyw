@@ -1,5 +1,8 @@
 import os
 import customtkinter
+import cv2
+import uuid
+import time
 from queue           import Queue
 from PIL             import Image, ImageTk
 from config          import *
@@ -559,7 +562,7 @@ class App(customtkinter.CTk):
         # Window for the main camera
         # For now this is just an error message of "No Camera Found"
         # Once a camera is linked we create the same size window but with the camera output
-        self.config_cam_win1 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", compound = "bottom",)
+        self.config_cam_win1 = CameraWindow(master=self.frame_right, width = 290, height = 260, text = "", compound = "bottom")
         self.config_cam_win1.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
 
         # Label that describes the main camera above
@@ -591,7 +594,22 @@ class App(customtkinter.CTk):
         #self.camera_aftinerator()
     
     def training_begin(self):
-        self.training.on_begin()
+        #self.training.on_begin()
+        '''
+        #letter = self.
+        counter = 0
+        while True:
+            for letter in self.usertrain_letters:
+                dir = os.path.dirname(__file__)
+                path = dir + '\test_' + letter
+            counter += 1
+            cv2.imwrite(os.path.join(path, '{}.jpg'.format(uuid.uuid1())), #??? )
+
+            time.sleep(2)
+        '''
+        ()
+
+
 
     # Button that recreates window with settings page
     def settings_button(self):
@@ -867,13 +885,6 @@ class App(customtkinter.CTk):
         self.label8 = customtkinter.CTkLabel(master=self.frame_main_right, text = f"Please sign the letter \"{letter}\" \nas provided in the example!", text_color = THEME_OPP, font=("Segoe UI", 20), width = 350, height = 100, fg_color=THEME, corner_radius = 8, compound = "bottom")
         self.label8.grid(row=3, column=0, sticky="ns", padx=10, pady=0)
 
-        # Window for the example camera
-        # For now this is just an error message of "No Camera Found"
-        # Once a camera is linked we create the same size window but with the camera output
-                
-        #self.label9 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-        #self.label9.grid(row=0, column=1, sticky="n", padx=0, pady=10)
-
         # Load the image from the /image/letters folder to use for this part and position it in the correct place
         # Place Imaage of example sign for user to use when signing in the main lesson window 
         self.A_image = self.load_image(f"/images/letters/{letter.lower()}.JPG", 150, 150)
@@ -881,19 +892,8 @@ class App(customtkinter.CTk):
         self.A_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
 
         # Label that describes the example camera above
-        self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Image", text_color = THEME_OPP)
-        self.label10.grid(row=0, column=1, padx=0, pady=0) 
-
-        # Window for the user hand camera
-        # For now this is just an error message of "No Camera Found"
-        # Once a camera is linked we create the same size window but with the camera output
-                
-        #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "No Camera Found", text_color = THEME_OPP, width = 150, height = 150, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
-        #self.label11.grid(row=0, column=1, sticky="s", padx=0, pady=10)
-
-        # Label that describes the user hand camera above
-        #self.label11 = customtkinter.CTkLabel(master=self.frame_main_right, text = "User Hand Camera", text_color = THEME_OPP)
-        #self.label11.grid(row=1, column=1, sticky="n", padx=0, pady=0) 
+        #self.label10 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Example Image", text_color = THEME_OPP)
+        #self.label10.grid(row=0, column=1, padx=10, pady=10)  
 
         if USE_CAMERA:
             self.label_cam2 = CameraWindow(master=self.frame_main_right, width = 150, height = 150, text = "", cropped = True, compound = "bottom")
@@ -1040,15 +1040,13 @@ class App(customtkinter.CTk):
             return     
 
     def camera_aftinerator(self):
-        #print(self.initial_rectframe)
-
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
-            # initializing this state again here makes sure the camera is still usable after
-            # now the camera afterinator will take the letter again afterward
-            self.border_change = 0         
+            self.border_change = 0  
             let = UserSign().run_comparison(self.letter_state.DESIRED_LETTER[0])
 
-            # ensure the bool border_change is not catching a desired letter yet and run cam afterinator
+            border_color_change = make_color(self.color_dict[1])
+            Camera().border_q.put(border_color_change)
+
             if let == None and self.border_change == 0: 
                 self.cam_after_id = self.after(210, self.camera_aftinerator)
                 return
