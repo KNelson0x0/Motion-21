@@ -232,7 +232,8 @@ class Config(object): # singleton me later
             self.user_name = user_name
             self.settings  = {'M21ConfigName' : user_name}
             self.data      = {}
-            self.users     = 0
+            self.users     = []
+            self.c_cfg     = False
 
             Archive().parse_arch(password) # password is swag.
                 
@@ -240,15 +241,15 @@ class Config(object): # singleton me later
             del password
 
             if user_name:
-                c_cfg = Archive().get_json(user_name, key) # password is swag.
+                self.c_cfg = Archive().get_json(user_name, key) # password is swag.
             #else:
             #    c_cfg = Archive().get_json(user_name = key)
 
-            if c_cfg == False: 
+            if self.c_cfg == False: 
                 self.user_name = ""
-                return False
+                return self
 
-            self.c_cfg = c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
+            self.c_cfg = self.c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
             self.users = list(Archive().header.keys())
 
         return self.instance
