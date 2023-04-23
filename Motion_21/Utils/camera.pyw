@@ -93,7 +93,7 @@ class Camera(object): # singleton because every time the camera is initialized t
     stop                 = False
     box_size             = 50
     last_box_size        = 50
-    last_border_color    = make_color(BorderColor.RED)
+    last_border_color    = make_color(BorderColor.BLUE)
     border_color         = last_border_color
     drawingModule        = mediapipe.solutions.drawing_utils
     handsModule          = mediapipe.solutions.hands
