@@ -309,7 +309,7 @@ class UserSign(object):
 
         #REPLACE LESSON_LETTER WITH FUNCTION PARAMETER AKA GUI STUFF
         lesson_letter = letter
-        print("LESSON LETTER: " + lesson_letter)
+        #print("LESSON LETTER: " + lesson_letter)
 
         matched_letter = ""
         matched = False

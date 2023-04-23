@@ -142,9 +142,16 @@ class App(customtkinter.CTk):
         if self.after_id:     self.after_cancel(self.after_id)
         if self.cam_after_id: self.after_cancel(self.cam_after_id)
         if self.motion_after_id: self.after_cancel(self.motion_after_id)
+        
         self.use_motion_afterinator = motion_afterinator
         self.options_menu_open      = opts_menu
         self.del_list               = StateHandler().change_state(new_state, dellist)
+
+        if new_state.value[1] != CameraState.CAM_NOT_REQUIRED: 
+            Camera().pause_q.put(False)
+        else:
+            Camera().pause_q.put(True)
+
         UserSign().reset_stage()
 
     # Button that recreates window with home page
@@ -730,7 +737,6 @@ class App(customtkinter.CTk):
 
         # Label that describes the user's accuracy (Keep for now but move later)
         self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: {}%".format(self.curr_accuracy), text_color = THEME_OPP, font=("Segoe UI", 14))
-        #self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
 
         #Lesson next and previous (fix combining if statements later)
@@ -908,29 +914,19 @@ class App(customtkinter.CTk):
         if (StateHandler().c_state.value[1] == CameraState.CAM_CONTINOUS or StateHandler().c_state.value[1] == CameraState.CAM_REQUIRED) and USE_CAMERA == 1: # find a better method of doing this later
             if self.border_change == 1: # seb and keith pair programming line
                 self.label_cam.cw_update()
-                self.after_id = self.after(10, self.the_afterinator)
             else:
                 self.label_cam.cw_update();
                 self.label_cam2.cw_update();
-                self.after_id = self.after(10, self.the_afterinator)
+            self.after_id = self.after(10, self.the_afterinator)
 
     def camera_aftinerator(self):
         if (StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state == WindowState.IN_MOTION_LESSON) and USE_CAMERA == 1:
-
-
             let = UserSign().run_comparison(self.letter_state.DESIRED_LETTER[0])
 
-            if let == None: 
-                self.cam_after_id = self.after(210, self.camera_aftinerator)
-                return
-
             if let == self.letter_state.DESIRED_LETTER[0]:
-                #self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
                 self.border_change = 1
 
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
-                #self.label8.update()
-                #self.after_cancel(self.after_id)
                 #self.after_cancel(self.cam_after_id)
                 return
 
@@ -943,9 +939,12 @@ class App(customtkinter.CTk):
                 self.curr_accuracy = int(self.average_list.l_average())
 
                 self.label12.configure(text = "Total Accuracy: {}%".format(self.curr_accuracy))
-                #self.label12.update()
             except Exception as e: 
                 print(e)
+
+            if let == None: 
+                self.cam_after_id = self.after(210, self.camera_aftinerator)
+                return
 
             self.cam_after_id = self.after(200, self.camera_aftinerator)
 
