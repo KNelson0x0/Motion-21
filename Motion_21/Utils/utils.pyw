@@ -1,11 +1,8 @@
 import time
-import tkinter
 import json
-from  .constants import DEBUG
+import tkinter
 
-def debug_log(x):
-    if DEBUG:
-        print(x)
+from Utils.imports import *
 
 def find_element(root: tkinter.Frame, name: str, type=None): # okay the type doesnt really work
     lst = root.winfo_children()
@@ -76,3 +73,4 @@ class Timer:
 
     def mark(self):
         self.last_time = time.time()    
+

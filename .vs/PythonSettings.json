@@ -1,5 +1,6 @@
 {
   "SuppressPackageInstallationPrompt": true,
   "SuppressEnvironmentCreationPrompt": true,
-  "Interpreter": "C:\\Users\\pccin\\OneDrive\\Documents\\3.10-motion21-env\\Scripts\\python.exe"
+  "Interpreter": "C:\\Users\\pccin\\OneDrive\\Documents\\3.10-motion21-env\\Scripts\\python.exe",
+  "SuppressConfigureTestFrameworkPrompt": "true"
 }

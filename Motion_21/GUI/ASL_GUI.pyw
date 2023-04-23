@@ -1,12 +1,14 @@
+
 import os
+import threading
+from tkinter.tix import COLUMN
 import customtkinter
 from queue           import Queue
+
+from Utils.imports import *
+
 from PIL             import Image, ImageTk
 from config          import *
-from Utils.utils     import *
-from Utils.constants import *
-from Utils.camera    import *
-from Utils.states    import *
 from ML.algorithm    import UserSign
 from ML.usertrain    import UserTrain
 from .camera_window  import CameraWindow
@@ -22,8 +24,6 @@ if not os.path.exists(dir_path):
 #Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
-
-
 class AverageList:
     def __init__(self, letter = None):
         self.letter        = letter
@@ -55,7 +55,7 @@ class AverageList:
             self.average      = ( letters )
             self.last_average = self.average
 
-            print("Counted[{}]: {}".format(letters, self.average))
+            #print("Counted[{}]: {}".format(letters, self.average))
             return (letters)
         
         except Exection as e:
@@ -65,25 +65,40 @@ class AverageList:
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-
-        if USE_CAMERA: 
-            self.event_handler = EventHandler() # init eventhandler
-            self.bind('<Left>',  EventHandler().arrow_key_left)
-            self.bind('<Right>', EventHandler().arrow_key_right)
-            self.bind('<Up>',    EventHandler().arrow_key_up)
-            self.bind('<Down>',  EventHandler().arrow_key_down)
-
         #Size of window and title
         self.geometry("740x520")
-        state_init = StateHandler()
-        self.del_list = []
-        self.letter_state = LetterState('_')
         self.title("ASL Learning App")
-        self.average_list = AverageList()
-        self.curr_accuracy = 100
-        self.after_id = ""
-        self.cam_after_id = ""
-        self.border_change = 0
+
+        # states and events
+        state_init        = StateHandler()
+        self.letter_state = LetterState('_')
+        
+        if USE_CAMERA: 
+            self.event_handler = EventHandler() # init eventhandler
+            self.bind('<Left>',  self.arrow_left)
+            self.bind('<Right>', self.arrow_right)
+            self.bind('<Up>',    self.arrow_up)
+            self.bind('<Down>',  self.arrow_down)
+
+        # helper attributes
+        self.del_list            = []
+        self.average_list        = AverageList()
+        self.options_menu_open   = True
+        self.curr_accuracy       = 100
+        self.roi_size            = 50
+        self.after_id            = ""
+        self.cam_after_id        = ""
+        self.motion_after_id     = ""
+        self.motion_timer_count  = 0
+        self.border_change       = 0 
+        self.use_motion_afterinator  = False
+        self.color_dict = { 0 : BorderColor.WHITE,
+                            1 : BorderColor.RED,
+                            2 : BorderColor.BLUE,
+                            3 : BorderColor.GREEN,
+                            4 : BorderColor.YELLOW,
+                            5 : BorderColor.BLACK }
+
         # Locks size of window
         self.resizable(False, False)
 
@@ -91,6 +106,28 @@ class App(customtkinter.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.home_window()
+
+    # Event Handler Stuff, was going to just pass a self instance to eventhandler but thats more messy than this is
+    def arrow_left(self, _):
+        if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
+            EventHandler().arrow_key_left(None)
+            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+50))
+
+    
+    def arrow_right(self, _):
+        if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
+            EventHandler().arrow_key_right(None)
+            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+50))
+
+    def arrow_up(self, _):
+        if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
+            EventHandler().arrow_key_up(None)
+            self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y+50))
+
+    def arrow_down(self, _):
+        if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
+            EventHandler().arrow_key_down(None)
+            self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y+50))
 
     #Image processing function declarations
     # ------------------------------------------------------------------------------------    
@@ -101,14 +138,24 @@ class App(customtkinter.CTk):
     # Button function declarations
     # ------------------------------------------------------------------------------------    
     
+    def change_state(self, new_state : WindowState, dellist : list, motion_afterinator : bool = True, opts_menu : bool = True):
+        if self.after_id:     self.after_cancel(self.after_id)
+        if self.cam_after_id: self.after_cancel(self.cam_after_id)
+        if self.motion_after_id: self.after_cancel(self.motion_after_id)
+        self.use_motion_afterinator = motion_afterinator
+        self.options_menu_open      = opts_menu
+        self.del_list               = StateHandler().change_state(new_state, dellist)
+        UserSign().reset_stage()
+
     # Button that recreates window with home page
     def home_button(self):
-        UserSign().reset_stage()
         # Destroyed old window
+
         if StateHandler().c_state == WindowState.HOME:
             return
 
-        StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.change_state(WindowState.HOME, self.del_list)
+
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -428,11 +475,7 @@ class App(customtkinter.CTk):
         self.destroy()
 
     def lesson_select(self):
-        UserSign().reset_stage()
-
-        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
-        if self.after_id:     self.after_cancel(self.after_id)
-        if self.cam_after_id: self.after_cancel(self.cam_after_id)
+        self.change_state(WindowState.LESSONS, self.del_list)
 
         static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
         movement_letters = ["J", "Z"]
@@ -481,10 +524,12 @@ class App(customtkinter.CTk):
         self.lesson6 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 6:\n V, W, X, Y", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 200, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[20:24]))
         self.lesson6.grid(row = 2, column = 5, padx = 2, pady = 2)
         
-        self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_movement(movement_letters[0:2]))
+        self.lesson7 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 7:\n J & Z", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 200, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_motion(movement_letters[0:2]))
         self.lesson7.grid(row = 3, column = 4, padx = 2, pady = 2)
         
     def lesson_letters_static(self, letters):
+        self.change_state(WindowState.LESSONS, self.del_list, False, True)
+
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -505,7 +550,7 @@ class App(customtkinter.CTk):
         self.frame_main_right.grid_rowconfigure(7, weight=1)      
         self.frame_main_right.grid_rowconfigure(9, minsize=0)
 
-        #buttons
+        # buttons *
         self.lesson_home = customtkinter.CTkButton(master=self.frame_main_left, text = "Home", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.home_button)
         self.lesson_home.grid(row = 10,  column = 0, padx = 0, pady = 0, sticky = "s")
 
@@ -513,7 +558,7 @@ class App(customtkinter.CTk):
         self.lesson_home.grid(row = 9,  column = 0, padx = 0, pady = 0, sticky = "s")
 
         # description label
-        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = f"Lesson 1: \nLetters {letters[0]}, {letters[1]}, {letters[2]}, and {letters[3]}\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
+        self.lesson_description = customtkinter.CTkLabel(master=self.frame_main_left, text = f"Lesson 1: \nLetters {letters[0]}, {letters[1]}, {letters[2]}, and {letters[3]}\n\n\n Goal:\n Learn the\n fundamentals of\n American Sign \n Language", text_color = THEME_OPP, font = ("Segoue UI", 12))
         self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
 
 
@@ -533,8 +578,10 @@ class App(customtkinter.CTk):
         self.D_image = self.load_image(f"/images/letters/{letters[3].lower()}.JPG", 150, 150)
         self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters[3]))
         self.buttonD.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "nswe")
+        self.use_motion_afterinator = False
 
-    def lesson_letters_movement(self, letters):
+    def lesson_letters_motion(self, letters):
+        self.change_state(WindowState.MOTION, self.del_list, True, True)
         self.frame_left.destroy()
         self.frame_right.destroy()
 
@@ -575,10 +622,13 @@ class App(customtkinter.CTk):
         self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons("Z", True))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
 
+        self.use_motion_afterinator = True
+
+    def callback_test(self):
+        print("Dripp!")
     # later we can alter this function to be just for "lesson 1" "lesson 2" and so on
     # for now it just has the entire alphabet, but later will call to each function for better organization
-    def letter_lessons(self, letter, btns: bool = False):
-        self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
+    def letter_lessons(self, letter, motion: bool = False):
         self.frame_main_right.destroy()
 
         self.back_to_lesson = customtkinter.CTkButton(master=self.frame_main_left, text = "Lesson Select", text_color = THEME_OPP, width = 120, height = 22, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.lesson_select)
@@ -595,9 +645,20 @@ class App(customtkinter.CTk):
         self.frame_main_right.grid_rowconfigure(7, weight=1)      
         self.frame_main_right.grid_rowconfigure(9, minsize=0)
         
-        self.tabview = CustomTabview(master=self.frame_main_left, width=25)
-        self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(5, 0), sticky="nsew")
-        self.tabview.add("Debug")
+        self.tabview = CustomTabview(master=self.frame_main_left, width=25, height=100, command = self.options_button)
+        self.tabview.grid(row=4, column=0, padx=(5, 0), pady=(50, 0), sticky="nsew")
+        self.tabview.add("Options")
+        self.options_frame = customtkinter.CTkFrame(master=self.frame_main_right, width = 10, height = 10) # remove warning
+        
+        self.options_camera_x    = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="Cam X: {}".format(EventHandler().x))
+        self.options_camera_y    = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="Cam Y: {}".format(EventHandler().y))
+        self.options_border_size = customtkinter.CTkLabel(master = self.tabview.tab("Options"), text="Box Size: {}".format(self.roi_size))
+
+        self.options_camera_x.grid   (row=0, padx=(10,5), pady=(3,5), sticky="nsew")
+
+        self.options_camera_y.grid   (row=1, padx=(10,5), pady=(5,5), sticky="nsew")
+
+        self.options_border_size.grid(row=2, padx=(10,5), pady=(5,5), sticky="nsew")
 
         '''
         we can change these into lessons and call to lesssons "A-D" functions and etc and just call the function here
@@ -625,10 +686,10 @@ class App(customtkinter.CTk):
         # Load the image from the /image/letters folder to use for this part and position it in the correct place
         # Place Imaage of example sign for user to use when signing in the main lesson window 
         self.A_image = self.load_image(f"/images/letters/{letter.lower()}.JPG", 150, 150)
-        if not btns:
-            self.A_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150)
-        else:
-            self.A_labelimage = customtkinter.CTkButton(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150, command=lambda x=0 : print("YEAH!"))
+        #if not btns:
+        self.A_labelimage = customtkinter.CTkLabel(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150)
+        #else:
+            #self.A_labelimage = customtkinter.CTkButton(master=self.frame_main_right, text = "", image = self.A_image, width = 150, height = 150, command=lambda x=0 : print("YEAH!"))
         self.A_labelimage.grid(row=0, column=1, sticky="n", padx=0, pady=10)
 
         # Label that describes the example camera above
@@ -648,15 +709,68 @@ class App(customtkinter.CTk):
         # Label that describes the user's accuracy
         self.label12 = customtkinter.CTkLabel(master=self.frame_main_right, text = "Total Accuracy: {}%".format(self.curr_accuracy), text_color = THEME_OPP, font=("Segoe UI", 14))
         self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
+        self.label12.grid(row=3, column=1, sticky="nsw", padx=0, pady=0) 
 
+        if not motion: self.change_state(WindowState.IN_LESSON, self.del_list)
+        else:          self.change_state(WindowState.IN_MOTION_LESSON, self.del_list)
         self.average_list.reinit(letter)
         self.letter_state.set_letter(letter)
+        
+        self.tabview._segmented_button_callback("Options")
         self.update()
-        self.the_afterinator()
+
+        self.border_change = 0
+        if motion: self.motion_afterinator()
         self.camera_aftinerator()
+        self.the_afterinator()
+
+    def options_submit(self):
+        self.options_menu_open = False
+        try:
+            self.roi_size = int(self.opts_roi_box.get())
+
+            if self.roi_size > 330: self.roi_size = 330
+            if self.roi_size < 50:   self.roi_rize = 50
+
+            self.options_border_size.configure(text = "Box Size: {}".format(self.roi_size))
+            EventHandler().set_boundary_range(self.roi_size)
+
+            #for i in range(10): 
+            Camera().box_size_q.put(self.roi_size) # I really wanna make sure it gets it since its called only once
+
+        except:
+            pass # for now, maybe change the box to red
+
+        try:
+            self.options_frame.destroy()
+        except:
+            pass
+
+    def options_button(self):
+        if self.options_menu_open == True:
+            self.options_menu_open = False # not proper state usage but im not adding a third clause for a bool rn
+
+            try:
+                self.options_frame.destroy() 
+            except:
+                pass
+
+        else:
+            self.options_frame = customtkinter.CTkFrame(master=self.frame_main_right, width = 180, height = 180)
+            self.options_frame.place(relx=.5, rely=.5, anchor="center")
+
+            self.opts_roi_label = customtkinter.CTkLabel(master=self.options_frame, text = "Rectange Size: ", text_color = THEME_OPP, font=("Segoe UI", 14))
+            self.opts_roi_label.grid(row=0, column=0, padx=(20, 20), pady=(20, 20), sticky="ew")
+
+            self.opts_roi_box = customtkinter.CTkEntry(master=self.options_frame, width=50, height=20, placeholder_text=self.roi_size)
+            self.opts_roi_box.grid(row=0, column=1, padx=(20, 20), pady=(20, 20), sticky="ew")
+
+            self.opts_submit = customtkinter.CTkButton(master=self.options_frame, text = "Ok!", text_color = THEME_OPP, height = 42, border_width = 2, corner_radius = 8, compound = "bottom", border_color="#000000", command=self.options_submit)
+            self.opts_submit.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), columnspan = 2)
+            self.options_menu_open = True
 
     def back_button_lessons(self):
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.change_state(WindowState.HOME, self.del_list)
         self.lesson_select()
 
     # Button that opens lesson select page
@@ -687,7 +801,6 @@ class App(customtkinter.CTk):
             print("Light")
         self.themes_button()
         
-
     # Defines user accounts
     def defaultUser(self):
         customtkinter.set_appearance_mode("Dark")
@@ -703,7 +816,7 @@ class App(customtkinter.CTk):
     # Creates the home window
     def home_window(self):
         # Configures grid layout of 2x1
-        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.change_state(WindowState.HOME, self.del_list)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -760,64 +873,33 @@ class App(customtkinter.CTk):
     
     def the_afterinator(self): # I can and will default to doofenshmirtz like naming conventions.
         # todo: change the afterinator to have more of a list of functions to execute or something instead of ifs statements.
-        if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1: # find a better method of doing this later
-            if self.border_change == 1:
-                # only reaches here when the letter is recognized, but isnt continuing the main camera?
-                #print(self.border_change)
+        if (StateHandler().c_state.value[1] == CameraState.CAM_CONTINOUS or StateHandler().c_state.value[1] == CameraState.CAM_REQUIRED) and USE_CAMERA == 1: # find a better method of doing this later
+            if self.border_change == 1: # seb and keith pair programming line
                 self.label_cam.cw_update()
                 self.after_id = self.after(10, self.the_afterinator)
             else:
-                self.label_cam.cw_update()
-                self.label_cam2.cw_update()
+                self.label_cam.cw_update();
+                self.label_cam2.cw_update();
                 self.after_id = self.after(10, self.the_afterinator)
 
-            return     
-
     def camera_aftinerator(self):
-        #print(self.initial_rectframe)
+        if (StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state == WindowState.IN_MOTION_LESSON) and USE_CAMERA == 1:
 
-        if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
-            # initializing this state again here makes sure the camera is still usable after
-            # now the camera afterinator will take the letter again afterward
-            self.border_change = 0
-            #print(self.border_change)         
+
             let = UserSign().run_comparison(self.letter_state.DESIRED_LETTER[0])
 
-            # ensure the bool border_change is not catching a desired letter yet and run cam afterinator
-            if let == None and self.border_change == 0: 
+            if let == None: 
                 self.cam_after_id = self.after(210, self.camera_aftinerator)
                 return
 
             if let == self.letter_state.DESIRED_LETTER[0]:
+                #self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
                 self.border_change = 1
-                self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-                print("FOUND!!!!!!!")
 
-                # weird error - sometimes when re-activating lesson, and getting the letter right AGAIN, this wont display the 2nd time
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
-                self.label8.update()
-
+                #self.label8.update()
                 #self.after_cancel(self.after_id)
-                self.after_cancel(self.cam_after_id)
-
-                if self.border_change == 1:
-                    print("here")
-                    # OMG FINALLY THANK YOU
-                    self.del_list = StateHandler().change_state(WindowState.LESSONS, self.del_list)
-                    #self.label_cam.cw_update()
-                    self.after_id = self.after(10, self.the_afterinator)
-
-
-                # after cancels need to actually cancel just the main camera
-                # right now canceling both
-                #   i think this is in cam_after_id? all of it is demolishing
-                
-                # ANOTHER METHOD
-                # these should reactivate when the camera found the letter, but this breaks it
-                #self.label_cam.cw_update()
-                #self.after_id = self.after(10, self.the_afterinator)
-                
-                let = None
+                #self.after_cancel(self.cam_after_id)
                 return
 
             try:
@@ -827,21 +909,28 @@ class App(customtkinter.CTk):
                     self.average_list.add(let, 5)
 
                 self.curr_accuracy = int(self.average_list.l_average())
-                #print(self.average_list.let_list)
-                #print("Curr Accurancy[{}]: {} - {}".format(let, self.curr_accuracy, int(self.average_list.l_average())))
 
                 self.label12.configure(text = "Total Accuracy: {}%".format(self.curr_accuracy))
-                self.label12.update()
+                #self.label12.update()
             except Exception as e: 
                 print(e)
-           
-            # ANOTHER METHOD
-            # testing shows this is never reached, but why?
-            # the camera is never resetting the afterinator unless the lesson is exited and re-entered
-            #print(got here!)
-            
-            self.after_id = self.after(10, self.the_afterinator)
+
             self.cam_after_id = self.after(200, self.camera_aftinerator)
+
+    def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
+        if StateHandler().c_state == WindowState.IN_MOTION_LESSON and USE_CAMERA == 1:
+
+            if (self.motion_timer_count <= 3):
+                self.motion_timer_count += 1
+            else:
+                self.motion_timer_count = 0
+
+            #print("================================ Based! ================================")
+
+            color_made = make_color(self.color_dict[self.motion_timer_count])
+            Camera().border_q.put(color_made)
+            #self.motion_after_id = self.after(1000, self.motion_afterinator)
+            self.motion_after_id = self.after(1000, self.motion_afterinator)
 
 if __name__ == "__main__":
     app = App()
