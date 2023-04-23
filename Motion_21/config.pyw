@@ -138,6 +138,9 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         return protected
 
+    def get_header(self):
+        return self.header
+
     def get_json(self, user_name : str = "", key : bytes = ""): # also up for name nomination, use_json
         crypt = Fernet(key)
         del key
@@ -240,10 +243,10 @@ class Config(object): # singleton me later
             key   = make_key(password)
             del password
 
+            self.users = list(Archive().get_header().keys())
+
             if user_name:
-                self.c_cfg = Archive().get_json(user_name, key) # password is swag.
-            #else:
-            #    c_cfg = Archive().get_json(user_name = key)
+                self.c_cfg = Archive().get_json(user_name, key) # password is swag.      
 
             if self.c_cfg == False: 
                 self.user_name = ""
