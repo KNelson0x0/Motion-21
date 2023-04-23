@@ -72,20 +72,27 @@ class App(customtkinter.CTk):
             self.bind('<Right>', EventHandler().arrow_key_right)
             self.bind('<Up>',    EventHandler().arrow_key_up)
             self.bind('<Down>',  EventHandler().arrow_key_down)
-            self.frame_control = EventHandler().frame_color
 
         #Size of window and title
         self.geometry("740x520")
         state_init = StateHandler()
-        self.del_list = []
-        self.letter_state = LetterState('_')
-        self.title("ASL Learning App")
-        self.average_list = AverageList()
-        self.curr_accuracy = 100
-        self.after_id = ""
-        self.cam_after_id = ""
-        self.border_change = 0
-        #self.initial_rectframe = Camera().begin
+        self.del_list            = []
+        self.average_list        = AverageList()
+        self.options_menu_open   = True
+        self.curr_accuracy       = 100
+        self.roi_size            = 50
+        self.after_id            = ""
+        self.cam_after_id        = ""
+        self.motion_after_id     = ""
+        self.motion_timer_count  = 0
+        self.border_change       = 0 
+        self.use_motion_afterinator  = False
+        self.color_dict = { 0 : BorderColor.WHITE,
+                            1 : BorderColor.RED,
+                            2 : BorderColor.BLUE,
+                            3 : BorderColor.GREEN,
+                            4 : BorderColor.YELLOW,
+                            5 : BorderColor.BLACK }
     
 
 

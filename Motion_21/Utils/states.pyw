@@ -25,65 +25,6 @@ class LetterState():
     def set_letter(self, letter):
         self.DESIRED_LETTER = [letter,CameraState.CAM_REQUIRED]
 
-
-class EventHandler(object):
-    x = 0
-    y = 0
-    R = 0
-    G = 0
-    B = 0
-  
-    def __new__(self):
-        if not USE_CAMERA: return 
-        if not hasattr(self, 'instance'):
-            self.instance = super(EventHandler, self).__new__(self)
-        return self.instance
-
-    # 420 | 320
-    # top left -50, -50
-    # top right 385, -50
-    # bottom right 385, 225
-    # bottom left -50, 225
-
-    def arrow_key_up(self, _):
-        if (self.y == -50): 
-           Camera().q.put([self.x, self.y, 1])
-           return
-        self.y -= 5
-        debug_log("arrow up: {}".format(self.y))
-        Camera().q.put([self.x, self.y, None])
-
-    def arrow_key_down(self, _):
-        if (self.y == 225): 
-           Camera().q.put([self.x, self.y, 1])
-           return
-        self.y += 5
-        debug_log("arrow down: {}".format(self.y))
-        Camera().q.put([self.x, self.y, None])
-
-    def arrow_key_left(self, _):
-        if (self.x == -50):
-            Camera().q.put([self.x, self.y, 1])
-            return
-        self.x -= 5
-        debug_log("arrow left: {}".format(self.x))
-        Camera().q.put([self.x, self.y, None])
-
-    def arrow_key_right(self, _):
-        if (self.x == 385):
-            Camera().q.put([self.x, self.y, 1])
-            return
-        self.x += 5
-        debug_log("arrow left: {}".format(self.x))
-        Camera().q.put([self.x, self.y, None])
-
-    def frame_color(self, _):
-        if not self.letter_state.DESIRED_LETTER[0]:
-            Camera().q.put([self.R, self.G, self.B], 1)
-        Camera().q.put([self.R, self.G, self.B, None])
-
-
-
 class StateHandler(object):
     def __new__(self):
         if not hasattr(self, 'instance'):
