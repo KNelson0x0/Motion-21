@@ -111,22 +111,22 @@ class App(customtkinter.CTk):
     def arrow_left(self, _):
         if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_left(None)
-            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+400))
+            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x))
 
     def arrow_right(self, _):
         if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_right(None)
-            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+350))
+            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x))
 
     def arrow_up(self, _):
         if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_up(None)
-            self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y+50))
+            self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y))
 
     def arrow_down(self, _):
         if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_down(None)
-            self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y+50))
+            self.options_camera_y.configure(text="Cam Y: {}".format(EventHandler().y))
 
     #Image processing function declarations
     # ------------------------------------------------------------------------------------    
@@ -753,11 +753,16 @@ class App(customtkinter.CTk):
         self.average_list.reinit(letter[index])
         self.letter_state.set_letter(letter[index])
         
+        # Call it so it realizes we have selected the button.
         self.tabview._segmented_button_callback("Options")
         self.update()
 
+        # Camera Border Stuff
         self.border_change = 0
+        Camera().border_q.put(BorderColor.Blue)
         if motion: self.motion_afterinator()
+
+        # Start Updates
         self.camera_aftinerator()
         self.the_afterinator()
 
