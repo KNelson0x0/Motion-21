@@ -1168,7 +1168,7 @@ class App(customtkinter.CTk):
                 return
 
             self.cam_after_id = self.after(200, self.camera_aftinerator)
-
+            '''
             try:
                 if(let == None):
                     self.average_list.add(self.average_list.letter, 1)
@@ -1186,7 +1186,7 @@ class App(customtkinter.CTk):
             
             self.after_id = self.after(10, self.the_afterinator)
             self.cam_after_id = self.after(200, self.camera_aftinerator)
-    
+            '''
     def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
         if StateHandler().c_state == WindowState.IN_MOTION_LESSON and USE_CAMERA == 1:
  
