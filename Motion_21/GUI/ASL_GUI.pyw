@@ -921,6 +921,8 @@ class App(customtkinter.CTk):
     def camera_aftinerator(self):
         if (StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state == WindowState.IN_MOTION_LESSON) and USE_CAMERA == 1:
             let = UserSign().run_comparison(self.letter_state.DESIRED_LETTER[0])
+            border_color_change = make_color(BorderColor.BLUE)
+            Camera().border_q.put(border_color_change)
 
             if let == self.letter_state.DESIRED_LETTER[0]:
                 self.border_change = 1
@@ -950,7 +952,7 @@ class App(customtkinter.CTk):
 
     def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
         if StateHandler().c_state == WindowState.IN_MOTION_LESSON and USE_CAMERA == 1:
-
+ 
             if (self.motion_timer_count <= 3):
                 self.motion_timer_count += 1
             else:
