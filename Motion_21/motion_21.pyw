@@ -23,15 +23,10 @@
 #
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
-from GUI.ASL_GUI import App
-from Utils.constants import *
-from Utils.camera import Camera
-
-# -- del
-import json, base64, hashlib
-from   cryptography.fernet import Fernet
-# -- del
-from config import *
+from GUI.ASL_GUI   import App
+from Utils.imports import *
+from datetime      import datetime
+from config        import *
 
 if __name__ == "__main__":
     # Loading Window Here!
@@ -41,14 +36,15 @@ if __name__ == "__main__":
     print("================= Config Read! ==================")
     try:
         ()
-        #Config("Stupendous", "Amazing")
+        Config("Stupendous", "Amazing")
         #Config("Beemer", "swag2")
+        print(Config().c_cfg)
+        #Config().save_var(datetime.today().timestamp(), "Last Login Time")
         #print(Config().c_cfg)
-        #print(Config()["c"])
-        #Archive().save_config("Beemer")
+        #Archive().save_config("Stupendous")
         #Config().add_user("Stupendous", "Amazing")
         #print("Stop")
-
+        print(Config()["Last Login Time"]["var"])
         #to_enc = {"M21ConfigName":"Beemer","c":2}
     
     except Exception as e:

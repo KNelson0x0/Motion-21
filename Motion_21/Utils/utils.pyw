@@ -1,11 +1,8 @@
 import time
 import json
 import tkinter
-from  .constants import DEBUG
 
-def debug_log(x):
-    if DEBUG:
-        print(x)
+from Utils.imports import *
 
 def find_element(root: tkinter.Frame, name: str, type=None): # okay the type doesnt really work
     lst = root.winfo_children()
@@ -41,6 +38,17 @@ def get_header(config_str : str):
 
     return json.loads(header), header
 
+def clean_json(js):
+	out_str = ""
+	searching = False
+	for i in js:
+		if i == '"': searching = not searching
+		if searching and i == "'":
+			out_str += 'M21_R3PL@C3_QUOTE'
+			continue
+		out_str += i
+	return out_str
+
 def get_json_size(self, j):
     return( len(str(j).replace('\n','').strip()) )
 
@@ -75,4 +83,4 @@ class Timer:
         return time.time() - self.last_time
 
     def mark(self):
-        self.last_time = time.time()    
+        self.last_time = time.time() 

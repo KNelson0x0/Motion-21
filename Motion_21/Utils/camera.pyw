@@ -3,11 +3,10 @@ import threading
 import mediapipe
 import numpy as np
 
-from time import sleep
+from time  import sleep
 from queue import Queue
-from Utils.utils import *
-from Utils.constants import *
-from Utils.states import *
+
+from Utils.imports import *
 
 def make_color(color : BorderColor): # BGR
     return {
@@ -23,9 +22,8 @@ class EventHandler(object):
     x = 0
     y = 0
     boundary_range = 0
-  
+
     def __new__(self):
-        if not USE_CAMERA: return 
         if not hasattr(self, 'instance'):
             self.instance = super(EventHandler, self).__new__(self)
         return self.instance
@@ -60,7 +58,7 @@ class EventHandler(object):
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_left(self, _):
-        if (self.x == -50):
+        if (self.x == -400):
             Camera().q.put([self.x, self.y, BorderColor.RED])
             return
         self.x -= 5
@@ -68,12 +66,13 @@ class EventHandler(object):
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_right(self, _):
-        if (self.x == 385 + self.boundary_range):
+        if (self.x == 40 + self.boundary_range):
             Camera().q.put([self.x, self.y, BorderColor.RED])
             return
         self.x += 5
         debug_log("arrow left: {}".format(self.x))
         Camera().q.put([self.x, self.y, None])
+
 
 class Camera(object): # singleton because every time the camera is initialized there is at least a five second freeze and I'd prefer not to hard global too much.
     stream               = cv2.VideoCapture(0)
@@ -90,20 +89,21 @@ class Camera(object): # singleton because every time the camera is initialized t
     q                    = Queue()
     border_q             = Queue()
     box_size_q           = Queue()
-    stop                 = False
+    pause_q              = Queue()
+    pause                = True
     box_size             = 50
     last_box_size        = 50
     last_border_color    = make_color(BorderColor.BLUE)
     border_color         = last_border_color
     drawingModule        = mediapipe.solutions.drawing_utils
     handsModule          = mediapipe.solutions.hands
-    #previous_rgb       = [0, 0, 0] # this is in BGR cause i think thats is what its start with -seb
 
     def __new__(self):
         if not USE_CAMERA: return
         if not hasattr(self, 'instance'):
-            self.instance = super(Camera, self).__new__(self)
-            self.thread   = threading.Thread(target=self.begin, args=(self,))
+            self.instance   = super(Camera, self).__new__(self)
+            self.thread     = threading.Thread(target=self.start_cam, args=(self,))
+            self.lock       = ""
             self.start(self)
 
         return self.instance
@@ -126,27 +126,10 @@ class Camera(object): # singleton because every time the camera is initialized t
             debug_log("[You really need to be using thread locks.]")
             return self.old_frame
 
-        '''
-    def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
-         try:  
-            if type(self.cropped_frame) != None:
-                frame = self.frame_q.get(timeout=.01)
-                if frame != None:
-                    return frame
-               
-                return self.cropped_frame
-         except Exception as e:
-            print(e)
-            if type(self.cropped_frame) != None:
-                return self.cropped_frame
-            return self.get_frame()
-        '''
-
     def get_cropped_frame(self): # ground work. will use proper mutexs and things in the future.
         if type(self.cropped_frame) != type(None):
             return self.cropped_frame
         return self.get_frame()
-         
 
     def get_cropped_frame_points(self): # ground work. will use proper mutexs and things in the future.
         if type(self.cropped_frame_points) != type(None):
@@ -184,15 +167,40 @@ class Camera(object): # singleton because every time the camera is initialized t
         except:
             sleep(10)
 
-    def begin(self):
-        i = 0
-        
-        self.warmup(self)
 
-        while (not self.stop):
-            if i % 5 == 0: 
+    def begin(self):
+        self.start_cam(self)
+    
+    def start_cam(self):
+        while (True):
+            try:
+                self.pause = self.pause_q.get(timeout=0.01)
+            except:
+                pass
+            if self.pause: 
+                sleep(.5)
+            else:
+                print("Starting Run Cam!")
+                self.run_cam(self)
+                print("Back from Run Cam!")
+
+    def run_cam(self):
+        i = 1
+        go = True
+
+        while (go):
+            # this is so it only writes the last frame every five frames, counts count 0 so 5.
+            if i == 4: # every 5 frames
                 self.old_frame = self.frame
-                i = 0
+                try:
+                    self.pause = self.pause_q.get(timeout=0.01)
+                    go = not self.pause # not because if we want it to pause we'd set pause to true, so if we want cam to pause we set it to false
+                    if go == False:
+                        return
+                except:
+                    pass
+                i = -1
+            i += 1
 
             _, self.frame = self.stream.read()
 
@@ -202,6 +210,7 @@ class Camera(object): # singleton because every time the camera is initialized t
                 # to help better performance for this thing ... right now.
                 
                 self.rect_frame = self.frame.copy()
+                self.rect_frame = cv2.flip(self.rect_frame, 1) #flips image horizontally, might need to change later
 
                 try:
                     self.border_color = self.border_q.get(timeout=.01)
@@ -222,19 +231,18 @@ class Camera(object): # singleton because every time the camera is initialized t
                     self.box_size = self.last_box_size
 
                 if offsets[2] == None:
-                   color = self.border_color
+                    color = self.border_color
                 else:
-                   color = make_color(offsets[2])
+                    color = make_color(offsets[2])
 
                 #cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), color, 3)
-                cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (200 + self.box_size + offsets[0], 200 + self.box_size + offsets[1]), color, 3)
-                #crop_box = hand_box[100:300, 100:300]
+                cv2.rectangle(self.rect_frame, (400 + offsets[0], 50 + offsets[1]), (550 + self.box_size + offsets[0], 200 + self.box_size + offsets[1]), color, 3)
 
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
-                self.rgb_img_crop = cv2.cvtColor(self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], 50 + offsets[0] : 200 + self.box_size + offsets[0]], cv2.COLOR_BGR2RGB)
+                self.rgb_img_crop = cv2.cvtColor(self.rect_frame[400 + offsets[1] : 550 + self.box_size + offsets[1], 50 + offsets[0] : 200 + self.box_size + offsets[0]], cv2.COLOR_BGR2RGB)
                 self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
 
-                roi = self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], 50 + offsets[0] : 200 + self.box_size + offsets[0]]
+                roi = self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], 400 + offsets[0] : 550 + self.box_size + offsets[0]]
                 roi_points = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
                 roi_points = self.draw_points(self, roi_points)
 
@@ -244,3 +252,5 @@ class Camera(object): # singleton because every time the camera is initialized t
                 debug_log("Something Happened! [");
                 debug_log(str(e))
                 debug_log("]")
+
+        print("Exiting Run Cam!")

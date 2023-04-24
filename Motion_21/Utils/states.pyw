@@ -1,21 +1,24 @@
-from .camera         import *
-from .utils          import *
-from enum            import Enum
+from enum import Enum
+from Utils.imports import *
+
 
 class CameraState(Enum):
-    CAM_OFF = 0
-    CAM_ON = 1
-    CAM_REQUIRED = 2
+    CAM_OFF          = 0
+    CAM_ON           = 1
+    CAM_REQUIRED     = 2
     CAM_NOT_REQUIRED = 3
+    CAM_CONTINOUS    = 4
 
 class WindowState(Enum):
-    UNKNOWN  = [0, CameraState.CAM_NOT_REQUIRED] # for unstated windows, really only for debugging
-    HOME     = [1, CameraState.CAM_NOT_REQUIRED]
-    LESSONS  = [2, CameraState.CAM_REQUIRED]
-    SETTINGS = [3, CameraState.CAM_NOT_REQUIRED]
-    THEMES   = [4, CameraState.CAM_NOT_REQUIRED]
-    CONFIG   = [5, CameraState.CAM_NOT_REQUIRED]
-    TRAINING = [6, CameraState.CAM_REQUIRED]
+    UNKNOWN          = [0, CameraState.CAM_NOT_REQUIRED] # for unstated windows, really only for debugging
+    HOME             = [1, CameraState.CAM_NOT_REQUIRED]
+    LESSONS          = [2, CameraState.CAM_NOT_REQUIRED]
+    IN_LESSON        = [2, CameraState.CAM_REQUIRED]
+    SETTINGS         = [3, CameraState.CAM_NOT_REQUIRED]
+    THEMES           = [4, CameraState.CAM_NOT_REQUIRED]
+    CONFIG           = [5, CameraState.CAM_NOT_REQUIRED]
+    MOTION           = [6, CameraState.CAM_CONTINOUS]
+    IN_MOTION_LESSON = [7, CameraState.CAM_CONTINOUS]
 
 class LetterState():
     DESIRED_LETTER = ["_", CameraState.CAM_REQUIRED]
@@ -36,7 +39,12 @@ class StateHandler(object):
         self.c_state = state
 
         if del_list == [] or del_list == None: return
-        [i.destroy() for i in del_list]
+        for i in del_list:
+            try:
+                i.destroy()
+            except:
+                pass
+
         del_list = []
       
-        return []
+        return del_list

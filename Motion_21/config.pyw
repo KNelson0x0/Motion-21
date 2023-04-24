@@ -1,9 +1,9 @@
 import json, base64, hashlib
-from   Utils.utils import *
-from   Utils.constants import *
-from   os.path  import exists
+
+from   Utils.imports import *
 from   os       import mkdir
 from   os       import remove
+from   os.path  import exists
 from   cryptography.fernet import Fernet
 
 
@@ -14,16 +14,18 @@ def make_key(passcode: str) -> bytes:
     del passcode
     return base64.urlsafe_b64encode(md5_obj.hexdigest().encode('utf-8'))
 
-
 class MemKey(): # because we arent storing any of this on a server, the least we can do is make sure the key isn't just floating around in memory somewhere
     """
        [NEVER USE THE ASSIGNMENT OPERATOR WITH THIS CLASS!]
        In order for the entire point of this class to work the key has to 
        be in memory for as little time as possible. If you do:
+
        mem_key = MemKey("password")
+
        and later do:
        
        mem_key = "password"
+
        mem_key is now a string obj and the key is once again in plaintext.
        Dont do that. Use .set_key.
     """
@@ -90,7 +92,7 @@ class Archive(object): # So python apparently does have circular imports but the
         return self.instance
 
     def set_password(self, key : str): # needs to be here for user switch
-        self.crypt  = Fernet(make_key(key))
+        self.crypt = Fernet(make_key(key))
         del key
 
     def parse_arch(self, key):
@@ -136,6 +138,9 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         return protected
 
+    def get_header(self):
+        return self.header
+
     def get_json(self, user_name : str = "", key : bytes = ""): # also up for name nomination, use_json
         crypt = Fernet(key)
         del key
@@ -150,7 +155,8 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode().replace("\'",'"')
+                    down_down    = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode()
+                    down_down    = clean_json(down_down).replace('"',"'").replace("\'",'"').replace("M21_R3PL@C3_QUOTE",'\\"')
                     self.c_cfg   = json.loads(down_down)
                     self.c_index = k
                     self.crypt   = crypt
@@ -230,23 +236,24 @@ class Config(object): # singleton me later
             self.user_name = user_name
             self.settings  = {'M21ConfigName' : user_name}
             self.data      = {}
-            self.users     = 0
+            self.users     = []
+            self.c_cfg     = False
 
             Archive().parse_arch(password) # password is swag.
                 
             key   = make_key(password)
             del password
 
+            self.users = list(Archive().get_header().keys())
+
             if user_name:
-                c_cfg = Archive().get_json(user_name, key) # password is swag.
-            else:
-                c_cfg = Archive().get_json(username = key)
+                self.c_cfg = Archive().get_json(user_name, key) # password is swag.      
 
-            if c_cfg == False: 
+            if self.c_cfg == False: 
                 self.user_name = ""
-                return False
+                return self
 
-            self.c_cfg = c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
+            self.c_cfg = self.c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
             self.users = list(Archive().header.keys())
 
         return self.instance
@@ -282,6 +289,7 @@ class Config(object): # singleton me later
         else:                            
             self.settings[name] = self.data        
 
+        self.c_cfg      = self.settings
         Archive().c_cfg = self.settings
 
     def save(self, object, name = "", attributes = []):
@@ -328,6 +336,7 @@ class Config(object): # singleton me later
         else:                            
             self.settings[name] = self.data
         
+        self.c_cfg      = self.settings
         Archive().c_cfg = self.settings
         #Archive().save_config()
     
