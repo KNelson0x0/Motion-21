@@ -92,7 +92,7 @@ class Archive(object): # So python apparently does have circular imports but the
         return self.instance
 
     def set_password(self, key : str): # needs to be here for user switch
-        self.crypt  = Fernet(make_key(key))
+        self.crypt = Fernet(make_key(key))
         del key
 
     def parse_arch(self, key):
@@ -155,9 +155,8 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode()
-                    down_down.replace('"','\"')
-                    down_down = down_down.replace("\'",'"')
+                    down_down    = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode()
+                    down_down    = clean_json(down_down).replace('"',"'").replace("\'",'"').replace("M21_R3PL@C3_QUOTE",'\\"')
                     self.c_cfg   = json.loads(down_down)
                     self.c_index = k
                     self.crypt   = crypt

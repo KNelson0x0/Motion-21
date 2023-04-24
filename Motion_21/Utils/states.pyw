@@ -39,9 +39,14 @@ class StateHandler(object):
         self.c_state = state
 
         if del_list == [] or del_list == None: return
-        [i.destroy() for i in del_list]
+        for i in del_list:
+            try:
+                i.destroy()
+            except:
+                pass
+
         del_list = []
       
-        return []
+        return del_list
 
 

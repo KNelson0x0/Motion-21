@@ -44,7 +44,7 @@ if __name__ == "__main__":
         #Archive().save_config("Stupendous")
         #Config().add_user("Stupendous", "Amazing")
         #print("Stop")
-
+        print(Config()["Last Login Time"]["var"])
         #to_enc = {"M21ConfigName":"Beemer","c":2}
     
     except Exception as e:
