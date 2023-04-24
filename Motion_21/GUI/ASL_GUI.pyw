@@ -22,7 +22,7 @@ if not os.path.exists(dir_path):
     os.mkdir(dir_path)
 
 #Can change this later for themes
-customtkinter.set_appearance_mode("Dark")
+customtkinter.set_appearance_mode("system")
 customtkinter.set_default_color_theme("dark-blue")
 class AverageList:
     def __init__(self, letter = None):
@@ -363,21 +363,25 @@ class App(customtkinter.CTk):
         # ------------------------------------------------------------------------------------
         self.frame_left = customtkinter.CTkFrame(master=self, width=200, corner_radius=0)
         self.frame_left.grid(row=0, column=0, sticky="nswe")
+
+         # configure grid layout (1x8)
+        self.frame_left.grid_rowconfigure(7, weight=1)      # empty row as spacing
+        self.frame_left.grid_rowconfigure(9, minsize=0)     # sets minimum size from bottom of screen to buttons
         
         # Creates labels for the left window
         # ------------------------------------------------------------------------------------
         
         # Creates label with the text "Users:"
-        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, text = "Users:", text_color = THEME_OPP)
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, text = "Change the application to be\n dark or light mode!", text_color = THEME_OPP, font = ("Segoe UI", 14))
         self.label_1.grid(row=0, column=0, padx=10, pady=10, sticky="we")
 
         # Default user settings button to reset all changes
-        self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Default User Settings", text_color = THEME_OPP, width = 200, height= 50, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.defaultUser)
-        self.button1.grid(row=1, column=0, padx=1, pady=1)
+        #self.button1 = customtkinter.CTkButton(master=self.frame_left, text = "Default User Settings", text_color = THEME_OPP, width = 200, height= 50, border_width = 1, corner_radius = 5, compound = "bottom", border_color=THEME, command=self.defaultUser)
+        #self.button1.grid(row=1, column=0, padx=1, pady=1)
 
         # Creates Return button
-        self.button2 = customtkinter.CTkButton(master=self.frame_left, text = "Return", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.return_function)
-        self.button2.grid(row=9, column=0, padx=0, pady=350, sticky="we")
+        self.button8 = customtkinter.CTkButton(master=self.frame_left, text = "Return", text_color = THEME_OPP, width = 150, height = 60, border_width = 1, corner_radius = 5, border_color=THEME, command=self.return_function)
+        self.button8.grid(row=8, column=0, padx=0, pady=0, sticky="we")
 
         # Creates the right side of the theme wind
         # ------------------------------------------------------------------------------------
@@ -388,13 +392,14 @@ class App(customtkinter.CTk):
         # ------------------------------------------------------------------------------------
 
         # Creates label with the text "Overall Theme Settings:" to describe what the drop down menu below it does
-        self.label_2 = customtkinter.CTkLabel(master=self.frame_right, text="Overall Theme Settings:", text_color = THEME_OPP)
+        self.label_2 = customtkinter.CTkLabel(master=self.frame_right, text="Overall Theme Settings:", text_color = THEME_OPP, font = ("Segoe UI", 20))
         self.label_2.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
         # Creates theme drop down menu to change general theme details all at once
         self.optionmenu_1 = customtkinter.CTkOptionMenu(master=self.frame_right, values=["Dark", "Light"], text_color = THEME_OPP, fg_color = THEME, command=self.change_appearance_mode)
-        self.optionmenu_1.grid(row=0, column=1, padx=5, pady=10, sticky="w")
+        self.optionmenu_1.grid(row=1, column=0, padx=5, pady=10, sticky="w")
 
+        '''
         # Creates label with the text "Font Size:" to describe what the slider below it does
         self.label_3 = customtkinter.CTkLabel(master=self.frame_right, text="Font Size:", text_color = THEME_OPP)
         self.label_3.grid(row=1, column=0, padx=5, pady=5, sticky="w")
@@ -407,7 +412,8 @@ class App(customtkinter.CTk):
                                                 to=1,
                                                 number_of_steps=10,
                                                 command=self.progressbar.set)
-        self.slider_1.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")   
+        self.slider_1.grid(row=2, column=0, columnspan=2, pady=10, padx=20, sticky="we")
+        '''
     
     # Model Training front end, configuring letter (pulled from old and converting and dynamifying)
     def configure_button(self): 
@@ -1059,7 +1065,7 @@ class App(customtkinter.CTk):
 
     # Defines user accounts
     def defaultUser(self):
-        customtkinter.set_appearance_mode("Dark")
+        customtkinter.set_appearance_mode("system")
         customtkinter.set_default_color_theme("dark-blue")
 
     # Deletes the old window and prints the home window
@@ -1168,25 +1174,7 @@ class App(customtkinter.CTk):
                 return
 
             self.cam_after_id = self.after(200, self.camera_aftinerator)
-            '''
-            try:
-                if(let == None):
-                    self.average_list.add(self.average_list.letter, 1)
-                else:
-                    self.average_list.add(let, 5)
-
-                self.curr_accuracy = int(self.average_list.l_average())
-                #print(self.average_list.let_list)
-                #print("Curr Accurancy[{}]: {} - {}".format(let, self.curr_accuracy, int(self.average_list.l_average())))
-
-                self.label12.configure(text = "Total Accuracy: {}%".format(self.curr_accuracy))
-                self.label12.update()
-            except Exception as e: 
-                print(e)
             
-            self.after_id = self.after(10, self.the_afterinator)
-            self.cam_after_id = self.after(200, self.camera_aftinerator)
-            '''
     def motion_afterinator(self): # realistically, could throw this in the regular afterinator but its easier to read
         if StateHandler().c_state == WindowState.IN_MOTION_LESSON and USE_CAMERA == 1:
  
