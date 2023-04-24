@@ -210,6 +210,7 @@ class Camera(object): # singleton because every time the camera is initialized t
                 # to help better performance for this thing ... right now.
                 
                 self.rect_frame = self.frame.copy()
+                self.rect_frame = cv2.flip(self.rect_frame, 1) #flips image horizontally, might need to change later
 
                 try:
                     self.border_color = self.border_q.get(timeout=.01)
