@@ -216,7 +216,7 @@ class UserSign(object):
 
             #image = Camera().rgb_img_crop
             #image = Camera().get_cropped_frame()
-            image = Camera().get_frame()
+            image = Camera().get_cropped_frame()
 
 
             #cv2.imshow("img", image)
@@ -309,7 +309,7 @@ class UserSign(object):
 
         #REPLACE LESSON_LETTER WITH FUNCTION PARAMETER AKA GUI STUFF
         lesson_letter = letter
-        print("LESSON LETTER: " + lesson_letter)
+        #print("LESSON LETTER: " + lesson_letter)
 
         matched_letter = ""
         matched = False
@@ -334,7 +334,7 @@ class UserSign(object):
                       "S": 15, "T": 15, "U": 18, "V": 18, "W": 15, "X": 15, "Y": 15}
         three_stage = ["J"]
         four_stage = ["Z"]
-        count_dict2 = {"J_1": 18, "J_2": 17, "J_3": 18, "Z": 15}
+        count_dict2 = {"J_1": 16, "J_2": 16, "J_3": 16, "Z": 15}
 
         if lesson_letter in static_letters:
             # Grabs user letter input
@@ -801,9 +801,9 @@ class UserSign(object):
                                     for i in range(len(xy_arr)):
                                         #print(UserSign().base_xy_arr1)
                                         #print(xy_arr)
-                                        if (xy_arr[i][1] >= (UserSign().base_xy_arr1[i][1] - 40)) and (xy_arr[i][1] <= (UserSign().base_xy_arr1[i][1] + 40)): #possibly change these values for x/y coordinates
+                                        if (xy_arr[i][1] >= (UserSign().base_xy_arr1[i][1] - 30)) and (xy_arr[i][1] <= (UserSign().base_xy_arr1[i][1] + 30)): #possibly change these values for x/y coordinates
                                             #print("BOOM")
-                                            if(xy_arr[i][0] < (UserSign().base_xy_arr1[i][0] - 40)): #might need to change this value too
+                                            if(xy_arr[i][0] > (UserSign().base_xy_arr1[i][0] + 50)): #might need to change this value too
                                                 #print("BOOM")
                                                 temp_count += 1
                                 #print(temp_count)
@@ -876,8 +876,8 @@ class UserSign(object):
                                 temp = (Z_star_user_arr[i] / base_arr[i]) * 100
                                 if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values/original was 60, 140
                                     for i in range(len(xy_arr)):
-                                        if (xy_arr[i][0] >= (UserSign().base_xy_arr1[i][0] - 40)) and (xy_arr[i][0] <= (UserSign().base_xy_arr1[i][0] + 40)): #possibly change these values for x/y coordinates
-                                            if(xy_arr[i][1] > (UserSign().base_xy_arr1[i][1] + 40)):
+                                        if (xy_arr[i][0] >= (UserSign().base_xy_arr1[i][0] - 30)) and (xy_arr[i][0] <= (UserSign().base_xy_arr1[i][0] + 30)): #possibly change these values for x/y coordinates
+                                            if(xy_arr[i][1] > (UserSign().base_xy_arr1[i][1] + 50)):
                                                 temp_count += 1
                                 if temp_count == 4:
                                     count += 1
@@ -947,8 +947,8 @@ class UserSign(object):
                                 temp = (Z_star_user_arr[i] / base_arr[i]) * 100
                                 if ((temp >= 60 and temp <= 140) or (temp <= -60 and temp >= -140)): #change these values/original was 60, 140
                                     for i in range(len(xy_arr)):
-                                        if (xy_arr[i][1] >= (UserSign().base_xy_arr3[i][1] - 40)) and (xy_arr[i][1] <= (UserSign().base_xy_arr3[i][1] + 40)): #possibly change these values for x/y coordinates
-                                            if(xy_arr[i][0] < (UserSign().base_xy_arr3[i][0] - 40)):
+                                        if (xy_arr[i][1] >= (UserSign().base_xy_arr3[i][1] - 30)) and (xy_arr[i][1] <= (UserSign().base_xy_arr3[i][1] + 30)): #possibly change these values for x/y coordinates
+                                            if(xy_arr[i][0] > (UserSign().base_xy_arr3[i][0] + 50)):
                                                 temp_count += 1
                                 if temp_count == 4:
                                     count += 1
