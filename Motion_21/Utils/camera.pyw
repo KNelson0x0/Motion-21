@@ -227,8 +227,8 @@ class Camera(object): # singleton because every time the camera is initialized t
                    color = make_color(offsets[2])
 
                 #cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), color, 3)
-                hand_box = cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (200 + self.box_size + offsets[0], 200 + self.box_size + offsets[1]), color, 3)
-                crop_box = hand_box[100:300, 100:300]
+                cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (200 + self.box_size + offsets[0], 200 + self.box_size + offsets[1]), color, 3)
+                #crop_box = hand_box[100:300, 100:300]
 
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
                 self.rgb_img_crop = cv2.cvtColor(self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], 50 + offsets[0] : 200 + self.box_size + offsets[0]], cv2.COLOR_BGR2RGB)

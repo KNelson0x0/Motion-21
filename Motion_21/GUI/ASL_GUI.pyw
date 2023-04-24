@@ -14,6 +14,8 @@ from ML.algorithm    import UserSign
 from ML.usertrain    import UserTrain
 from .camera_window  import CameraWindow
 from .custom_tabview import CustomTabview
+from ML.usermodel import UserModel
+
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 main_cam_frame = []
@@ -551,7 +553,7 @@ class App(customtkinter.CTk):
         self.frame_right = customtkinter.CTkFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=10, pady=10)
 
-        self.training = UserTrain("DEMO_USER", letter, self.frame_right)
+        #self.training = UserTrain("DEMO_USER", letter, self.frame_right)
 
         # configure grid layout (5x3)
         self.frame_right.grid_rowconfigure((0, 1, 3), weight=1)        # sets weights of standard rows
@@ -573,7 +575,7 @@ class App(customtkinter.CTk):
         self.label7 = customtkinter.CTkLabel(master=self.frame_right, text = 'Please sign the letter "{}" that you want \nMotion 21 to use as an example!'.format(letter), font=("Segoe UI", 20), width = 450, height = 100, fg_color=("gray38"), corner_radius = 8, compound = "bottom")
         self.label7.grid(row=3, column=0, columnspan=2, sticky="ns", padx=0, pady=0)
 
-        self.button6 = customtkinter.CTkButton(master=self.frame_left, width = 160, height = 60, border_width = 1, corner_radius = 5, text = "Begin", compound = "bottom",  border_color="#101010", command=self.training_begin)
+        self.button6 = customtkinter.CTkButton(master=self.frame_left, width = 160, height = 60, border_width = 1, corner_radius = 5, text = "Begin", compound = "bottom",  border_color="#101010", command=lambda:self.training_afterinator(letter))
         self.button6.grid(row=7, column=0, columnspan=3, sticky="wse", padx=10, pady=10)
 
         # Window for the user hand camera
@@ -593,24 +595,6 @@ class App(customtkinter.CTk):
         self.the_afterinator()
         #self.camera_aftinerator()
     
-    def training_begin(self):
-        #self.training.on_begin()
-        '''
-        #letter = self.
-        counter = 0
-        while True:
-            for letter in self.usertrain_letters:
-                dir = os.path.dirname(__file__)
-                path = dir + '\test_' + letter
-            counter += 1
-            cv2.imwrite(os.path.join(path, '{}.jpg'.format(uuid.uuid1())), #??? )
-
-            time.sleep(2)
-        '''
-        ()
-
-
-
     # Button that recreates window with settings page
     def settings_button(self):
         global THEME
@@ -1028,16 +1012,16 @@ class App(customtkinter.CTk):
                 self.label_cam.cw_update()
                 self.label_cam2.cw_update()
 
-                
+            if StateHandler().c_state == WindowState.TRAINING:
+                self.config_cam_win1.cw_update()
+                self.config_cam_win2.cw_update()
+                self.after_id = self.after(200, self.afterinator)
 
-                self.after_id = self.after(10, self.the_afterinator)
-        
-        if StateHandler().c_state == WindowState.TRAINING:
-            self.config_cam_win1.cw_update()
-            self.config_cam_win2.cw_update()
+                return               
+
             self.after_id = self.after(10, self.the_afterinator)
-
-            return     
+        
+             
 
     def camera_aftinerator(self):
         if StateHandler().c_state == WindowState.LESSONS and USE_CAMERA == 1:
@@ -1092,7 +1076,21 @@ class App(customtkinter.CTk):
             
             self.after_id = self.after(10, self.the_afterinator)
             self.cam_after_id = self.after(200, self.camera_aftinerator)
+    
+    def training_afterinator(self, letter):
+        count = 0
 
+        if StateHandler().c_state == WindowState.TRAINING:
+            self.config_cam_win1.cw_update()
+            self.config_cam_win2.cw_update()
+            self.after_id = self.after(200, self.training_afterinator(letter))
+
+            return
+      
+        if count <= 5:
+            UserModel().data_collect(letter)
+            #UserModel().run_user_model(letter)
+            count += 1
 
 
 if __name__ == "__main__":
