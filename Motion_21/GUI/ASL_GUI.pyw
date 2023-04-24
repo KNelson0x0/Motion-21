@@ -111,13 +111,12 @@ class App(customtkinter.CTk):
     def arrow_left(self, _):
         if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_left(None)
-            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+50))
+            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+400))
 
-    
     def arrow_right(self, _):
         if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
             EventHandler().arrow_key_right(None)
-            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+50))
+            self.options_camera_x.configure(text="Cam X: {}".format(EventHandler().x+350))
 
     def arrow_up(self, _):
         if StateHandler().c_state == WindowState.IN_LESSON or StateHandler().c_state  == WindowState.IN_MOTION_LESSON:
@@ -925,9 +924,10 @@ class App(customtkinter.CTk):
 
             if let == self.letter_state.DESIRED_LETTER[0]:
                 self.border_change = 1
+                border_color_change = make_color(BorderColor.GREEN)
+                Camera().border_q.put(border_color_change)
 
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
-                #self.after_cancel(self.cam_after_id)
                 return
 
             try:
@@ -940,7 +940,7 @@ class App(customtkinter.CTk):
 
                 self.label12.configure(text = "Total Accuracy: {}%".format(self.curr_accuracy))
             except Exception as e: 
-                print(e)
+                debug_log(e)
 
             if let == None: 
                 self.cam_after_id = self.after(210, self.camera_aftinerator)

@@ -58,7 +58,7 @@ class EventHandler(object):
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_left(self, _):
-        if (self.x == -50):
+        if (self.x == -400):
             Camera().q.put([self.x, self.y, BorderColor.RED])
             return
         self.x -= 5
@@ -66,7 +66,7 @@ class EventHandler(object):
         Camera().q.put([self.x, self.y, None])
 
     def arrow_key_right(self, _):
-        if (self.x == 385 + self.boundary_range):
+        if (self.x == 40 + self.boundary_range):
             Camera().q.put([self.x, self.y, BorderColor.RED])
             return
         self.x += 5
@@ -236,13 +236,13 @@ class Camera(object): # singleton because every time the camera is initialized t
                     color = make_color(offsets[2])
 
                 #cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), color, 3)
-                cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (200 + self.box_size + offsets[0], 200 + self.box_size + offsets[1]), color, 3)
+                cv2.rectangle(self.rect_frame, (400 + offsets[0], 50 + offsets[1]), (550 + self.box_size + offsets[0], 200 + self.box_size + offsets[1]), color, 3)
 
                 self.rgb_img_rect = cv2.cvtColor(self.rect_frame, cv2.COLOR_BGR2RGB)
-                self.rgb_img_crop = cv2.cvtColor(self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], 50 + offsets[0] : 200 + self.box_size + offsets[0]], cv2.COLOR_BGR2RGB)
+                self.rgb_img_crop = cv2.cvtColor(self.rect_frame[400 + offsets[1] : 550 + self.box_size + offsets[1], 50 + offsets[0] : 200 + self.box_size + offsets[0]], cv2.COLOR_BGR2RGB)
                 self.rgb_img      = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB) 
 
-                roi = self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], 50 + offsets[0] : 200 + self.box_size + offsets[0]]
+                roi = self.rect_frame[50 + offsets[1] : 200 + self.box_size + offsets[1], 400 + offsets[0] : 550 + self.box_size + offsets[0]]
                 roi_points = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
                 roi_points = self.draw_points(self, roi_points)
 
