@@ -155,7 +155,9 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode().replace("\'",'"')
+                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode()
+                    down_down.replace('"','\"')
+                    down_down = down_down.replace("\'",'"')
                     self.c_cfg   = json.loads(down_down)
                     self.c_index = k
                     self.crypt   = crypt
@@ -288,6 +290,7 @@ class Config(object): # singleton me later
         else:                            
             self.settings[name] = self.data        
 
+        self.c_cfg      = self.settings
         Archive().c_cfg = self.settings
 
     def save(self, object, name = "", attributes = []):
@@ -334,6 +337,7 @@ class Config(object): # singleton me later
         else:                            
             self.settings[name] = self.data
         
+        self.c_cfg      = self.settings
         Archive().c_cfg = self.settings
         #Archive().save_config()
     

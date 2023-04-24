@@ -22,6 +22,7 @@ class EventHandler(object):
     x = 0
     y = 0
     boundary_range = 0
+
     def __new__(self):
         if not hasattr(self, 'instance'):
             self.instance = super(EventHandler, self).__new__(self)
