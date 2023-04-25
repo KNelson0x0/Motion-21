@@ -334,7 +334,7 @@ class UserSign(object):
                       "S": 15, "T": 15, "U": 18, "V": 18, "W": 15, "X": 15, "Y": 15}
         three_stage = ["J"]
         four_stage = ["Z"]
-        count_dict2 = {"J_1": 16, "J_2": 16, "J_3": 17, "Z": 15}
+        count_dict2 = {"J_1": 16, "J_2": 16, "J_3": 16, "Z": 15}
 
         if lesson_letter in static_letters:
             # Grabs user letter input
@@ -521,7 +521,6 @@ class UserSign(object):
                                     #matched = True
                                     #matched_letter = lesson_letter
                                     UserSign().stage = 2
-                                    return "J_1"
                                 #else:
                                     #print("Counts that matched: " + str(count))
                                     #print(lesson_letter + " was not a match")
@@ -586,7 +585,6 @@ class UserSign(object):
                                     #matched = True
                                     #matched_letter = lesson_letter
                                     UserSign().stage = 3
-                                    return "J_2"
                                 #else:
                                     #print("Counts that matched: " + str(count))
                                     #print(lesson_letter + " was not a match")
@@ -754,7 +752,6 @@ class UserSign(object):
                                     #matched_letter = lesson_letter
                                     UserSign.base_xy_arr1 = xy_arr
                                     UserSign().stage = 2
-                                    return "Z_1"
                                 #else:
                                     #print("Counts that matched: " + str(count))
                                     #print(lesson_letter + " was not a match")
@@ -831,7 +828,6 @@ class UserSign(object):
                                     #matched_letter = lesson_letter
                                     UserSign().base_xy_arr2 = xy_arr
                                     UserSign().stage = 3
-                                    return "Z_2"
                                 #else:
                                     #print("Counts that matched: " + str(count))
                                     #print(lesson_letter + " was not a match")
@@ -904,7 +900,6 @@ class UserSign(object):
                                     #matched_letter = lesson_letter_base
                                     UserSign().base_xy_arr3 = xy_arr
                                     UserSign().stage = 4
-                                    return "Z_3"
                                 #else:
                                     #print("Counts that matched: " + str(count))
                                     #print(lesson_letter + " was not a match")
