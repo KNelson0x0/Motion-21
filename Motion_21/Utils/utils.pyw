@@ -84,4 +84,3 @@ class Timer:
 
     def mark(self):
         self.last_time = time.time()    
-

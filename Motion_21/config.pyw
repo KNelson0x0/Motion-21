@@ -92,12 +92,14 @@ class Archive(object): # So python apparently does have circular imports but the
         return self.instance
 
     def set_password(self, key : str): # needs to be here for user switch
-        self.crypt  = Fernet(make_key(key))
+        self.crypt = Fernet(make_key(key))
         del key
 
-    def parse_arch(self, key):
-        self.crypt  = Fernet(make_key(key))
-        del key
+    def parse_arch(self, key : str = ""):
+        if key != "": 
+            self.crypt  = Fernet(make_key(key))
+            del key
+
         sizes       = [x[0] for x in list(self.header.values())]
         header_size = len(self.header_str)
       
@@ -134,7 +136,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         try:
             self.jsons[self.c_index] = protected
         except:
-            print("Config cannot be updated yet as it hasn't been added yet!")
+            debug_log("Config cannot be updated yet as it hasn't been added yet!")
 
         return protected
 
@@ -155,15 +157,14 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode()
-                    down_down.replace('"','\"')
-                    down_down = down_down.replace("\'",'"')
+                    down_down    = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode()
+                    down_down    = clean_json(down_down).replace('"',"'").replace("\'",'"').replace("M21_R3PL@C3_QUOTE",'\\"')
                     self.c_cfg   = json.loads(down_down)
                     self.c_index = k
                     self.crypt   = crypt
                     return self.c_cfg,
             except Exception as e:
-                print(e)
+                debug_log(e)
                 debug_log("[Archive::get_json]: Idk do better or something.")
                 continue
         return False
@@ -183,10 +184,13 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         crypt = Fernet(key)
         payload = crypt.encrypt(bytes('{{"M21ConfigName" : "{}"}}'.format(user_name), 'utf-8')).decode()
         success = crypt.encrypt(b"UserSuccess").decode()
+        self.c_cfg = '{{"M21ConfigName" : "{}"}}'.format(user_name)
+        self.c_index = success
         self.header[user_name] = [len(payload), success]
         self.jsons[success] = payload
         self.save_config(user_name)
         self.crypt = crypt
+
 
     def del_config(self, user_name : str, key : bytes):
         self.crypt = Fernet(key)
@@ -201,18 +205,31 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                     del self.jsons[k]
                     self.c_cfg = {}
                     del self.crypt
-                    return True
+                    
+                    f = open(self.user_path,'w')
+                    stang = json.dumps(self.header)
+
+                    # write encrypted bits back
+                    for k,v in self.jsons.items():
+                        stang += v  
+
+                    f.write(stang)
+                    f.close()
+                    return
+
             except Exception as e:
                 debug_log("[Archive::del_config]: Nope!")
                 continue
+
+
         return False
 
     def save_config(self, user_name):
         f = open(self.user_path,'r')
         
         # add file header
-        print("[------]\n{}".format(self.c_cfg))
-        crypted = self.crypt.encrypt(bytes(str(self.c_cfg), 'utf-8')).decode()
+        debug_log("[------]\n{}".format(self.c_cfg))
+        crypted = self.crypt.encrypt(bytes(json.dumps(self.c_cfg), 'utf-8')).decode()
 
         self.jsons[self.c_index] = crypted
         self.header[user_name]   = [len(crypted), self.header[user_name][1]]
@@ -226,7 +243,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         for k,v in self.jsons.items():
             stang += v  
 
-        print("[------]")
+        debug_log("[------]")
         f.write(stang)
         f.close()
 
@@ -255,7 +272,6 @@ class Config(object): # singleton me later
                 return self
 
             self.c_cfg = self.c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
-            self.users = list(Archive().header.keys())
 
         return self.instance
   
@@ -292,6 +308,7 @@ class Config(object): # singleton me later
 
         self.c_cfg      = self.settings
         Archive().c_cfg = self.settings
+        Archive().save_config(self.user_name)
 
     def save(self, object, name = "", attributes = []):
         # object     - the object you want the values saved from
@@ -351,8 +368,41 @@ class Config(object): # singleton me later
         del password
         Archive().del_config(user_name, key)
 
-    def load(self, key):
-        self.settings = Archive().get_json(key)
 
-    def delete(self):
-        self.settings = {} 
+    def reload(self, user_name : str = ""):
+        if user_name != "":
+            self.user_name = user_name
+            self.settings  = {'M21ConfigName' : user_name}
+            self.data      = {}
+        self.users     = []
+
+        Archive().parse_arch() # password is swag.
+
+        self.users = list(Archive().get_header().keys())   
+
+        return
+
+
+    def set_password(self, password : str):
+        Archive().set_password(password)
+        del password
+        
+
+    def load(self, user_name : str, password : str):
+        key = make_key(password)
+
+        try: 
+            Archive().parse_arch(password) # reparse
+        except:
+            return False
+
+        del password
+
+        cfg = Archive().get_json(user_name, key)
+        
+        if not cfg: return False
+
+
+        self.user_name = user_name
+        self.c_cfg = cfg[0]
+        return True

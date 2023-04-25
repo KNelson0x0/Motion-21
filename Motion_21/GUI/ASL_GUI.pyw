@@ -58,12 +58,12 @@ class AverageList:
             #print("Counted[{}]: {}".format(letters, self.average))
             return (letters)
         
-        except Exection as e:
+        except Exception as e:
             print(e)
             return last_average
 
 class App(customtkinter.CTk):
-    def __init__(self):
+    def __init__(self, user_name : str = "Debug"):
         super().__init__()
         #Size of window and title
         self.geometry("740x520")
@@ -86,11 +86,12 @@ class App(customtkinter.CTk):
         self.options_menu_open   = True
         self.curr_accuracy       = 100
         self.roi_size            = 50
+        self.motion_timer_count  = 0
+        self.border_change       = 0 
+        self.user_name           = user_name
         self.after_id            = ""
         self.cam_after_id        = ""
         self.motion_after_id     = ""
-        self.motion_timer_count  = 0
-        self.border_change       = 0 
         self.use_motion_afterinator  = False
         self.color_dict = { 0 : BorderColor.WHITE,
                             1 : BorderColor.RED,
@@ -105,6 +106,7 @@ class App(customtkinter.CTk):
         #Handy closing function to stop all running processes even when window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+        print(self.user_name)
         self.home_window()
 
     # Event Handler Stuff, was going to just pass a self instance to eventhandler but thats more messy than this is
@@ -578,20 +580,45 @@ class App(customtkinter.CTk):
 
 
         # letters A - D letters to select on screen
-        self.A_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150) 
-        self.buttonA = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.A_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 0, lesson_number))
+        self.A_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150)
+
+        FG_Color_A = THEME
+        try: # Be assured, I hate this too. Just for demo.
+            FG_Color_A = "#00FF00" if Config()["Lesson_{}_Complete".format(letters[0])]["var"] == True else THEME
+        except:
+            pass
+
+        self.buttonA = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.A_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = FG_Color_A, command=lambda : self.letter_lessons(letters, 0, lesson_number))
         self.buttonA.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "nswe")
 
+        FG_Color_B = THEME
+        try: 
+            FG_Color_B = "#00FF00" if Config()["Lesson_{}_Complete".format(letters[1])]["var"] == True else THEME
+        except:
+            pass
+
         self.B_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150)
-        self.buttonB = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.B_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 1, lesson_number))
+        self.buttonB = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.B_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = FG_Color_B, command=lambda : self.letter_lessons(letters, 1, lesson_number))
         self.buttonB.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "nswe")
 
+        FG_Color_C = THEME
+        try: 
+            FG_Color_C = "#00FF00" if Config()["Lesson_{}_Complete".format(letters[2])]["var"] == True else THEME
+        except:
+            pass
+
         self.C_image = self.load_image(f"/images/letters/{letters[2].lower()}.JPG", 150, 150)
-        self.buttonC = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.C_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 2, lesson_number))
+        self.buttonC = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.C_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = FG_Color_C, command=lambda : self.letter_lessons(letters, 2, lesson_number))
         self.buttonC.grid(row = 2, column = 1, padx = 20, pady = 15, sticky = "nswe")
 
+        FG_Color_D = THEME
+        try: 
+            FG_Color_D = "#00FF00" if Config()["Lesson_{}_Complete".format(letters[3])]["var"] == True else THEME
+        except:
+            pass
+
         self.D_image = self.load_image(f"/images/letters/{letters[3].lower()}.JPG", 150, 150)
-        self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 3, lesson_number))
+        self.buttonD = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.D_image, width = 200, height = 200, border_width = 2, corner_radius = 20, compound = "top", fg_color = THEME, border_color = FG_Color_D, command=lambda : self.letter_lessons(letters, 3, lesson_number))
         self.buttonD.grid(row = 2, column = 2, padx = 20, pady = 15, sticky = "nswe")
         self.use_motion_afterinator = False
 
@@ -629,12 +656,23 @@ class App(customtkinter.CTk):
         self.lesson_description.grid(row=1, column=0, padx=1, pady=1, sticky="we")
         
         # letters J and Z, which require a special case of teaching
+
+        FG_Color_J = THEME
+        try: 
+            FG_Color_J = "#00FF00" if Config()["Lesson_{}_Complete".format(letters[0])]["var"] == True else THEME
+        except:
+            pass
         self.J_image = self.load_image(f"/images/letters/{letters[0].lower()}.JPG", 150, 150)
-        self.buttonJ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.J_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 0, lesson_number, True))
+        self.buttonJ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.J_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = FG_Color_J, command=lambda : self.letter_lessons(letters, 0, lesson_number, True))
         self.buttonJ.grid(row = 1, column = 1, padx = 20, pady = 15, sticky = "we")
 
+        FG_Color_Z = THEME
+        try: 
+            FG_Color_Z = "#00FF00" if Config()["Lesson_{}_Complete".format(letters[1])]["var"] == True else THEME
+        except:
+            pass
         self.Z_image = self.load_image(f"/images/letters/{letters[1].lower()}.JPG", 150, 150) 
-        self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = THEME, command=lambda : self.letter_lessons(letters, 1, lesson_number, True))
+        self.buttonZ = customtkinter.CTkButton(master = self.frame_main_right, text = "", font = ("Segoe UI", 50, "bold"), image = self.Z_image, width = 200, height = 200, border_width = 2, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color = FG_Color_Z, command=lambda : self.letter_lessons(letters, 1, lesson_number, True))
         self.buttonZ.grid(row = 1, column = 2, padx = 20, pady = 15, sticky = "we")
 
         self.use_motion_afterinator = True
@@ -935,6 +973,9 @@ class App(customtkinter.CTk):
                 self.border_change = 1
                 border_color_change = make_color(BorderColor.GREEN)
                 Camera().border_q.put(border_color_change)
+
+                complete = True
+                Config().save_var(complete, "Lesson_{}_Complete".format(self.letter_state.DESIRED_LETTER[0]))
 
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 return

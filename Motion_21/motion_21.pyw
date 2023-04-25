@@ -29,25 +29,29 @@ from Utils.imports import *
 from config        import *
 from datetime      import datetime
 from tkinter       import messagebox
+from time import sleep
 
-#app = App()
-login_page = LoginPage()
 
-def on_closing():
-    login_page.destroy()
-    #app.start()
 
 if __name__ == "__main__":
     # Loading Window Here!
-    #cam = Camera() # init it.
-
+    cam = Camera() # init it.
     
     print("================= Config Read! ==================")
     try:
-        ()
-        #Config("Stupendous", "Amazing")
-        Config("Beemer", "swag2")
-        print(Config().c_cfg)
+        export_list = [False, ""]
+        login_page = LoginPage(export_list)
+        login_page.start()
+        del login_page # haha im not using your toplevels haha (egregious coding war crime)
+
+        print(export_list)
+
+        if export_list[0]:
+            app = App(export_list[1])
+            app.start()
+
+
+        #Config("Beemer", "swag2")
         #Config().save_var(datetime.today().timestamp(), "Last Login Time")
         #print(Config().c_cfg)
         #Archive().save_config("Stupendous")
@@ -63,6 +67,3 @@ if __name__ == "__main__":
               There should be 0 reason this ever prints other than 'it broke because our professors were looking at it' and 'because ofc it would'.")
         """
         print("=================================================")
-
-#login_page.protocol("WM_DELETE_WINDOW", on_closing)
-#login_page.start()
