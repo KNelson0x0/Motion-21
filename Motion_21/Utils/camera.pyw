@@ -222,8 +222,7 @@ class Camera(object): # singleton because every time the camera is initialized t
 
                 try:
                     self.offsets = self.q.get(timeout=.01)
-                    self.previous_offsets = self.offsets 
-                    print("Offset: {}".format(self.offsets))
+                    self.previous_offsets = self.offsets
                 except:
                     self.offsets  = self.previous_offsets
 
@@ -255,8 +254,6 @@ class Camera(object): # singleton because every time the camera is initialized t
                 self.cropped_frame = roi # still an image
                 self.cropped_frame_points = roi_points # still an image
             except Exception as e:
-                print(e)
-                print(self.offsets)
                 debug_log("Something Happened! [");
                 debug_log(str(e))
                 debug_log("]")
