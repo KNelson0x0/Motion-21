@@ -88,8 +88,7 @@ class Camera(object): # singleton because every time the camera is initialized t
     q                    = Queue()
     border_q             = Queue()
     box_size_q           = Queue()
-    pause_q              = Queue()
-    pause                = True
+    stop                 = False
     box_size             = 50
     last_box_size        = 50
     last_border_color    = make_color(BorderColor.BLUE)
@@ -101,7 +100,7 @@ class Camera(object): # singleton because every time the camera is initialized t
         if not USE_CAMERA: return
         if not hasattr(self, 'instance'):
             self.instance   = super(Camera, self).__new__(self)
-            self.thread     = threading.Thread(target=self.start_cam, args=(self,))
+            self.thread     = threading.Thread(target=self.begin, args=(self,))
             self.lock       = ""
             self.start(self)
 
@@ -153,6 +152,8 @@ class Camera(object): # singleton because every time the camera is initialized t
             except:
                 print("No hand detected")
 
+
+
     def warmup(self): # camera seems to need a bit to warmup. not joking.
         try:
             for i in range(100):
@@ -166,40 +167,15 @@ class Camera(object): # singleton because every time the camera is initialized t
         except:
             sleep(10)
 
-
     def begin(self):
-        self.start_cam(self)
-    
-    def start_cam(self):
-        while (True):
-            try:
-                self.pause = self.pause_q.get(timeout=0.01)
-            except:
-                pass
-            if self.pause: 
-                sleep(.5)
-            else:
-                print("Starting Run Cam!")
-                self.run_cam(self)
-                print("Back from Run Cam!")
+        i = 0
+        self.border_color
+        self.warmup(self)
 
-    def run_cam(self):
-        i = 1
-        go = True
-
-        while (go):
-            # this is so it only writes the last frame every five frames, counts count 0 so 5.
-            if i == 4: # every 5 frames
+        while (not self.stop):
+            if i % 5 == 0: 
                 self.old_frame = self.frame
-                try:
-                    self.pause = self.pause_q.get(timeout=0.01)
-                    go = not self.pause # not because if we want it to pause we'd set pause to true, so if we want cam to pause we set it to false
-                    if go == False:
-                        return
-                except:
-                    pass
-                i = -1
-            i += 1
+                i = 0
 
             _, self.frame = self.stream.read()
 
@@ -209,7 +185,6 @@ class Camera(object): # singleton because every time the camera is initialized t
                 # to help better performance for this thing ... right now.
                 
                 self.rect_frame = self.frame.copy()
-                self.rect_frame = cv2.flip(self.rect_frame, 1) #flips image horizontally, might need to change later
 
                 try:
                     self.border_color = self.border_q.get(timeout=.01)
@@ -230,9 +205,9 @@ class Camera(object): # singleton because every time the camera is initialized t
                     self.box_size = self.last_box_size
 
                 if offsets[2] == None:
-                    color = self.border_color
+                   color = self.border_color
                 else:
-                    color = make_color(offsets[2])
+                   color = make_color(offsets[2])
 
                 #cv2.rectangle(self.rect_frame, (52 + offsets[0], 52 + offsets[1]), (252 + offsets[0], 252 + offsets[1]), color, 3)
                 cv2.rectangle(self.rect_frame, (50 + offsets[0], 50 + offsets[1]), (200 + self.box_size + offsets[0], 200 + self.box_size + offsets[1]), color, 3)
@@ -251,5 +226,3 @@ class Camera(object): # singleton because every time the camera is initialized t
                 debug_log("Something Happened! [");
                 debug_log(str(e))
                 debug_log("]")
-
-        print("Exiting Run Cam!")
