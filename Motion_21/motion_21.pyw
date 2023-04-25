@@ -24,20 +24,29 @@
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 from GUI.ASL_GUI   import App
+from GUI.login_GUI import LoginPage
 from Utils.imports import *
-from datetime      import datetime
 from config        import *
+from datetime      import datetime
+from tkinter       import messagebox
+
+#app = App()
+login_page = LoginPage()
+
+def on_closing():
+    login_page.destroy()
+    #app.start()
 
 if __name__ == "__main__":
     # Loading Window Here!
-    cam = Camera() # init it.
-    app = App()
+    #cam = Camera() # init it.
+
     
     print("================= Config Read! ==================")
     try:
         ()
-        Config("Stupendous", "Amazing")
-        #Config("Beemer", "swag2")
+        #Config("Stupendous", "Amazing")
+        Config("Beemer", "swag2")
         print(Config().c_cfg)
         #Config().save_var(datetime.today().timestamp(), "Last Login Time")
         #print(Config().c_cfg)
@@ -55,5 +64,5 @@ if __name__ == "__main__":
         """
         print("=================================================")
 
-    app.start()
-    
+#login_page.protocol("WM_DELETE_WINDOW", on_closing)
+#login_page.start()

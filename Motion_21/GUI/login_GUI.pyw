@@ -1,0 +1,187 @@
+from turtle import bgcolor
+import customtkinter
+import tkinter
+from config        import *
+from Utils.imports import *
+from GUI.ASL_GUI import App
+import os
+from random import randint
+
+PATH = os.path.dirname(os.path.realpath(__file__))
+dir_path = '%s\\ASL_Learning\\' %  os.environ['APPDATA'] 
+if not os.path.exists(dir_path):
+    os.mkdir(dir_path)
+
+#Can change this later for themes
+customtkinter.set_appearance_mode("Dark")
+customtkinter.set_default_color_theme("dark-blue")
+
+class LoginPage(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+
+        #Size of window and title
+        self.geometry("460x410")
+        self.title("ASL Learning App")
+        self.resizable(False, False)
+
+        #Handy closing function to stop all running processes even when window is closed
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.del_list = []
+        self.wrong_label_active: bool = False
+        self.login_window()
+ 
+    def on_closing(self, event=0):
+        self.destroy()
+
+    def start(self):
+        self.mainloop()
+
+    def login_window(self):
+        StateHandler().change_state(WindowState.HOME, self.del_list)
+        self.grid_columnconfigure(0, weight=1)
+
+        len_users = len(Config().users)
+
+        #len_users = 2 #remove for Keith stuff
+        self.frame_right = customtkinter.CTkScrollableFrame(master=self)
+        self.frame_left = customtkinter.CTkFrame(master=self)
+        self.frame_left.grid(row = 0, column = 1, sticky="nswe", padx=7, pady=5)
+        self.frame_right.grid(row=1, column=1, sticky="nswe", padx=7, pady=5)
+
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, width=100, font=("Segoe UI", 50), height=60, text="User Login", corner_radius=6)
+        self.label_1.grid(row= 0, column = 0, padx = 100, pady = 30, sticky = "n")
+
+        self.del_list.append(customtkinter.CTkLabel(master=self, font=("Segoe UI", 24), fg_color = "grey32", text="Select User:", corner_radius=6))
+        self.del_list[-1].place(relx = 0.355, rely = 0.285)
+
+        for i in range(len_users):
+            btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], corner_radius=6, width=200, command = lambda l = i: self.load_user(Config().users[l])) #Do Keith stuff here
+            btn.grid(row = i, column = 0, padx = 118, pady = 20)
+            self.del_list.append(btn)
+
+        self.del_list.append(customtkinter.CTkButton(master=self, text="New User", corner_radius=6, width=200, height = 40, command = self.new_user))
+        self.del_list[-1].grid(row = 2, column = 1, padx = 8, pady = 1, sticky = "w")
+
+        self.del_list.append(customtkinter.CTkButton(master=self, text="Delete User", corner_radius=6, width=200, height = 40, command = self.del_user))
+        self.del_list[-1].grid(row = 2, column = 1, padx = 8, pady = 1, sticky = "e")
+
+        self.del_list.append(self.frame_right)
+        self.del_list.append(self.frame_left)
+
+    def load_user(self, user):
+        self.frame_right.grid_forget()
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+
+        self.password = ""
+        self.show_pass = customtkinter.StringVar(self, "off")
+
+        self.frame_middle = customtkinter.CTkFrame(master = self)
+        self.frame_middle.grid_columnconfigure(0, weight=1)
+        self.frame_middle.grid(row = 0, column = 0, sticky="nswe", padx=7, pady=5)
+
+        self.welcome_label = customtkinter.CTkLabel(master=self.frame_middle, font=("Segoe UI", 50), text="Welcome!", corner_radius=6)
+        self.welcome_label.grid(row = 0, column = 0, padx = 5, pady = 20)
+
+        self.user_name = customtkinter.CTkLabel(master=self.frame_middle, font=("Segoe UI", 24), fg_color = "grey32", text=user, corner_radius=6)
+        self.user_name.grid(row = 1, column = 0, padx = 5, pady = 3)
+
+        self.password = customtkinter.CTkEntry(master = self.frame_middle, font=("Segoe UI", 16), placeholder_text = "Password", width = 200, show = "*", textvariable = self.password)
+        self.password.grid(row = 2, column = 0, padx = 5, pady = 30)
+
+        self.show_password_cbox = customtkinter.CTkCheckBox(master=self.frame_middle, font=("Segoe UI", 12), text = "Show password", variable = self.show_pass, command = self.show_password, onvalue = "on", offvalue = "off")
+        self.show_password_cbox.grid(row = 3, column = 0, padx = 5, pady = 0)
+
+        self.login_button = customtkinter.CTkButton(master=self.frame_middle, text="Login", corner_radius=6, width=200, height = 40, command = self.user_login)
+        self.login_button.grid(row = 5, column = 0, padx = 8, pady = 50, sticky = "e")
+
+        self.back_button = customtkinter.CTkButton(master=self.frame_middle, text="Back", corner_radius=6, width=200, height = 40, command = self.back_login)
+        self.back_button.grid(row = 5, column = 0, padx = 8, pady = 50, sticky = "w")
+        self.wrong_label_active = False
+
+    def show_password(self):
+        if(self.show_pass.get() == "on"):
+            self.password.configure(show='')
+        else:
+            self.password.configure(show='*')
+
+    def back_login(self):
+        self.frame_middle.grid_forget()
+        self.frame_middle.destroy()
+
+        self.login_window()
+
+    def user_login(self):
+        print(self.password.get()) #Do Keith stuff here
+        
+        cfg = False
+        try:
+            cfg = Archive().get_json(self.user_name.cget("text"), make_key(self.password.get()))
+        except Exception as e:
+            print("Exception: {}".format(e))
+            cfg = False
+
+        if cfg == False:
+            if not self.wrong_label_active: 
+                self.wrong_label_active = True
+                self.password.configure(border_color="#FF0000")
+
+                self.wrong_label = customtkinter.CTkLabel(master=self.frame_middle, font=("Segoe UI", 18), text="Wrong password", corner_radius=6)
+                self.del_list.append(self.wrong_label)
+                self.del_list[-1].grid(row = 4, column = 0, padx = 5, pady = 10)
+            else:
+                wrong_list = {
+                    0 : "Wrong password",
+                    1 : "Nope",
+                    2 : "Try Again",
+                    3 : "Is CapsLock On?",
+                    4 : "Not Quite",
+                    5 : "Good try though",
+                    6 : "You'll get it eventually",
+                    7 : "uhhh, no"
+                }
+                self.wrong_label.configure(text=wrong_list[randint(0,7)])
+                return
+            
+        else:
+            # set logged in vars here
+            self.quit()
+
+    def new_user(self):
+        self.frame_right.grid_forget()
+        self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
+
+        self.frame_user = customtkinter.CTkFrame(master=self)
+        self.frame_user.grid(row=0, column=0, sticky="nswe", padx=5, pady=5)
+        self.frame_user.grid_columnconfigure(0, weight=1)
+
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_user, font=("Segoe UI", 50), text="New User", corner_radius=6)
+        self.label_1.grid(row= 1, column = 0, padx = 0, pady = 30)
+
+        self.username = customtkinter.CTkEntry(master=self.frame_user, corner_radius=6, width=200, placeholder_text="username")
+        self.username.grid(row= 2, column = 0, padx = 150, pady = 20)
+
+        self.password = customtkinter.CTkEntry(master=self.frame_user, corner_radius=6, width=200, placeholder_text="password")
+        self.password.grid(row= 3, column = 0, padx = 150, pady = 20)
+
+        self.f_button = customtkinter.CTkButton(master=self.frame_user, text="Create", corner_radius=6, width=200, command=self.button_create)
+        self.f_button.grid(row= 4, column = 0, padx = 150, pady = 20)
+
+        self.e_button = customtkinter.CTkButton(master=self.frame_user, text="Back", corner_radius=6, width=200, command=self.button_back)
+        self.e_button.grid(row= 5, column = 0, padx = 150, pady = 20)
+
+    def button_create(self):
+        self.username.get()#Do Keith stuff here
+        self.password.get()#Do Keith stuff here
+
+        self.frame_user.grid_forget()
+        self.frame_user.destroy()
+        self.login_window()
+
+    def button_back(self):
+        self.frame_user.grid_forget()
+        self.frame_user.destroy()
+        self.login_window()
+
+    def del_user(self):
+        print("Delete user pressed")
