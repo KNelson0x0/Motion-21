@@ -794,6 +794,7 @@ class App(customtkinter.CTk):
         else:          self.change_state(WindowState.IN_MOTION_LESSON, self.del_list)
         self.average_list.reinit(letter[index])
         self.letter_state.set_letter(letter[index])
+        print(self.letter_state.DESIRED_LETTER[0])
         
         # Call it so it realizes we have selected the button.
         self.tabview._segmented_button_callback("Options")
@@ -974,7 +975,8 @@ class App(customtkinter.CTk):
                 border_color_change = make_color(BorderColor.GREEN)
                 Camera().border_q.put(border_color_change)
 
-                complete = True
+                debug_log("=== [ FOUND ] ===")
+                complete = True # ???
                 Config().save_var(complete, "Lesson_{}_Complete".format(self.letter_state.DESIRED_LETTER[0]))
 
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
