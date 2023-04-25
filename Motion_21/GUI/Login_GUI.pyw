@@ -74,8 +74,8 @@ class LoginPage(customtkinter.CTk):
 
         #self.del_list.append(customtkinter.CTkButton(master = self, text = "Testing", command = self.LoginWindow))
         #self.del_list[-1].grid(row =0, column = 0)
-        self.passWord = ""
-        self.ShowPas = self.StringVar("off")
+        self.password = ""
+        self.ShowPass = customtkinter.StringVar(self, "off")
 
         self.frame_middle = customtkinter.CTkFrame(master = self)
         self.frame_middle.grid_columnconfigure(0, weight=1)
@@ -87,11 +87,11 @@ class LoginPage(customtkinter.CTk):
         self.userName = customtkinter.CTkLabel(master=self.frame_middle, font=("Segoe UI", 24), fg_color = "grey32", text=user, corner_radius=6)
         self.userName.grid(row = 1, column = 0, padx = 5, pady = 3)
 
-        self.password = customtkinter.CTkEntry(master = self.frame_middle, font=("Segoe UI", 16), placeholder_text = "Password", width = 100, show = "*", textvariable = self.passWord)
+        self.password = customtkinter.CTkEntry(master = self.frame_middle, font=("Segoe UI", 16), placeholder_text = "Password", width = 100, show = "*", textvariable = self.password)
         self.password.grid(row = 2, column = 0, padx = 5, pady = 30, sticky = "n")
 
-        self.showPassword = customtkinter.CTkCheckBox(master=self.frame_middle, font=("Segoe UI", 12), text = "Show password", variable = self.ShowPas, command = self.ShowPassword, onvalue = "on", offvalue = "off")
-        self.ShowPassword.grid(row = 2, column = 0, padx = 5, pady = 30, sticky = "s")
+        self.showPassword = customtkinter.CTkCheckBox(master=self.frame_middle, font=("Segoe UI", 12), text = "Show password", variable = self.ShowPass, command = self.ShowPassword, onvalue = "on", offvalue = "off")
+        self.showPassword.grid(row = 2, column = 0, padx = 5, pady = 30, sticky = "s")
 
 
     def ShowPassword(self):
