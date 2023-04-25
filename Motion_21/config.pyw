@@ -138,6 +138,9 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         return protected
 
+    def get_header(self):
+        return self.header
+
     def get_json(self, user_name : str = "", key : bytes = ""): # also up for name nomination, use_json
         crypt = Fernet(key)
         del key
@@ -152,7 +155,9 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                    continue
                 gate = self.crypt.decrypt(bytes(k, 'utf-8'))
                 if gate == b"UserSuccess":
-                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode().replace("\'",'"')
+                    down_down = crypt.decrypt(bytes(self.jsons[k],'utf-8')).decode()
+                    down_down.replace('"','\"')
+                    down_down = down_down.replace("\'",'"')
                     self.c_cfg   = json.loads(down_down)
                     self.c_index = k
                     self.crypt   = crypt
@@ -232,23 +237,24 @@ class Config(object): # singleton me later
             self.user_name = user_name
             self.settings  = {'M21ConfigName' : user_name}
             self.data      = {}
-            self.users     = 0
+            self.users     = []
+            self.c_cfg     = False
 
             Archive().parse_arch(password) # password is swag.
                 
             key   = make_key(password)
             del password
 
+            self.users = list(Archive().get_header().keys())
+
             if user_name:
-                c_cfg = Archive().get_json(user_name, key) # password is swag.
-            #else:
-            #    c_cfg = Archive().get_json(user_name = key)
+                self.c_cfg = Archive().get_json(user_name, key) # password is swag.      
 
-            if c_cfg == False: 
+            if self.c_cfg == False: 
                 self.user_name = ""
-                return False
+                return self
 
-            self.c_cfg = c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
+            self.c_cfg = self.c_cfg[0] # dont get why its tupling, dc at this point, its getting selected
             self.users = list(Archive().header.keys())
 
         return self.instance
@@ -284,6 +290,7 @@ class Config(object): # singleton me later
         else:                            
             self.settings[name] = self.data        
 
+        self.c_cfg      = self.settings
         Archive().c_cfg = self.settings
 
     def save(self, object, name = "", attributes = []):
@@ -330,6 +337,7 @@ class Config(object): # singleton me later
         else:                            
             self.settings[name] = self.data
         
+        self.c_cfg      = self.settings
         Archive().c_cfg = self.settings
         #Archive().save_config()
     

@@ -928,6 +928,17 @@ class App(customtkinter.CTk):
                 self.label8.configure(text="Congrats! You have succesfully signed\n the letter: {}".format(self.letter_state.DESIRED_LETTER[0]))
                 #self.after_cancel(self.cam_after_id)
                 return
+            if let == "J_1":
+                self.label8.configure(text="Correctly configured,\nStart moving!")
+            if let == "J_2":
+                self.label8.configure(text="66% recognized!")
+            if let == "Z_1":
+                self.label8.configure(text="Correctly configured,\nStart moving!")
+            if let == "Z_2":
+                self.label8.configure(text="50% recognized!")
+            if let == "Z_3":
+                self.label8.configure(text="75% recognized!")
+            
 
             try:
                 if(let == None):
