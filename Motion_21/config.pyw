@@ -381,13 +381,11 @@ class Config(object): # singleton me later
         self.users = list(Archive().get_header().keys())   
 
         return
-
-
+    
     def set_password(self, password : str):
         Archive().set_password(password)
         del password
         
-
     def load(self, user_name : str, password : str):
         key = make_key(password)
 
