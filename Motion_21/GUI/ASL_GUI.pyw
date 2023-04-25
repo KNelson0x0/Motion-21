@@ -97,7 +97,7 @@ class App(customtkinter.CTk):
         #Handy closing function to stop all running processes even when window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.home_window()
+        self.login()
 
     #Image processing function declarations
     # ------------------------------------------------------------------------------------    
@@ -124,12 +124,12 @@ class App(customtkinter.CTk):
         self.label_1.grid(row= 0, column = 0, padx = 110, pady = 30)
 
         for i in range(len_users):
-            btn = customtkinter.CTkButton(master=self.frame_right, text="Config().users[i]", text_color=THEME_OPP, corner_radius=6, width=200, fg_color=THEME, border_color=THEME, command = lambda l = i: self.loadUser(l+1))
+            btn = customtkinter.CTkButton(master=self.frame_right, text="Config().users[i]", text_color=THEME_OPP, corner_radius=6, width=200, fg_color=THEME, border_color=THEME, command = lambda l = i: self.loadUser(i+1))
             btn.grid(row = i, column = 0, padx = 5, pady = 20)
             btn_list.append(btn)
 
-        #self.del_list = btn_list
-
+        self.del_list = btn_list
+        self.del_list.append(self.frame_right)
     def loadUser(self, user):
         #open database and pull for appearance and font
         customtkinter.set_appearance_mode("Dark")
@@ -138,6 +138,7 @@ class App(customtkinter.CTk):
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
+        self.frame_right.grid_forget()
 
         if StateHandler().c_state == WindowState.HOME:
             return
