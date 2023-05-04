@@ -24,7 +24,7 @@
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 from GUI.ASL_GUI import App
-#from GUI.Login_GUI import LoginPage
+from GUI.Login_GUI import LoginPage
 from Utils.constants import *
 from Utils.camera import Camera
 
@@ -44,12 +44,22 @@ if __name__ == "__main__":
     print("================= Config Read! ==================")
     try:
         ()
-        Config("Stupendous", "Amazing")
+        export_list = [False, ""]
+        login_page = LoginPage(export_list)
+        login_page.start()
+        del login_page # haha im not using your toplevels haha (egregious coding war crime)
+
+        print(export_list)
+
+        if export_list[0]:
+            app = App(export_list[1])
+            app.start()
+        #Config("Stupendous", "Amazing")
         #Config("Beemer", "swag2")
         #print(Config().c_cfg)
         #print(Config()["c"])
         #Archive().save_config("Beemer")
-        Config().add_user("Stupendous", "Amazing")
+        #Config().add_user("Stupendous", "Amazing")
         #print("Stop")
 
         #to_enc = {"M21ConfigName":"Beemer","c":2}

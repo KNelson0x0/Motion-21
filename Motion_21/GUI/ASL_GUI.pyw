@@ -64,7 +64,7 @@ class AverageList:
             return last_average
 
 class App(customtkinter.CTk):
-    def __init__(self):
+    def __init__(self, user_name : str = "Debug"):
         super().__init__()
         #Size of window and title
         self.geometry("740x520")
@@ -107,7 +107,6 @@ class App(customtkinter.CTk):
         #Handy closing function to stop all running processes even when window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.login()
 
     #Image processing function declarations
     # ------------------------------------------------------------------------------------    
