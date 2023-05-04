@@ -1,5 +1,4 @@
-import Utils.utils as utils
-import Utils.utils as utils
+from Utils.imports import *
 
 from enum    import Enum
 from .camera    import *
@@ -107,5 +106,3 @@ class StateHandler(object):
         del_list = []
       
         return del_list
-
-

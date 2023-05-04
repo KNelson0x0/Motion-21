@@ -1,8 +1,7 @@
 import time
 import json
 import tkinter
-from   .states    import BorderColor
-from   .constants import DEBUG
+from Utils.imports import *
 
 def make_color(color : BorderColor): # BGR
     print("make_color")
