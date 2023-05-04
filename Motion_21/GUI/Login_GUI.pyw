@@ -1,9 +1,7 @@
-import customtkinter
-import tkinter
-from config        import *
-from Utils.states    import BorderColor, CameraState, WindowState, LetterState, EventHandler, StateHandler
-from GUI.ASL_GUI import App
 import os
+import customtkinter
+from config        import *
+from Utils.imports import *
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 dir_path = '%s\\ASL_Learning\\' %  os.environ['APPDATA'] 

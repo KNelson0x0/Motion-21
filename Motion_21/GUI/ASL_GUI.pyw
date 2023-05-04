@@ -1,20 +1,19 @@
 import os
 import threading
-import tkinter
+import os
+import threading
+from tkinter.tix import COLUMN
 import customtkinter
 from queue           import Queue
 
+from Utils.imports import *
+
 from PIL             import Image, ImageTk
 from config          import *
-from Utils.utils     import debug_log, end_brace_index, get_header, get_json_size
-from Utils.constants import DEBUG, USE_CAMERA
-from Utils.camera    import Camera
-from Utils.states    import BorderColor, CameraState, WindowState, LetterState, EventHandler, StateHandler
 from ML.algorithm    import UserSign
 from ML.usertrain    import UserTrain
 from .camera_window  import CameraWindow
 from .custom_tabview import CustomTabview
-from datetime import date
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 main_cam_frame = []
@@ -85,11 +84,22 @@ class App(customtkinter.CTk):
         # helper attributes
         self.del_list            = []
         self.average_list        = AverageList()
+        self.options_menu_open   = True
         self.curr_accuracy       = 100
+        self.roi_size            = 50
+        self.motion_timer_count  = 0
+        self.border_change       = 0 
+        self.user_name           = user_name
         self.after_id            = ""
         self.cam_after_id        = ""
         self.motion_after_id     = ""
-        self.motion_timer_count  = 0
+        self.use_motion_afterinator  = False
+        self.color_dict = { 0 : BorderColor.WHITE,
+                            1 : BorderColor.RED,
+                            2 : BorderColor.BLUE,
+                            3 : BorderColor.GREEN,
+                            4 : BorderColor.YELLOW,
+                            5 : BorderColor.BLACK }
 
         # Locks size of window
         #self.resizable(False, False)
