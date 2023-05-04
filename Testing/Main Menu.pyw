@@ -10,13 +10,6 @@ dir_path = '%s\\ASL_Learning\\' %  os.environ['APPDATA']
 if not os.path.exists(dir_path):
     os.mkdir(dir_path)
 
-# To-Do List:
-# 1) Implement save file
-# 2) Fix color on themes page as it is currently set to a grey on right side (implement along with save file)
-# 3) Add functionality to other buttons
-# 4) Add options for text resizing and button resizing
-
-#Can change this later for themes
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
 
@@ -32,16 +25,11 @@ class App(customtkinter.CTk):
         #Handy closing function to stop all running processes even when window is closed
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.home_window()
+        self.lesson_select()
 
-
-    # Button function declarations
-    # ------------------------------------------------------------------------------------    
+ 
     def load_image(self, path, image_size1, image_size2):
         return ImageTk.PhotoImage(Image.open(PATH + path).resize((image_size1, image_size2)))
-    
-    # Button that recreates window with home page
- 
 
     def on_closing(self, event=0):
         self.destroy()
@@ -51,7 +39,7 @@ class App(customtkinter.CTk):
 
 
     # Creates the home window
-    def home_window(self):
+    def lesson_select(self):
         #self.grid_columnconfigure(1, weight=1)
         #self.grid_rowconfigure(0, weight=1)
 

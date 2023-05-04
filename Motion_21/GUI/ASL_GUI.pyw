@@ -117,34 +117,6 @@ class App(customtkinter.CTk):
 
     # Button function declarations
     # ------------------------------------------------------------------------------------    
-    def login(self):
-        StateHandler().change_state(WindowState.SETTINGS, self.del_list)
-        btn_list = []
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(2, weight=1)
-
-        #len_users = len(Config().users)
-        len_users = 2
-        self.frame_right = customtkinter.CTkScrollableFrame(master=self)
-        self.frame_left = customtkinter.CTkFrame(master=self)
-        self.frame_left.grid(row = 0, column = 1, sticky="nswe", padx=0, pady=5)
-        self.frame_right.grid(row=1, column=1, sticky="nswe", padx=135, pady=20)
-
-        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, width=200, font=("Segoe UI", 60), height=60, text="User Login", corner_radius=6)
-        self.label_1.grid(row= 0, column = 0, padx = 110, pady = 30)
-
-        for i in range(len_users):
-            btn = customtkinter.CTkButton(master=self.frame_right, text="Config().users[i]", text_color=THEME_OPP, corner_radius=6, width=200, fg_color=THEME, border_color=THEME, command = lambda l = i: self.loadUser(i+1))
-            btn.grid(row = i, column = 0, padx = 5, pady = 20)
-            btn_list.append(btn)
-
-        self.del_list = btn_list
-        self.del_list.append(self.frame_right)
-    def loadUser(self, user):
-        #open database and pull for appearance and font
-        customtkinter.set_appearance_mode("Dark")
-        self.home_button()
-
     # Button that recreates window with home page
     def home_button(self):
         # Destroyed old window
@@ -154,13 +126,8 @@ class App(customtkinter.CTk):
             return
 
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)
-        self.home_window()
+        self.lesson_select()
 
-
-    def loadUser(self, user):
-        #open database and pull for appearance and font
-        customtkinter.set_appearance_mode("Dark")
-        self.home_button()
     # Button that allows user to change home page preferences
     def home_settings_button(self):
         print("testing home settings button")
@@ -753,10 +720,10 @@ class App(customtkinter.CTk):
         self.frame_left.destroy()
         self.frame_right.destroy()
 
-        self.home_window()
+        self.lesson_select()
 
     # Creates the home window
-    def home_window(self):
+    def lesson_select(self):
         today = date.today()
         dateTime = today.strftime("%m/%d/%y")
         self.del_list = StateHandler().change_state(WindowState.HOME, self.del_list)

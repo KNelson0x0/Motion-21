@@ -23,8 +23,8 @@
 #
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 
-#from GUI.ASL_GUI import App
-from GUI.Login_GUI import LoginPage
+from GUI.ASL_GUI import App
+#from GUI.Login_GUI import LoginPage
 from Utils.constants import *
 from Utils.camera import Camera
 
@@ -38,8 +38,8 @@ from config import *
 if __name__ == "__main__":
     # Loading Window Here!
     #cam = Camera() # init it.
-    loginPage = LoginPage()
-    #app = App()
+    #loginPage = LoginPage()
+    app = App()
     
     print("================= Config Read! ==================")
     try:
@@ -62,6 +62,7 @@ if __name__ == "__main__":
         """
         print("=================================================")
 
-    loginPage.start()
+    #loginPage.start()
+    app.start()
 
 
