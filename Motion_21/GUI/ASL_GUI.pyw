@@ -236,6 +236,9 @@ class App(customtkinter.CTk):
     def buttonBb(self):
         self.users_button()
 
+    def app_quit(self):
+        self.destroy()
+
     def cExit(self):
         self.ewindow.destroy()
         self.users_button()
@@ -447,7 +450,7 @@ class App(customtkinter.CTk):
         self.button3.grid(row=0, column=0, padx=0, pady=0)
         self.button4 = customtkinter.CTkButton(master=self.frame_left, text = "Themes", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", border_color=THEME, command=self.themes_button)
         self.button4.grid(row=1, column=0, padx=0, pady=0)
-        self.button_logout = customtkinter.CTkButton(master=self.frame_left, text = "Logout", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", border_color=THEME, command=self.themes_button)
+        self.button_logout = customtkinter.CTkButton(master=self.frame_left, text = "Logout", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", border_color=THEME, command=self.app_quit)
         self.button_logout.grid(row=2, column=0, padx=0, pady=0)
         #self.button6 = customtkinter.CTkButton(master=self.frame_left, text = "Notifications", text_color = THEME_OPP, width = 200, height = 60, border_width = 1, corner_radius = 5, compound = "bottom", fg_color = THEME, border_color=THEME, command=self.notif_button)
         #self.button6.grid(row=3, column=0, padx=0, pady=0)
