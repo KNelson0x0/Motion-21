@@ -173,6 +173,9 @@ class App(customtkinter.CTk):
     def home_settings_button(self):
         print("testing home settings button")
 
+    def testing(self, x):
+        print(x)
+
     # Button that recreates window with users page
     def users_button(self):
         StateHandler().change_state(WindowState.SETTINGS, self.del_list)
