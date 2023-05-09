@@ -70,8 +70,40 @@ class LoginPage(customtkinter.CTk):
         self.del_list.append(customtkinter.CTkButton(master=self, text="New User", corner_radius=6, width=200, height = 40, command = self.new_user))
         self.del_list[-1].grid(row = 2, column = 1, padx = 8, pady = 1, sticky = "w")
 
-        self.del_list.append(customtkinter.CTkButton(master=self, text="Delete User", corner_radius=6, width=200, height = 40, command = lambda l = i: self.del_window(Config().users[l])))
+        self.del_list.append(customtkinter.CTkButton(master=self, text="Delete User", corner_radius=6, width=200, height = 40, command = self.del_confirm))
         self.del_list[-1].grid(row = 2, column = 1, padx = 8, pady = 1, sticky = "e")
+
+        self.del_list.append(self.frame_right)
+        self.del_list.append(self.frame_left)
+
+    def del_confirm(self):
+        self.frame_right.grid_forget()
+        len_users = len(Config().users)
+
+        self.frame_left = customtkinter.CTkFrame(master=self)
+        self.frame_left.grid(row = 0, column = 1, sticky="nswe", padx=7, pady=5)
+        self.frame_right = customtkinter.CTkScrollableFrame(master=self)
+        self.frame_right.grid(row=1, column=1, sticky="nswe", padx=7, pady=5)
+
+        StateHandler().change_state(WindowState.UNKNOWN, self.del_list)
+
+        self.grid_columnconfigure(0, weight=1)
+        
+        self.label_1 = customtkinter.CTkLabel(master=self.frame_left, width=100, font=("Segoe UI", 50), height=60, text="User Delete", corner_radius=6)
+        self.label_1.grid(row= 0, column = 0, padx = 100, pady = 30, sticky = "n")
+
+        self.del_list.append(customtkinter.CTkLabel(master=self, font=("Segoe UI", 24), fg_color = "grey32", text="Select User:", corner_radius=6))
+        self.del_list[-1].place(relx = 0.355, rely = 0.285)
+
+        for i in range(len_users):
+            btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], corner_radius=6, width=200, command = lambda l = i: self.del_window(Config().users[l])) #Do Keith stuff here
+            #btn = customtkinter.CTkButton(master=self.frame_right, text=users[i], corner_radius=6, width=200, command = lambda l = i: self.load_user(users[l]))
+            btn.grid(row = i, column = 0, padx = 118, pady = 20)
+            self.del_list.append(btn)
+
+        self.del_list.append(customtkinter.CTkButton(master=self, text="Back", corner_radius=6, width=200, height = 40, command = self.back_main))
+        self.del_list[-1].grid(row = 2, column = 1, padx = 100, pady = 0)
+
 
         self.del_list.append(self.frame_right)
         self.del_list.append(self.frame_left)
@@ -102,7 +134,7 @@ class LoginPage(customtkinter.CTk):
         self.confirm_button = customtkinter.CTkButton(master=self.frame_middle, text="Confirm", corner_radius=6, width=200, height = 40, command = self.del_user)
         self.confirm_button.grid(row = 5, column = 0, padx = 8, pady = (50,0), sticky = "e")
 
-        self.back_button = customtkinter.CTkButton(master=self.frame_middle, text="Back", corner_radius=6, width=200, height = 40, command = self.back_login)
+        self.back_button = customtkinter.CTkButton(master=self.frame_middle, text="Back", corner_radius=6, width=200, height = 40, command = self.back_delete)
         self.back_button.grid(row = 5, column = 0, padx = 8, pady = (50,0), sticky = "w")
         self.wrong_label_active = False
 
@@ -141,6 +173,19 @@ class LoginPage(customtkinter.CTk):
             self.password.configure(show='')
         else:
             self.password.configure(show='*')
+
+    def back_delete(self):
+        self.frame_middle.grid_forget()
+        self.frame_middle.destroy()
+
+        self.del_confirm()
+
+    def back_main(self):
+        self.frame_right.grid_forget()
+        self.frame_left.grid_forget()
+        #self.frame_middle.destroy()
+
+        self.login_window()
 
     def back_login(self):
         self.frame_middle.grid_forget()
