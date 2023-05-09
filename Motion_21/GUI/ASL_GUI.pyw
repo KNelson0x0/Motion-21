@@ -501,7 +501,7 @@ class App(customtkinter.CTk):
         self.change_state(WindowState.LESSONS, self.del_list)
 
         static_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
-        static_numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+        static_numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
         movement_letters = ["J", "Z"]
 
         self.frame_left.destroy()
@@ -530,13 +530,13 @@ class App(customtkinter.CTk):
         
 
         # lessons
-        self.lesson1 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 1:\n 1, 2, 3", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 190, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_numbers[0:3], 1))
+        self.lesson1 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 1:\n 0, 1, 2, 3", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 190, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_numbers[0:4], 1))
         self.lesson1.grid(row = 0, column = 4, padx = 2, pady = 2)
 
-        self.lesson2 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 2:\n 4, 5, 6, 7", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 190, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_numbers[3:7], 2))
+        self.lesson2 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 2:\n 4, 5, 6", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 190, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_numbers[4:7], 2))
         self.lesson2.grid(row = 0, column = 5, padx = 2, pady = 2)
 
-        self.lesson3 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 3:\n 8, 9, 10", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 190, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_numbers[7:10], 3))
+        self.lesson3 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 3:\n 7, 8, 9, 10", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"),  width = 190, height = 100, border_width = 2, corner_radius = 8, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_numbers[7:11], 3))
         self.lesson3.grid(row = 0, column = 6, padx = 2, pady = 2)
 
         self.lesson4 = customtkinter.CTkButton(master = self.frame_main_right, text = "LESSON 4:\n A, B, C, D", text_color = THEME_OPP, font = ("Segoe UI", 18, "bold"), width = 190, height = 100, border_width = 2, corner_radius = 5, compound = "bottom", border_color = "#000000", command = lambda : self.lesson_letters_static(static_letters[0:4], 4))
