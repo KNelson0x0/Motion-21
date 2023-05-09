@@ -4,7 +4,7 @@ import os
 from usermodel import UserModel
 
 #Pass in letter from GUI here
-letter = "J_2"
+letter = "10"
 
 #Pass in button presses from GUI here
 take_picture = "s"

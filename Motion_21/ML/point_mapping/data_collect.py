@@ -4,7 +4,7 @@ import os
 import uuid
 
 ################################# CHANGE THIS BASED ON WHICH LETTER YOU ARE DOING ####################################
-letter = 'Z'
+letter = '1'
 
 
 cap = cv2.VideoCapture(0)
