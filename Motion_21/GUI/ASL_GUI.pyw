@@ -1,10 +1,6 @@
 
 import os
-import threading
-from tkinter.tix import COLUMN
 import customtkinter
-from queue           import Queue
-
 from Utils.imports import *
 
 from PIL             import Image, ImageTk

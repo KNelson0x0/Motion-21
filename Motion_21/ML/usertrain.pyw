@@ -21,7 +21,6 @@ from tensorflow.keras.optimizers          import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
-
 class UserTrain:
     def __init__(self, username, symbol, main_window = None):
         self.user_name = username

@@ -8,7 +8,7 @@ import os
 from random import randint
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-dir_path = '%s\\ASL_Learning\\' %  os.environ['APPDATA'] 
+dir_path = '%s\\ASL_Learning\\' % os.environ['APPDATA'] 
 if not os.path.exists(dir_path):
     os.mkdir(dir_path)
 
