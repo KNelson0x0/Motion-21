@@ -1,4 +1,4 @@
-# custom_segmented_button.pyw: edit of customTkinters CustomTabview to make the options menu run the callbacks I want it to instead of the original ones.
+# custom_segmented_button.pyw: edit of customTkinters Tabview to make the options menu run the callbacks I want it to instead of the original ones.
 import customtkinter as CT
 from typing import Union, Tuple, List, Dict, Callable, Optional
 
