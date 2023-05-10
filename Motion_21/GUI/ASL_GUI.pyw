@@ -1,3 +1,7 @@
+# ASL_GUI.pyw: The main file for the GUI of our application that constructs and destructs windows, images, and camera input.
+#              Our application uses customtkinter as our primary library for the creation of the GUI but uses other libraries
+#              Like OpenCV for the camera and MediaPipe for the hand maps. It will call to other classes such as config and 
+#              UserSign for additional functionalities such as the user system and data base training.
 
 import os
 import customtkinter

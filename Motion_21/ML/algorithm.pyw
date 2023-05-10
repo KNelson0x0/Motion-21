@@ -1,3 +1,9 @@
+# algorithm.pyw: The Machine-Learning Algorithm where the majority of the calculations and classifications are computed.
+#                It uses the base_letters file as our database and uses a two-step process for classification.
+#                The first step is a PCA method that reduces the size of the data and simplifying the number of calculations
+#                needed while the second step is comparing a user sign with our base letters. If the algorithm detects that
+#                the user successfully signed a letter it will pass that information back to the GUI.
+
 import cv2
 import mediapipe
 import os
