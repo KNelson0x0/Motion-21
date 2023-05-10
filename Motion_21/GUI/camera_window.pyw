@@ -1,3 +1,4 @@
+# camera_window.pyw: camera window tkinter element for use in the UI
 import customtkinter
 from   PIL import Image, ImageTk
 from   Utils.camera import Camera
@@ -13,7 +14,7 @@ class CameraWindow(customtkinter.CTkLabel):
         
         self.cw_update();
 
-    def cw_update(self):
+    def cw_update(self): # update the camera window ( .update is already taken >:/ )
         img         = Image.fromarray(Camera().rgb_img_rect if not self.cropped else Camera().get_cropped_frame_points())
 
         if self.width != None and self.height != None:
