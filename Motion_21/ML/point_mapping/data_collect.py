@@ -1,3 +1,6 @@
+# data_collect.py: Our primary method of gathering data for our base letter database. It takes in camera input and takes screenshots
+#                  of a preset rectangular area when the user presses a button to store as a base letter file.
+
 import cv2
 import shutil
 import os

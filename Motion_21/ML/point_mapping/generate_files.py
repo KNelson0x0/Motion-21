@@ -1,3 +1,5 @@
+# generate_files.py: Generates our base letter files such as the images and the relational data.
+
 import cv2
 import mediapipe
 import os

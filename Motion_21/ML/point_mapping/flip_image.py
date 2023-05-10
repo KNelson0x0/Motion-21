@@ -1,3 +1,5 @@
+# flip_image.py: Flips the base letter image that was input so it accounts for both left and right hand users.
+
 import cv2
 import os
 from os import listdir
