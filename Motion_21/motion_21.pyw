@@ -22,6 +22,7 @@
 #                               ╚═════════════════╩═══════════════════╝ 
 #
 #▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+# motion_21.pyw: main file for our project
 
 from GUI.ASL_GUI   import App
 from GUI.login_GUI import LoginPage
@@ -49,16 +50,6 @@ if __name__ == "__main__":
         if export_list[0]:
             app = App(export_list[1])
             app.start()
-
-
-        #Config("Beemer", "swag2")
-        #Config().save_var(datetime.today().timestamp(), "Last Login Time")
-        #print(Config().c_cfg)
-        #Archive().save_config("Stupendous")
-        #Config().add_user("Stupendous", "Amazing")
-        #print("Stop")
-
-        #to_enc = {"M21ConfigName":"Beemer","c":2}
     
     except Exception as e:
         print("Except: {}".format(e))

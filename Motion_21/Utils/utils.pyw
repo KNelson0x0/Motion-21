@@ -1,3 +1,5 @@
+# utils.pyw: miscellaneous utility functions and objects 
+
 import time
 import json
 import tkinter

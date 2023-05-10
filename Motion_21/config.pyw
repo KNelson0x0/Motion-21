@@ -1,3 +1,4 @@
+# config.pyw: File that houses all of the archive and config objects and functions
 import json, base64, hashlib
 
 from   Utils.imports import *
@@ -7,14 +8,15 @@ from   os.path  import exists
 from   cryptography.fernet import Fernet
 
 
-def make_key(passcode: str) -> bytes:
+def make_key(passcode: str) -> bytes: # transforms a users plaintext key into a non-human-readable blob of characters and returns it in a fun base64 safe format for fernet.
     md5_obj = hashlib.md5()
     passcode = MemKey(passcode)
     md5_obj.update(bytes(passcode.get_key(),'utf-8'))
     del passcode
     return base64.urlsafe_b64encode(md5_obj.hexdigest().encode('utf-8'))
 
-class MemKey(): # because we arent storing any of this on a server, the least we can do is make sure the key isn't just floating around in memory somewhere
+# key class, transforms a users plaintext key into something way worse to look at. If this we had compiled this into a bin (and python IR wasn't cringe) this would just deter reverse engineers and help combat mem scans for the plaintext key.
+class MemKey(): # because we arent storing any of this on a server, the least we can do is make sure the plaintext key isn't just floating around in memory somewhere
     """
        [NEVER USE THE ASSIGNMENT OPERATOR WITH THIS CLASS!]
        In order for the entire point of this class to work the key has to 
@@ -63,7 +65,7 @@ class MemKey(): # because we arent storing any of this on a server, the least we
             shifted_ascii = ord(c) << (1 << 3 << 3 << 7 & (255))  # Shift the ASCII value one by a really cool amount and then make sure it stays within valid ascii range
             shifted_msg += chr(shifted_ascii)
     
-        # XOR the shifted message with a super secret and very random key (can be randomized based on HWID, do this later)
+        # XOR the shifted message with a super secret and very random key (could be randomized based on HWID)
         key = 'Motion21IsCool'
         xorred_msg = ''
         for i in range(len(shifted_msg)): # they are definitely gonna know this is the encrypt function lol
@@ -73,7 +75,7 @@ class MemKey(): # because we arent storing any of this on a server, the least we
     
         return xorred_msg
     
-class Archive(object): # So python apparently does have circular imports but they are just really stupid and bad so heres another singleton
+class Archive(object): # Class that reads, writes, encrypts, decrypts, and manages the config file (archive) | So python apparently does have circular imports but they are just really stupid and bad so heres another singleton
     def __new__(self):
         if not hasattr(self, 'instance'):
             self.instance  = super(Archive, self).__new__(self)
@@ -95,7 +97,7 @@ class Archive(object): # So python apparently does have circular imports but the
         self.crypt = Fernet(make_key(key))
         del key
 
-    def parse_arch(self, key : str = ""):
+    def parse_arch(self, key : str = ""): # parse the archive
         if key != "": 
             self.crypt  = Fernet(make_key(key))
             del key
@@ -121,7 +123,7 @@ class Archive(object): # So python apparently does have circular imports but the
 Key: {}\n\
 Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i]) for i in range(len(self.jsons)) ]))
       
-    def update_json(self, new_json): # also uses it
+    def update_json(self, new_json): # update the json
         new_json_s = new_json 
 
         if type(new_json) == "<class 'config.Config'>":
@@ -143,7 +145,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
     def get_header(self):
         return self.header
 
-    def get_json(self, user_name : str = "", key : bytes = ""): # also up for name nomination, use_json
+    def get_json(self, user_name : str = "", key : bytes = ""): # get json based on username and pass | also up for name nomination, use_json
         crypt = Fernet(key)
         del key
         gate = ''
@@ -169,7 +171,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                 continue
         return False
 
-    def exists(self, name : str):
+    def exists(self, name : str): # figures out whether a header exists or not
         for i in self.headers.keys():
             try:
                 gate = self.crypt.decrypt(bytes(i[1], 'utf-8'))
@@ -180,7 +182,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
                 pass
         return False
 
-    def add_config(self, user_name : str, key : bytes): 
+    def add_config(self, user_name : str, key : bytes): # adds the config the to db
         crypt = Fernet(key)
         payload = crypt.encrypt(bytes('{{"M21ConfigName" : "{}"}}'.format(user_name), 'utf-8')).decode()
         success = crypt.encrypt(b"UserSuccess").decode()
@@ -191,8 +193,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         self.save_config(user_name)
         self.crypt = crypt
 
-
-    def del_config(self, user_name : str, key : bytes):
+    def del_config(self, user_name : str, key : bytes): # removes the config from the db
         self.crypt = Fernet(key)
         for i, k in enumerate(self.jsons.keys()):
             try:
@@ -224,7 +225,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
 
         return False
 
-    def save_config(self, user_name):
+    def save_config(self, user_name): # saves the config
         f = open(self.user_path,'r')
         
         # add file header
@@ -247,7 +248,7 @@ Value: {}\n".format(i, list(self.jsons.keys())[i], list(self.jsons.values())[i])
         f.write(stang)
         f.close()
 
-class Config(object): # singleton me later
+class Config(object): # Config class, more or less a wrap around archive to make usage easier and more understandable.
     def __new__(self, user_name : str = "", password : str = ""):
         if not hasattr(self, 'instance'):
             self.instance  = super(Config, self).__new__(self)
@@ -275,13 +276,13 @@ class Config(object): # singleton me later
 
         return self.instance
   
-    def __setitem__(self, key, new_val):
+    def __setitem__(self, key, new_val): # allows for Config()["key"] = x
         self.settings[key] = new_val # probably extremely shallow setting. I, may, add deeper searching sets. 
 
-    def __getitem__(self, x):
+    def __getitem__(self, x): # allows for x = Config()["key"] 
         return self.c_cfg[x] # same as above with gets
 
-    def save_var(self, var, name = ""):
+    def save_var(self, var, name = ""): # saves an individual variable
         # var  - the variable you want values' saved.
         # name - the name of the variable you want it saved under. please use this though i've added support to do this without a name.
 
@@ -310,7 +311,7 @@ class Config(object): # singleton me later
         Archive().c_cfg = self.settings
         Archive().save_config(self.user_name)
 
-    def save(self, object, name = "", attributes = []):
+    def save(self, object, name = "", attributes = []): # saves something from an object, ex: Animal.Legs
         # object     - the object you want the values saved from
         # attributes - if its an object you want values saved from, provide a list of the values youd like in string form
         # name       - provide a name for the object youd like saved (advised, otherwise it gets an autoname that you will have to find and deal with yourself https://pixy.org/src/455/4559042.png)
@@ -356,20 +357,19 @@ class Config(object): # singleton me later
         
         self.c_cfg      = self.settings
         Archive().c_cfg = self.settings
-        #Archive().save_config()
+        Archive().save_config(self.user_name)
     
-    def add_user(self, user_name : str, password : str): # plaintext user and pass
+    def add_user(self, user_name : str, password : str): # add a new user | plaintext user and pass
         key = make_key(password)
         del password
         Archive().add_config(user_name, key)
 
-    def delete_user(self, user_name : str, password : str):
+    def delete_user(self, user_name : str, password : str): # remove a user
         key = make_key(password)
         del password
         Archive().del_config(user_name, key)
 
-
-    def reload(self, user_name : str = ""):
+    def reload(self, user_name : str = ""): # refresh Config
         if user_name != "":
             self.user_name = user_name
             self.settings  = {'M21ConfigName' : user_name}
@@ -382,11 +382,11 @@ class Config(object): # singleton me later
 
         return
     
-    def set_password(self, password : str):
+    def set_password(self, password : str): # change the current stored password
         Archive().set_password(password)
         del password
         
-    def load(self, user_name : str, password : str):
+    def load(self, user_name : str, password : str): # load a config from the Archive
         key = make_key(password)
 
         try: 
@@ -399,7 +399,6 @@ class Config(object): # singleton me later
         cfg = Archive().get_json(user_name, key)
         
         if not cfg: return False
-
 
         self.user_name = user_name
         self.c_cfg = cfg[0]

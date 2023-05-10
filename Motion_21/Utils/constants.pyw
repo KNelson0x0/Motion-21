@@ -1,12 +1,11 @@
+# constants.pyw: collection of variables, functions, and objects that need to be constant and globally accessible
+
 import os
 from enum import Enum
 
 # ====== Debug Options ======
 DEBUG = 1
 USE_CAMERA = 1
-# ======================
-
-USE_CAMERA = 1;
 # ======================
 
 WEIRD_TKINTER_SPACE = 114

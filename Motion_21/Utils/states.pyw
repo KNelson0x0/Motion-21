@@ -1,3 +1,5 @@
+# states.pyw: Application state and state related objects.
+
 from enum import Enum
 from Utils.imports import *
 

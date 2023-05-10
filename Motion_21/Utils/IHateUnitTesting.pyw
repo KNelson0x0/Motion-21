@@ -1,3 +1,5 @@
+# IHateUnitTesting.pyw: mandatory unit testing file for the config system (might be outdated now)
+
 from config import *
 from GUI.ASL_GUI import App
 import os

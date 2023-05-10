@@ -1,12 +1,12 @@
+# scroll_panel.pyw: original example for animations and movement of elements if we had ever decided to use them. Currently: Unused.
+
 import customtkinter as CT
 from constants import *
 import math
 from utils import *
 from enum import Enum
 
-
 class ScrollPanel (CT.CTkFrame):
-
     class AnimationState(Enum):
         READY = 1
         IN_PROGRESS = 2
