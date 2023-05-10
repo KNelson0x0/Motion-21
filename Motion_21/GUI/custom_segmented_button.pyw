@@ -1,4 +1,4 @@
-# custom_segmented_button.pyw: edit of customTkinters CustomSegmentedButton to make the options menu with the clickable button where it is seen in the lesson screens.
+# custom_segmented_button.pyw: edit of customTkinters SegmentedButton to make the options menu with the clickable button where it is seen in the lesson screens.
 
 import tkinter
 from typing import Union, Tuple, List, Dict, Callable, Optional
