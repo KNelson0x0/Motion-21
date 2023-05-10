@@ -1,12 +1,9 @@
 
 
-from turtle import bgcolor
 import customtkinter
-import tkinter
 from config        import *
 from Utils.imports import *
 from time import sleep
-from GUI.ASL_GUI import App
 import os
 from random import randint
 
@@ -98,7 +95,7 @@ class LoginPage(customtkinter.CTk):
         self.del_list[-1].place(relx = 0.355, rely = 0.285)
 
         for i in range(len_users):
-            btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], corner_radius=6, width=200, command = lambda l = i: self.del_window(Config().users[l])) #Do Keith stuff here
+            btn = customtkinter.CTkButton(master=self.frame_right, text=Config().users[i], corner_radius=6, width=200, command = lambda l = i: self.del_window(Config().users[l])) # Do Keith stuff here -- Keith Stuff be done
             #btn = customtkinter.CTkButton(master=self.frame_right, text=users[i], corner_radius=6, width=200, command = lambda l = i: self.load_user(users[l]))
             btn.grid(row = i, column = 0, padx = 118, pady = 20)
             self.del_list.append(btn)

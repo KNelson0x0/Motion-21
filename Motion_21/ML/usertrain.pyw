@@ -1,3 +1,5 @@
+# usertrain.pyw: class for collecting user data and training a new model based on it
+
 import os
 import cv2
 import time
