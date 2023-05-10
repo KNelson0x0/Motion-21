@@ -1,4 +1,6 @@
-
+# Login_GUI.pyw: The user login, create, and delete that allows for saving user information.
+#              Application uses customtkinter as our primary library for the creation of the GUI but uses other libraries
+#              Uses config.pyw to save users or delete them along with sending which user is used for ASL_GUI.pyw
 
 import customtkinter
 from config        import *
