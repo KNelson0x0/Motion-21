@@ -18,8 +18,8 @@
   </font>   
   <br>
   <sub>
-  Motion 21 aims to be an application that will combine Machine Learning and Computer Vision methodologies to assist in teaching American Sign Language(ASL). Motion 21 is currently being contributed to by 5 different team members that can be found in the
-  <strong>Team </strong> section.
+  Motion 21 is an application that combines Machine Learning and Computer Vision methodologies to assist in teaching American Sign Language(ASL). Motion 21 is currently being contributed to by 4 different team members that can be found in the
+  <strong> Main Team </strong> section.
   </sub>
   </p>
 </h4>
@@ -30,7 +30,7 @@
 <h4 align="left" > 
   <font size="5">  
     <p> 
-      <strong> Team: 
+      <strong> Main Team: 
       </strong>
   </font>
   <br>
@@ -102,29 +102,35 @@
     </div>
   </div> 
   <br>
-  <div style="width:150px;height:150px;margin-right:15px;display:flex;"> 
-    <p float="left">
-        <img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/64790218?v=4?v=4&h=300&w=300&fit=cover&mask=circle&maxage=7d" alt="Sebastian Reel" width="100" height="100" style="border-radius: 50%" align = "left"/> 
-    <p float="left">
-    <div>
-      <p> 
-        <strong> 
-          <ins> Sebastian Reel 
-          </ins> 
-        </strong> 
-      </p>
-      <p>Contact: sebastianreel@nevada.unr.edu
-      </p>
-      <p>Title: Project Manager
-    </div>
   </div> 
 </h4>
 <br>
 <br>
 
+***          
+<div style="width:150px;height:150px;margin-right:15px;display:flex;"> 
+  <h4 align="left"> 
+    <font size="5">        
+      <strong> Additional Collaborators: </strong>
+    </font>
+  </h4>
+  <div style="float:left">
+    <img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/64790218?v=4?v=4&h=300&w=300&fit=cover&mask=circle&maxage=7d" alt="Sebastian Reel" width="100" height="100" style="border-radius: 50%" align = "left"/> 
+  </div>
+  <div style="float:left">
+    <p> 
+      <strong> 
+        <ins> Sebastian Reel 
+        </ins> 
+      </strong> 
+    </p>
+    <p>Contact: sebastianreel@nevada.unr.edu</p>
+    <p>Title: Unofficial Project Manager</p>
+  </div>
+</div>
+
 ***
-
-
+                   
 <h4 align="left">
   <font size="5">  
     <strong> Languages and Tools: 
